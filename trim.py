@@ -12,6 +12,7 @@ u""" 画像のトリミング"""
 # !/usr/bin/python
 # デフォルトの文字コード 変更
 # -*- coding: utf-8 -*-
+# Gdiff test
 
 # モジュール インポート
 import numpy as np
