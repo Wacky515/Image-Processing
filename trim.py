@@ -39,7 +39,7 @@ class Trim(tpm.GetImage):
         u""" トリミング 開始 """
         gim = tpm.GetImage(image)
         gim.display("Original image")
-        key = ord(getch.getch())
+#         key = ord(getch.getch())
         event = 0
         coor_x = 0
         coor_y = 0
@@ -62,7 +62,7 @@ class Trim(tpm.GetImage):
 def main():
     u""" メインルーチン """
     print os.getcwd()
-    os.chdir("D:\\OneDrive\\Biz\\Python\\TemplateMatching")
+    os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
     print os.getcwd()
 
     tm = Trim()

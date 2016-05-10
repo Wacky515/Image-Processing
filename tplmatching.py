@@ -258,12 +258,12 @@ class ImageProcessing:
 
 def main():
     # vimテスト用各変数 定義 # {{{
-    # print os.getcwd()
-    os.chdir("D:\\OneDrive\\Biz\\Python\\TemplateMatching")
-    # print os.getcwd()
-    path = "D:\\OneDrive\\Biz\\Python\\TemplateMatching"
-    smpl_pic = "D:\\OneDrive\\Biz\\Python\\TemplateMatching\\tpl_1.png"
-    smpl_pic2 = "D:\\OneDrive\\Biz\\Python\\TemplateMatching\\tpl_2.png"
+    print os.getcwd()
+    os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
+    print os.getcwd()
+    path = "D:\\OneDrive\\Biz\\Python\\ImageProcessing"
+    smpl_pic = "D:\\OneDrive\\Biz\\Python\\ImageProcessing\\tpl_1.png"
+    smpl_pic2 = "D:\\OneDrive\\Biz\\Python\\ImageProcessing\\tpl_2.png"
 # }}}
 
 # # マスタ画像の最大枝番 取得# {{{
