@@ -58,8 +58,7 @@ class GetImage:
 
     def display(self, window_name, image=0, _type=1):
         u""" 画像・動画 画面出力
-        image: 画像の有無 判定
-        _type: 0:静止画/1:動画 切換え"""
+        _type: 0:静止画/動画 切換え"""
 # ウィンドウ名の引数（window_name）をオミットしたい！！！
 # window_name = string(image)！！！
         if image == 0:
