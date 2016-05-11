@@ -38,10 +38,12 @@ class Trim(tpm.GetImage):
         u""" トリミング 開始 """
         gim = tpm.GetImage(image)
         window_name = "Original image"
-        gim.display(window_name)
-        cv2.setMousecallback(window_name, self.mouse_event, param)
+# TODO: 読込み画像名を正規名に変更する事！！！
+        image = "tpl_1.png"
+        gim.display(window_name, image, 0)
+        cv2.setMousecallback(window_name, self.mouse_event)
 
-    def mouse_event(self, event, coor_x, coor_y, flags, param):
+    def mouse_event(self, event, coor_x, coor_y, flags):
         if event == cv2.EVENT_LBUTTONDOWN:
             coor_x, coor_y = 0
             print "Selected positon:" + str(coor_x) + ", " + str(coor_y)
