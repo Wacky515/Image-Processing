@@ -43,13 +43,13 @@ def termination(cap_name=0, wait_time=33):
 
 class GetImage:
     u""" 画像・動画 取得クラス """
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, image):
+        self.image = image
 
     def get_image(self, conv_type=1):
         u""" 画像・動画 読込み """
         try:
-            image = cv2.imread(self.name, conv_type)
+            image = cv2.imread(self.image, conv_type)
             return image
 # 画像取得 エラー処理
         except:
