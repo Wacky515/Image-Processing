@@ -36,15 +36,14 @@ class Trim(tpm.GetImage):
 
     def start_trim(self, image):
         u""" トリミング 開始 """
-        # image = "tpl_2.png"
+        # image = "trim_test.png"
         window_name = "Original image"
 
-        # gim = tpm.GetImage(image)
-        # gim.display(window_name, 0, 0)
-# !!!: 2016/05/12 ここまで！！！
-        cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
-        cv2.imshow(window_name, image)
-        # cv2.setMousecallback(window_name, self.mouse_event)
+        gim = tpm.GetImage(image)
+        gim.display(window_name, 0, 0)
+        # cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
+        # cv2.imshow(window_name, image)
+        cv2.setMousecallback(window_name, self.mouse_event)
 
     def mouse_event(self, event, coor_x, coor_y, flags):
 
