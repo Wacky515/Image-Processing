@@ -44,14 +44,16 @@ class Trim:
         cv2.imshow(window_name, image)
         tpm.termination(0, 0)
 
-    def mouse_event(self, event, coor_x, coor_y, flags):
+    def mouse_event(self, event, coor_x, coor_y, flags, param):
         u""" マウスイベント 取得 """
         if event == cv2.EVENT_LBUTTONDOWN:
-            coor_x, coor_y = 0
+            coor_x = 0
+            coor_y = 0
+            print "Reset positon:" + str(coor_x) + ", " + str(coor_y)
 
         if event == cv2.EVENT_MOUSEMOVE:
             print "Selected positon:" + str(coor_x) + ", " + str(coor_y)
-            if cv2.waitkey(33) > 0:
+            if cv2.waitKey(33) > 0:
                 print("Quit")
                 tpm.termination(0, 0)
 
