@@ -29,26 +29,27 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 
-class Trim(tpm.GetImage):
+class Trim:
     u""" トリミング クラス """
-    def __init__(self):
-        pass
+    def __init__(self, image):
+        self.image = image
 
-    def start_trim(self, image):
+    def start_trim(self):
         u""" トリミング 開始 """
-        # image = "trim_test.png"
+        image = cv2.imread(self.image, 1)
         window_name = "Original image"
 
-        gim = tpm.GetImage(image)
-        gim.display(window_name, 0, 0)
-        # cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
-        # cv2.imshow(window_name, image)
-        cv2.setMousecallback(window_name, self.mouse_event)
+        cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
+        cv2.setMouseCallback(window_name, self.mouse_event)
+        cv2.imshow(window_name, image)
+        tpm.termination(0, 0)
 
     def mouse_event(self, event, coor_x, coor_y, flags):
-
+        u""" マウスイベント 取得 """
         if event == cv2.EVENT_LBUTTONDOWN:
             coor_x, coor_y = 0
+
+        if event == cv2.EVENT_MOUSEMOVE:
             print "Selected positon:" + str(coor_x) + ", " + str(coor_y)
             if cv2.waitkey(33) > 0:
                 print("Quit")
@@ -65,8 +66,8 @@ def main():
     os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
     print os.getcwd()
 
-    tm = Trim()
-    tm.start_trim("trim_test.png")
+    tm = Trim("trim_test.png")
+    tm.start_trim()
 
 if __name__ == '__main__':
     main()
