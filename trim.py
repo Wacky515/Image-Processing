@@ -46,20 +46,38 @@ class Trim:
 
     def mouse_event(self, event, coor_x, coor_y, flags, param):
         u""" マウスイベント 取得 """
+        trim_flg = False
+        start_x = start_y = end_x = end_y = 0
+
         if event == cv2.EVENT_LBUTTONDOWN:
-            coor_x = 0
-            coor_y = 0
-            print "Reset positon:" + str(coor_x) + ", " + str(coor_y)
+            # """ 2回目以降に古い描画を消去するため
+            # 左クリック押下毎に対象画像を読込み """
+            # image = cv2.imread(self.image, 1)
+            # cv2.imshow(self.window_name, image)
+
+            trim_flg = True
+            start_x, start_y = coor_x, coor_y
+            print "Start trim: " + str(start_x) + ", " + str(start_y) + \
+                    ", " + str(trim_flg)
+
+        if event == cv2.EVENT_LBUTTONUP:
+            trim_flg = False
+            end_x, end_y = coor_x, coor_y
+            end_x = coor_x
+            end_y = coor_y
+            print "End trim: " + str(end_x) + ", " + str(end_y) + \
+                    ", " + str(trim_flg)
 
         if event == cv2.EVENT_MOUSEMOVE:
-            print "Selected positon:" + str(coor_x) + ", " + str(coor_y)
-            if cv2.waitKey(33) > 0:
-                print("Quit")
-                tpm.termination(0, 0)
+            print "Select: " + str(coor_x) + ", " + str(coor_y) + \
+                    ", " + str(trim_flg)
+            # while True:
+            #     if trim_flg is True:
+            #         print "Selected: " + str(coor_x) + ", " + str(coor_y)
 
-        # if event == cv2.EVENT_LBUTTONDOWN:
-# 左クリック押下 画像再描画（いらない表示を消す＝文字のない画像を受け取る！！）
-        # image = cv2.imread("***.png")
+        if cv2.waitKey(33) > 0:
+            print("Quit")
+            tpm.termination(0, 0)
 
 
 def main():
