@@ -46,14 +46,16 @@ class Trim:
 
     def mouse_event(self, event, coor_x, coor_y, flags, param):
         u""" マウスイベント 取得 """
-        trim_flg = False
+        # FIXME: ↓ 移動する！！！
+        # trim_flg = False
         start_x = start_y = end_x = end_y = 0
 
         if event == cv2.EVENT_LBUTTONDOWN:
             # """ 2回目以降に古い描画を消去するため
+            # FIXME: 別のウィンドウが生成される！！！
             # 左クリック押下毎に対象画像を読込み """
             # image = cv2.imread(self.image, 1)
-            # cv2.imshow(self.window_name, image)
+            # cv2.imshow("Trimming", image)
 
             trim_flg = True
             start_x, start_y = coor_x, coor_y
