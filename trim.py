@@ -46,8 +46,6 @@ class Trim:
 
     def mouse_event(self, event, coor_x, coor_y, flags, param):
         u""" マウスイベント 取得 """
-        # FIXME: ↓ 移動する！！！
-        # trim_flg = False
         start_x = start_y = end_x = end_y = 0
 
         if event == cv2.EVENT_LBUTTONDOWN:
@@ -57,25 +55,18 @@ class Trim:
             # image = cv2.imread(self.image, 1)
             # cv2.imshow("Trimming", image)
 
-            trim_flg = True
             start_x, start_y = coor_x, coor_y
-            print "Start trim: " + str(start_x) + ", " + str(start_y) + \
-                    ", " + str(trim_flg)
+            print "Start trim: " + str(start_x) + ", " + str(start_y)
 
         if event == cv2.EVENT_LBUTTONUP:
-            trim_flg = False
             end_x, end_y = coor_x, coor_y
             end_x = coor_x
             end_y = coor_y
-            print "End trim: " + str(end_x) + ", " + str(end_y) + \
-                    ", " + str(trim_flg)
+            print "End trim: " + str(end_x) + ", " + str(end_y)
 
-        if event == cv2.EVENT_MOUSEMOVE:
-            print "Select: " + str(coor_x) + ", " + str(coor_y) + \
-                    ", " + str(trim_flg)
-            # while True:
-            #     if trim_flg is True:
-            #         print "Selected: " + str(coor_x) + ", " + str(coor_y)
+        if event == cv2.EVENT_MOUSEMOVE \
+                and flags == cv2.EVENT_FLAG_LBUTTON:
+            print "Select: " + str(coor_x) + ", " + str(coor_y)
 
         if cv2.waitKey(33) > 0:
             print("Quit")
