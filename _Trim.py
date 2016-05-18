@@ -92,7 +92,7 @@ def Mouse_trim(event,x,y,flags,param):
     elif event == cv2.EVENT_LBUTTONUP:
         TrimmingFlagC = False
         if TrimmingFlagS == True and TrimmingFlagM == True:
-            while true:
+            while True:
                 TrimmingFlagE = False
 #左クリック押上の座標 取得
                 TrimAreaE = (x, y)
