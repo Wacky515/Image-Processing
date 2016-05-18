@@ -32,16 +32,16 @@ sys.setdefaultencoding("utf-8")
 class Trim:
     u""" トリミング クラス """
     def __init__(self, image):
-        self.image = image
+        self.img = image
+        self.image = cv2.imread(self.img, 1)
 
     def start_trim(self):
         u""" トリミング 開始 """
-        image = cv2.imread(self.image, 1)
         window_name = "Original image"
 
         cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
         cv2.setMouseCallback(window_name, self.mouse_event)
-        cv2.imshow(window_name, image)
+        cv2.imshow(window_name, self.image)
         tpm.termination(0, 0)
 
     def mouse_event(self, event, coor_x, coor_y, flags, param):
@@ -58,17 +58,22 @@ class Trim:
             start_x, start_y = coor_x, coor_y
             print "Start trim: " + str(start_x) + ", " + str(start_y)
 
-        if event == cv2.EVENT_LBUTTONUP:
+        elif event == cv2.EVENT_LBUTTONUP:
             end_x, end_y = coor_x, coor_y
-            end_x = coor_x
-            end_y = coor_y
             print "End trim: " + str(end_x) + ", " + str(end_y)
 
-        if event == cv2.EVENT_MOUSEMOVE \
+        elif event == cv2.EVENT_MOUSEMOVE \
                 and flags == cv2.EVENT_FLAG_LBUTTON:
-            print "Select: " + str(coor_x) + ", " + str(coor_y)
+            image = cv2.imread(self.img, 1)
+            is_drawable = True
+            # !!!: 2016/05/18 以下からできない！！！
+            while is_drawable is True:
+                cv2.rectangle(image, (start_x, start_y), (coor_x, coor_y),\
+                        (255, 0, 0), 3)
+                print "Select: " + str(coor_x) + ", " + str(coor_y)
+                cv2.waitKey(33) > 0
 
-        if cv2.waitKey(33) > 0:
+        elif cv2.waitKey(33) > 0:
             print("Quit")
             tpm.termination(0, 0)
 
