@@ -31,20 +31,14 @@ sys.setdefaultencoding("utf-8")
 
 class Trim:
     u""" トリミング クラス """
-    # 2016/05/19 引数の受渡しができない！！！
     start_x = 0
     start_y = 0
     coor_x = 0
     coor_y = 0
 
     def __init__(self, img):
-    # def __init__(self, img, start_x, start_y, coor_x, coor_y):
         self.img = img
         self.image = cv2.imread(self.img, 1)
-        # self.start_x = start_x
-        # self.start_y = start_y
-        # self.coor_x = coor_x
-        # self.coor_y = coor_y
 
     def start_trim(self):
         u""" トリミング 開始 """
@@ -53,56 +47,47 @@ class Trim:
         cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
         cv2.setMouseCallback(window_name, self.mouse_event)
         cv2.imshow(window_name, self.image)
-        cra = cv2.rectangle
-        cra(self.image,
-            (self.start_x, self.start_y),
-            (self.coor_x, self.coor_y),
-            (255, 0, 0), 3)
         tpm.termination(0, 0)
 
     def mouse_event(self, event, coor_x, coor_y, flags, param):
         u""" マウスイベント 取得 """
-        self.start_x = self.start_y = end_x = end_y = 0
+        Trim.coor_x = coor_x
+        Trim.coor_y = coor_y
 
         if event == cv2.EVENT_LBUTTONDOWN:
-            # FIXME: 別のウィンドウが生成される！！！
-            # """ 2回目以降に古い描画を消去するため
-            # 左クリック押下毎に対象画像を読込み """
-            # cv2.imshow("Trimming", self.image)
+            Trim.start_x = Trim.start_y = end_x = end_y = 0
+            """ 2回目以降に古い描画を消去するため
+            左クリック押下毎に対象画像を読込み """
+            self.image = cv2.imread(self.img, 1)
 
-            self.start_x, self.start_y = self.coor_x, self.coor_y
-            print "Start: " + str(self.start_x) + ", " + str(self.start_y)
+            Trim.start_x, Trim.start_y = Trim.coor_x, Trim.coor_y
+            print "Start: " + str(Trim.start_x) + ", " + str(Trim.start_y)
 
         elif event == cv2.EVENT_LBUTTONUP:
-            end_x, end_y = self.coor_x, self.coor_y
+            end_x, end_y = Trim.coor_x, Trim.coor_y
             print "End: " + str(end_x) + ", " + str(end_y)
 
         elif event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON:
-            # image = cv2.imread(self.img, 1)
-
+            self.image = cv2.imread(self.img, 1)
             cra = cv2.rectangle
-            # cra(self.image, (start_x, start_y), (coor_x, coor_y),\
-            # (255, 0, 0), 3)
-            cra(self.image, (0, 0), (100, 100), (255, 0, 0), 3)
+            cra(self.image,
+                (Trim.start_x, Trim.start_y),
+                (Trim.coor_x, Trim.coor_y),
+                (255, 0, 0),
+                3)
             # lineType(Int)
             # 8: 8連結（デフォルト値）
             # 4: 4連結
             # CV_AA: アンチエイリアス
 
-            print "Select: " + str(self.coor_x) + ", " + str(self.coor_y)
+            # FIXME: 矩形描画が別ウインドウになる！！！
+            cv2.imshow("Trim", self.image)
 
-            # # !!!: 2016/05/18 以下からできない！！！
-            # is_drawable = True
-            # while is_drawable is True:
-            #     cv2.rectangle(image, (start_x, start_y), (coor_x, coor_y),\
-            #             (255, 0, 0), 3)
-            #     print "Select: " + str(coor_x) + ", " + str(coor_y)
-            #     cv2.waitKey(33) > 0
+            print "Select: " + str(Trim.coor_x) + ", " + str(Trim.coor_y)
 
         elif cv2.waitKey(33) > 0:
             print("Quit")
             tpm.termination(0, 0)
-
 
 def main():
     u""" メインルーチン """
