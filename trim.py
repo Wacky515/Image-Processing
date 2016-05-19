@@ -81,9 +81,6 @@ class Trim:
             thickness_in = 1
             cra(self.image, start_point, end_point, color_out, thickness_out)
             cra(self.image, start_point, end_point, color_in, thickness_in)
-
-            # FIXME: 矩形描画が別ウインドウになる！！！
-            # cv2.imshow("Trim", self.image)
             cv2.imshow(Trim.window_name, self.image)
 
             print "Select: " + str(Trim.coor_x) + ", " + str(Trim.coor_y)
