@@ -68,17 +68,17 @@ class Trim:
             print "End: " + str(end_x) + ", " + str(end_y)
 
         elif event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON:
+            """ 古い矩形描画を消去するため
+            マウス移動イベント毎に対象画像を読込み """
             self.image = cv2.imread(self.img, 1)
             cra = cv2.rectangle
-            cra(self.image,
-                (Trim.start_x, Trim.start_y),
-                (Trim.coor_x, Trim.coor_y),
-                (255, 0, 0),
-                3)
-            # lineType(Int)
-            # 8: 8連結（デフォルト値）
-            # 4: 4連結
-            # CV_AA: アンチエイリアス
+            length_x = 2 * Trim.start_x - Trim.coor_x
+            length_y = 2 * Trim.start_y - Trim.coor_y
+            start_point = (length_x, length_y)
+            end_point = (Trim.coor_x, Trim.coor_y)
+            color = (0, 127, 255)
+            thickness = 2
+            cra(self.image, start_point, end_point, color, thickness)
 
             # FIXME: 矩形描画が別ウインドウになる！！！
             cv2.imshow("Trim", self.image)
@@ -88,6 +88,7 @@ class Trim:
         elif cv2.waitKey(33) > 0:
             print("Quit")
             tpm.termination(0, 0)
+
 
 def main():
     u""" メインルーチン """
