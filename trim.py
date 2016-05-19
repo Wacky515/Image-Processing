@@ -35,6 +35,7 @@ class Trim:
     start_y = 0
     coor_x = 0
     coor_y = 0
+    window_name = "Original image"
 
     def __init__(self, img):
         self.img = img
@@ -42,11 +43,9 @@ class Trim:
 
     def start_trim(self):
         u""" トリミング 開始 """
-        window_name = "Original image"
-
-        cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
-        cv2.setMouseCallback(window_name, self.mouse_event)
-        cv2.imshow(window_name, self.image)
+        cv2.namedWindow(Trim.window_name, cv2.WINDOW_AUTOSIZE)
+        cv2.setMouseCallback(Trim.window_name, self.mouse_event)
+        cv2.imshow(Trim.window_name, self.image)
         tpm.termination(0, 0)
 
     def mouse_event(self, event, coor_x, coor_y, flags, param):
@@ -76,12 +75,16 @@ class Trim:
             length_y = 2 * Trim.start_y - Trim.coor_y
             start_point = (length_x, length_y)
             end_point = (Trim.coor_x, Trim.coor_y)
-            color = (0, 127, 255)
-            thickness = 2
-            cra(self.image, start_point, end_point, color, thickness)
+            color_out = (0, 0, 31)
+            color_in = (0, 127, 255)
+            thickness_out = 2
+            thickness_in = 1
+            cra(self.image, start_point, end_point, color_out, thickness_out)
+            cra(self.image, start_point, end_point, color_in, thickness_in)
 
             # FIXME: 矩形描画が別ウインドウになる！！！
-            cv2.imshow("Trim", self.image)
+            # cv2.imshow("Trim", self.image)
+            cv2.imshow(Trim.window_name, self.image)
 
             print "Select: " + str(Trim.coor_x) + ", " + str(Trim.coor_y)
 
