@@ -45,21 +45,7 @@ class Trim:
         u""" トリミング 開始 """
         cv2.namedWindow(Trim.window_name, cv2.WINDOW_AUTOSIZE)
         cv2.setMouseCallback(Trim.window_name, self.mouse_event)
-        # 操作方法 画面出力
-        cpt = cv2.putText
-        image = self.image
-        # text = "Select Area:Drag center + ("\r\n") + Captcha:Long press S"
-        text = "Select Area:Drag center Captcha:Long press S"
-        origin = (10, 20)
-        # coor_desc_out = (10, self.image.shape[0] - 10)
-        font = cv2.FONT_HERSHEY_SIMPLEX
-        scale = 0.5
-        color_out = (0, 0, 31)
-        color_in = (0, 127, 225)
-        thickness_out = 3
-        thickness_in = 1
-        cpt(image, text, origin, font, scale, color_out, thickness_out)
-        cpt(image, text, origin, font, scale, color_in, thickness_in)
+        self.ope_guide_text("Select Area:Drag center Captcha:Long press S")
 
         cv2.imshow(Trim.window_name, self.image)
         tpm.termination(0, 0)
@@ -105,6 +91,20 @@ class Trim:
         elif cv2.waitKey(33) > 0:
             print("Quit")
             tpm.termination(0, 0)
+
+    def ope_guide_text(self, text):
+        u""" 操作方法 画面出力 """
+        cpt = cv2.putText
+        image = self.image
+        origin = (10, 20)
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        scale = 0.5
+        color_out = (0, 0, 31)
+        color_in = (0, 127, 225)
+        thickness_out = 3
+        thickness_in = 1
+        cpt(image, text, origin, font, scale, color_out, thickness_out)
+        cpt(image, text, origin, font, scale, color_in, thickness_in)
 
 
 def main():
