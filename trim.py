@@ -45,7 +45,12 @@ class Trim:
         u""" トリミング 開始 """
         cv2.namedWindow(Trim.window_name, cv2.WINDOW_AUTOSIZE)
         cv2.setMouseCallback(Trim.window_name, self.mouse_event)
-        self.ope_guide_text("Select Area:Drag center Captcha:Long press S")
+        # 読込み画像の大きさ 取得
+        size = self.image.shape
+        baseline = size[0] - 10
+        text_height = self.write_text("Captcha:Long press S", (1, baseline))
+        baseline_upper = baseline - text_height[1] - 3
+        self.write_text("Select Area:Drag center", (1, baseline_upper))
 
         cv2.imshow(Trim.window_name, self.image)
         tpm.termination(0, 0)
@@ -92,19 +97,19 @@ class Trim:
             print("Quit")
             tpm.termination(0, 0)
 
-    def ope_guide_text(self, text):
-        u""" 操作方法 画面出力 """
+    def write_text(self, text, origin,
+            scale=0.7,
+            color_out=(0, 0, 31), color_in=(0, 127, 225),
+            thickness_out=3, thickness_in=1):
+        u""" テキスト 画面出力 """
         cpt = cv2.putText
         image = self.image
-        origin = (10, 20)
         font = cv2.FONT_HERSHEY_SIMPLEX
-        scale = 0.5
-        color_out = (0, 0, 31)
-        color_in = (0, 127, 225)
-        thickness_out = 3
-        thickness_in = 1
         cpt(image, text, origin, font, scale, color_out, thickness_out)
         cpt(image, text, origin, font, scale, color_in, thickness_in)
+        # 戻り値にフォントサイズを指定
+        size, baseline = cv2.getTextSize(text, font, scale, thickness_out)
+        return size
 
 
 def main():
@@ -113,7 +118,8 @@ def main():
     os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
     print os.getcwd()
 
-    tm = Trim("trim_test.png")
+    # tm = Trim("trim_test.png")
+    tm = Trim("trim_test2.png")
     tm.start_trim()
 
 if __name__ == '__main__':
