@@ -33,6 +33,8 @@ class Trim:
     u""" トリミング クラス """
     start_x = 0
     start_y = 0
+    end_x = 0
+    end_y = 0
     coor_x = 0
     coor_y = 0
     window_name = "Original image"
@@ -40,19 +42,28 @@ class Trim:
     def __init__(self, img):
         self.img = img
         self.image = cv2.imread(self.img, 1)
+        self.size = self.image.shape
 
     def start_trim(self):
         u""" トリミング 開始 """
         cv2.namedWindow(Trim.window_name, cv2.WINDOW_AUTOSIZE)
         cv2.setMouseCallback(Trim.window_name, self.mouse_event)
+
         # 読込み画像の大きさ 取得
-        size = self.image.shape
-        baseline = size[0] - 10
+        baseline = self.size[0] - 10
+
+        # 操作方法説明文 表示
         text_height = self.write_text("Captcha:Long press S", (1, baseline))
         baseline_upper = baseline - text_height[1] - 3
         self.write_text("Select Area:Drag center", (1, baseline_upper))
 
         cv2.imshow(Trim.window_name, self.image)
+        # テスト出力
+        print "Trim pos: (" + str(Trim.start_x) + ", "\
+                + str(Trim.start_y) + "), ("\
+                + str(Trim.end_x) + ", "\
+                + str(Trim.end_y) + ")"
+
         tpm.termination(0, 0)
 
     def mouse_event(self, event, coor_x, coor_y, flags, param):
@@ -61,7 +72,7 @@ class Trim:
         Trim.coor_y = coor_y
 
         if event == cv2.EVENT_LBUTTONDOWN:
-            Trim.start_x = Trim.start_y = end_x = end_y = 0
+            Trim.start_x = Trim.start_y = Trim.end_x = Trim.end_y = 0
             """ 2回目以降に古い描画を消去するため
             左クリック押下毎に対象画像を読込み """
             self.image = cv2.imread(self.img, 1)
@@ -70,8 +81,13 @@ class Trim:
             print "Start: " + str(Trim.start_x) + ", " + str(Trim.start_y)
 
         elif event == cv2.EVENT_LBUTTONUP:
-            end_x, end_y = Trim.coor_x, Trim.coor_y
-            print "End: " + str(end_x) + ", " + str(end_y)
+            Trim.end_x, Trim.end_y = Trim.coor_x, Trim.coor_y
+            print "End: " + str(Trim.end_x) + ", " + str(Trim.end_y)
+            print "Trim area: (" + str(Trim.start_x) + ", "\
+                    + str(Trim.start_y) + "), ("\
+                    + str(Trim.end_x) + ", "\
+                    + str(Trim.end_y) + ")"
+        # 2016/05/23 ここまで！！！ "s"キーで画像保存処理実装から
 
         elif event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON:
             """ 古い矩形描画を消去するため
@@ -97,6 +113,8 @@ class Trim:
             print("Quit")
             tpm.termination(0, 0)
 
+        return Trim.start_x, Trim.start_y, Trim.end_x, Trim.end_y
+
     def write_text(self, text, origin,
             scale=0.7,
             color_out=(0, 0, 31), color_in=(0, 127, 225),
@@ -118,8 +136,8 @@ def main():
     os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
     print os.getcwd()
 
-    # tm = Trim("trim_test.png")
-    tm = Trim("trim_test2.png")
+    tm = Trim("trim_test.png")
+    # tm = Trim("trim_test2.png")
     tm.start_trim()
 
 if __name__ == '__main__':
