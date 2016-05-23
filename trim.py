@@ -38,7 +38,6 @@ class Trim:
     coor_x = 0
     coor_y = 0
     window_name = "Original image"
-    baseline = 0
 
     def __init__(self, img):
         self.img = img
@@ -51,13 +50,15 @@ class Trim:
         cv2.setMouseCallback(Trim.window_name, self.mouse_event)
 
         # 読込み画像の大きさ 取得
-        Trim.baseline = self.size[0] - 10
+        text_offset = 10
+        baseline = self.size[0] - text_offset
 
         # 操作方法説明文 表示
-        self.write_text("Select area: Drag center", (1, Trim.baseline))
-        # text_height = self.write_text("Select Area:Drag center", (1, baseline))
-        # baseline_upper = baseline - text_height[1] - 3
-        # self.write_text("Captcha:Long press S", (1, baseline_upper))
+        text_height = self.write_text("Select area: Drag center", (1, baseline))
+        baseline_mid = baseline - text_height[1] - text_offset
+        self.write_text("Save: Long press \"s\" key", (1, baseline_mid))
+        baseline_upper = text_height[1] + text_offset / 2
+        self.write_text("Back: Long press \"Esc\" key", (1, baseline_upper))
 
         cv2.imshow(Trim.window_name, self.image)
         # テスト出力
@@ -109,9 +110,6 @@ class Trim:
             cra(self.image, start_point, end_point, color_out, thickness_out)
             cra(self.image, start_point, end_point, color_in, thickness_in)
             cv2.imshow(Trim.window_name, self.image)
-
-            # 2016/05/23 ここまで2！！！
-            # self.write_text("Save: Long press \"s\" key", (1, Trim.baseline))
 
             print "Select: " + str(Trim.coor_x) + ", " + str(Trim.coor_y)
 
