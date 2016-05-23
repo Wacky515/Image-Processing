@@ -39,6 +39,10 @@ class Trim:
     coor_y = 0
     window_name = "Original image"
 
+    text_offset = 10
+    baseline = 0
+    baseline_upper = 0
+
     def __init__(self, img):
         self.img = img
         self.image = cv2.imread(self.img, 1)
@@ -49,16 +53,15 @@ class Trim:
         cv2.namedWindow(Trim.window_name, cv2.WINDOW_AUTOSIZE)
         cv2.setMouseCallback(Trim.window_name, self.mouse_event)
 
-        # 読込み画像の大きさ 取得
-        text_offset = 10
-        baseline = self.size[0] - text_offset
+        # 読込み画像の大きさから文字描画のベースライン 取得
+        Trim.baseline = self.size[0] - Trim.text_offset
 
         # 操作方法説明文 表示
-        text_height = self.write_text("Select area: Drag center", (1, baseline))
-        baseline_mid = baseline - text_height[1] - text_offset
-        self.write_text("Save: Long press \"s\" key", (1, baseline_mid))
-        baseline_upper = text_height[1] + text_offset / 2
-        self.write_text("Back: Long press \"Esc\" key", (1, baseline_upper))
+        text1 = "Select area: Drag center"
+        text2 = "Back: Long press \"Esc\" key"
+        text_height = self.write_text(text1, (1, Trim.baseline))
+        Trim.baseline_upper = text_height[1] + Trim.text_offset / 2
+        self.write_text(text2, (1, Trim.baseline_upper))
 
         cv2.imshow(Trim.window_name, self.image)
         # テスト出力
@@ -85,7 +88,14 @@ class Trim:
 
         elif event == cv2.EVENT_LBUTTONUP:
             Trim.end_x, Trim.end_y = Trim.coor_x, Trim.coor_y
-            # 2016/05/23 ここまで！！！ "s"キーで画像保存処理実装から
+            self.image = cv2.imread(self.img, 1)
+
+            # 操作方法説明文 表示
+            text3 = "Back: Long press \"Esc\" key"
+            text4 = "Save: Long press \"s\" key"
+            text_height = self.write_text(text3, (1, Trim.baseline_upper))
+            self.write_text(text4, (1, Trim.baseline))
+            cv2.imshow(Trim.window_name, self.image)
 
             print "End: " + str(Trim.end_x) + ", " + str(Trim.end_y)
             print "Trim area: (" + str(Trim.start_x) + ", "\
@@ -109,6 +119,7 @@ class Trim:
             thickness_in = 1
             cra(self.image, start_point, end_point, color_out, thickness_out)
             cra(self.image, start_point, end_point, color_in, thickness_in)
+
             cv2.imshow(Trim.window_name, self.image)
 
             print "Select: " + str(Trim.coor_x) + ", " + str(Trim.coor_y)
@@ -120,11 +131,11 @@ class Trim:
         return Trim.start_x, Trim.start_y, Trim.end_x, Trim.end_y
 
     def write_text(self, text, origin,
+            cpt=cv2.putText,
             scale=0.7,
             color_out=(0, 0, 31), color_in=(0, 127, 225),
             thickness_out=3, thickness_in=1):
         u""" テキスト 画面出力 """
-        cpt = cv2.putText
         image = self.image
         font = cv2.FONT_HERSHEY_SIMPLEX
         cpt(image, text, origin, font, scale, color_out, thickness_out)
