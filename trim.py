@@ -38,6 +38,7 @@ class Trim:
     coor_x = 0
     coor_y = 0
     window_name = "Original image"
+    baseline = 0
 
     def __init__(self, img):
         self.img = img
@@ -50,12 +51,13 @@ class Trim:
         cv2.setMouseCallback(Trim.window_name, self.mouse_event)
 
         # 読込み画像の大きさ 取得
-        baseline = self.size[0] - 10
+        Trim.baseline = self.size[0] - 10
 
         # 操作方法説明文 表示
-        text_height = self.write_text("Captcha:Long press S", (1, baseline))
-        baseline_upper = baseline - text_height[1] - 3
-        self.write_text("Select Area:Drag center", (1, baseline_upper))
+        self.write_text("Select area: Drag center", (1, Trim.baseline))
+        # text_height = self.write_text("Select Area:Drag center", (1, baseline))
+        # baseline_upper = baseline - text_height[1] - 3
+        # self.write_text("Captcha:Long press S", (1, baseline_upper))
 
         cv2.imshow(Trim.window_name, self.image)
         # テスト出力
@@ -82,12 +84,13 @@ class Trim:
 
         elif event == cv2.EVENT_LBUTTONUP:
             Trim.end_x, Trim.end_y = Trim.coor_x, Trim.coor_y
+            # 2016/05/23 ここまで！！！ "s"キーで画像保存処理実装から
+
             print "End: " + str(Trim.end_x) + ", " + str(Trim.end_y)
             print "Trim area: (" + str(Trim.start_x) + ", "\
                     + str(Trim.start_y) + "), ("\
                     + str(Trim.end_x) + ", "\
                     + str(Trim.end_y) + ")"
-        # 2016/05/23 ここまで！！！ "s"キーで画像保存処理実装から
 
         elif event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON:
             """ 古い矩形描画を消去するため
@@ -106,6 +109,9 @@ class Trim:
             cra(self.image, start_point, end_point, color_out, thickness_out)
             cra(self.image, start_point, end_point, color_in, thickness_in)
             cv2.imshow(Trim.window_name, self.image)
+
+            # 2016/05/23 ここまで2！！！
+            # self.write_text("Save: Long press \"s\" key", (1, Trim.baseline))
 
             print "Select: " + str(Trim.coor_x) + ", " + str(Trim.coor_y)
 
