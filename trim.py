@@ -33,13 +33,14 @@ class Trim:
     u""" トリミング クラス """
 
     def __init__(self, img, save_name):
-        # 画像読込み用 インスタンス変数郡
+        # 画像読込み用 インスタンス変数郡# {{{
         self.img = img
         self.save_name = save_name
         self.image = cv2.imread(self.img, 1)
         self.size = self.image.shape
+# }}}
 
-        # 矩形描画用 インスタンス変数郡
+        # 矩形描画用 インスタンス変数郡# {{{
         self.start_x = 0
         self.start_y = 0
         self.end_x = 0
@@ -48,18 +49,23 @@ class Trim:
         self.length_y = 0
         self.coor_x = 0
         self.coor_y = 0
+# }}}
 
-        # テキスト描画用 インスタンス変数郡
+        # テキスト描画用 インスタンス変数郡# {{{
         self.text_offset = 10
         self.baseline = 0
         self.baseline_upper = 0
         self.text1 = "Select area: Drag center"
         self.text2 = "Quit: Long press \"Esc\" key"
         self.text3 = "Save: Long press \"s\" key"
+# }}}
 
-        # その他 インスタンス変数郡
+        # その他 インスタンス変数郡# {{{
         self.save_flg = False
         self.window_name = "Original image"
+        self.save_key = "s"
+        self.quit_key = "q"
+# }}}
 
     def start_trim(self):
         u""" トリミング 開始 """
@@ -82,7 +88,15 @@ class Trim:
             + str(self.end_x) + ", "\
             + str(self.end_y) + ")"
 
-        tpm.termination(0, 0)
+        if cv2.waitKey(33) == ord(self.quit_key):
+            cv2.destroyWindow(self.window_name)
+            print("Key in quit")
+            # sys.exit()
+
+        print("Q")
+        cv2.destroyWindow(self.window_name)
+
+        # tpm.termination(0, 0)
 
     def mouse_event(self, event, coor_x, coor_y, flags, param):
         u""" マウスイベント 取得 """
@@ -138,7 +152,7 @@ class Trim:
             print "Select: " + str(self.coor_x) + ", " + str(self.coor_y)
 
         # 2016/05/24 ここまで！！！ "s" 押下したら終了する！！！
-        if cv2.waitKey(33) == ord("s") and self.save_flg is True:
+        if cv2.waitKey(33) == ord(self.save_key) and self.save_flg is True:
             height = 0
             width = 0
             trim_image =\
@@ -146,7 +160,7 @@ class Trim:
                         width: self.start_x + self.length_x]
             cv2.imwrite(self.save_name, trim_image)
 
-        return self.start_x, self.start_y, self.end_x, self.end_y
+        # return self.start_x, self.start_y, self.end_x, self.end_y
 
     def write_text(self, text, origin,
             cpt=cv2.putText,
