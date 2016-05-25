@@ -158,12 +158,12 @@ class Trim:
             # 各種描画を消去する為 対象画像を再読込み
             self.image = cv2.imread(self.img, 1)
 
-            # 2016/05/25 AM ここまで トリミング範囲演算 途中！！！
+            # 2016/05/25 ここまで 保存処理から！！！
             # トリミング範囲 演算
-            height = self.start_y - self.length_y / 2
-            width = self.start_x - self.length_x / 2
-            trim_image = self.image[height: height + self.length_y,
-                width: width + self.length_x]
+            height = self.length_y
+            width = self.length_x
+            trim_image = self.image[height: self.end_y,
+                width: self.end_x]
 
             # 保存処理と保存フラグ偽処理
             cv2.imwrite(self.save_name, trim_image)
