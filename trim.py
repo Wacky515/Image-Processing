@@ -12,7 +12,6 @@ u""" 画像のトリミング"""
 # !/usr/bin/python
 # デフォルトの文字コード 変更
 # -*- coding: utf-8 -*-
-# Gdiff test 2016/05/11
 
 # モジュール インポート
 import numpy as np
@@ -41,14 +40,9 @@ class Trim:
 # }}}
 
         # 矩形描画用 インスタンス変数郡# {{{
-        self.start_x = 0
-        self.start_y = 0
-        self.end_x = 0
-        self.end_y = 0
-        self.length_x = 0
-        self.length_y = 0
-        self.coor_x = 0
-        self.coor_y = 0
+        self.start_x = self.start_y = 0
+        self.end_x = self.end_y = 0
+        self.length_x = self.length_y = 0
 # }}}
 
         # テキスト描画用 インスタンス変数郡# {{{
@@ -56,13 +50,13 @@ class Trim:
         self.baseline = 0
         self.baseline_upper = 0
         self.text1 = "Select area: Drag center"
-        self.text2 = "Quit: Long press \"Esc\" key"
+        self.text2 = "Quit: Long press \"q\" key"
         self.text3 = "Save: Long press \"s\" key"
 # }}}
 
         # その他 インスタンス変数郡# {{{
-        self.save_flg = False
         self.window_name = "Original image"
+        self.save_flg = False
         self.save_key = "s"
         self.quit_key = "q"
 # }}}
@@ -88,14 +82,10 @@ class Trim:
             + str(self.end_x) + ", "\
             + str(self.end_y) + ")"
 
-        if cv2.waitKey(33) == ord(self.quit_key):
-            cv2.destroyWindow(self.window_name)
-            print("Key in quit")
-            # sys.exit()
+        self.quit_tirm()
 
-        print("Q")
-        cv2.destroyWindow(self.window_name)
-
+        print "Code end"
+        # 静止画の出力保持処理
         # tpm.termination(0, 0)
 
     def mouse_event(self, event, coor_x, coor_y, flags, param):
@@ -105,13 +95,15 @@ class Trim:
 
         if event == cv2.EVENT_LBUTTONDOWN:
             self.start_x = self.start_y = self.end_x = self.end_y = 0
-            """ 2回目以降に古い描画を消去するため
+            """ 2回目以降に古い描画を消去する為
             左クリック押下毎に対象画像を読込み """
             self.image = cv2.imread(self.img, 1)
 
             self.start_x, self.start_y = self.coor_x, self.coor_y
-            self.save_flg is False
+            self.save_flg = False
+
             # テスト出力
+            print "Left button down"
             print "Start: " + str(self.start_x) + ", " + str(self.start_y)
 
         elif event == cv2.EVENT_LBUTTONUP:
@@ -129,17 +121,19 @@ class Trim:
             self.draw_rectangle()
 
             cv2.imshow(self.window_name, self.image)
-            self.save_flg is True
+            self.save_flg = True
 
             # テスト出力
+            print "Left button up"
             print "End: " + str(self.end_x) + ", " + str(self.end_y)
             print "Trim area: (" + str(self.start_x) + ", "\
                 + str(self.start_y) + "), ("\
                 + str(self.end_x) + ", "\
                 + str(self.end_y) + ")"
+            print self.save_flg
 
         elif event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON:
-            """ 古い矩形描画を消去するため
+            """ 古い矩形描画を消去する為
             マウス移動イベント毎に対象画像を読込み """
             self.image = cv2.imread(self.img, 1)
 
@@ -149,18 +143,33 @@ class Trim:
             cv2.imshow(self.window_name, self.image)
 
             # テスト出力
-            print "Select: " + str(self.coor_x) + ", " + str(self.coor_y)
+            print "Mouse location: " + str(self.coor_x) + ", "\
+                + str(self.coor_y)
 
-        # 2016/05/24 ここまで！！！ "s" 押下したら終了する！！！
-        if cv2.waitKey(33) == ord(self.save_key) and self.save_flg is True:
-            height = 0
-            width = 0
-            trim_image =\
-                self.image[height: self.start_y + self.length_y,
-                        width: self.start_x + self.length_x]
+        if cv2.waitKey(0) == ord(self.save_key) and self.save_flg is True:
+            # テスト出力
+            print "Input key \"s\""
+            print "Save image..."
+            print "Trim range: (" + str(self.start_x) + ", "\
+                + str(self.start_y) + "), ("\
+                + str(self.length_x) + ", "\
+                + str(self.length_y) + ")"
+
+            # 各種描画を消去する為 対象画像を再読込み
+            self.image = cv2.imread(self.img, 1)
+
+            # 2016/05/25 AM ここまで トリミング範囲演算 途中！！！
+            # トリミング範囲 演算
+            height = self.start_y - self.length_y / 2
+            width = self.start_x - self.length_x / 2
+            trim_image = self.image[height: height + self.length_y,
+                width: width + self.length_x]
+
+            # 保存処理と保存フラグ偽処理
             cv2.imwrite(self.save_name, trim_image)
+            self.save_flg = False
 
-        # return self.start_x, self.start_y, self.end_x, self.end_y
+        self.quit_tirm()
 
     def write_text(self, text, origin,
             cpt=cv2.putText,
@@ -190,6 +199,15 @@ class Trim:
         cra(self.image, start_point, end_point, color_out, thickness_out)
         cra(self.image, start_point, end_point, color_in, thickness_in)
 
+    def quit_tirm(self):
+        # 静止画の出力保持&終了処理
+        if cv2.waitKey(0) == ord(self.quit_key):
+            # テスト出力
+            print "Input key \"q\""
+            print "Quit"
+            cv2.destroyWindow(self.window_name)
+            sys.exit()
+
 
 def main():
     u""" メインルーチン """
@@ -203,3 +221,8 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+""" FIXME:
+RuntimeError: maximum recursion depth exceeded. 再帰の回数の限界を超えている
+→ トリミングモードの開始回数を制限する！！！
+"""
