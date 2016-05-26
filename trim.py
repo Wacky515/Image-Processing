@@ -15,16 +15,12 @@ u""" 画像のトリミング"""
 
 # モジュール インポート
 import os
-# import numpy as np
 
 import cv2
-# import cv2.cv as cv
 
 import sys
-# sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../SaveData')
 sys.path.append("D:\OneDrive\Biz\Python\SaveDate")
 
-# import tplmatching as tpm
 import savedata as sd
 
 # sysモジュール リロード
@@ -93,7 +89,7 @@ class Trim:
 
         self.quit_tirm()
 
-        print "trim() end"
+        print "Trim.trim() end..."
 
     def mouse_event(self, event, coor_x, coor_y, flags, param):
         u""" マウスイベント 取得 """
