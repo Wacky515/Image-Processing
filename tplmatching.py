@@ -15,7 +15,7 @@ u""" テンプレートマッチングによる画像処理 """
 # }}}
 
 # モジュール インポート# {{{
-# import numpy as np
+import numpy as np
 import os
 import glob
 import time
@@ -240,7 +240,7 @@ class ImageProcessing:
             if frame is None:
                 print "Can not get video size"
                 break
-# }}}
+                # }}}
             print "Capture is running..."
             cv2.imshow(name, frame)
             # !!!: 以上までをclassにしたいがwhile内のframeをwhile外に出せないので断念！！！
