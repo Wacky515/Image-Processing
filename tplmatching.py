@@ -15,11 +15,12 @@ u""" テンプレートマッチングによる画像処理 """
 # }}}
 # モジュール インポート# {{{
 import numpy as np
-import cv2
-import cv2.cv as cv
 import os
 import glob
 import time
+
+import cv2
+import cv2.cv as cv
 # import unittest
 
 import sys
@@ -259,9 +260,12 @@ class ImageProcessing:
 
 def main():
     # vimテスト用各変数 定義 # {{{
+    # テスト出力
+    print "Current directory is..."
     print os.getcwd()
     os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
     print os.getcwd()
+
     path = "D:\\OneDrive\\Biz\\Python\\ImageProcessing"
     smpl_pic = "D:\\OneDrive\\Biz\\Python\\ImageProcessing\\tpl_1.png"
     smpl_pic2 = "D:\\OneDrive\\Biz\\Python\\ImageProcessing\\tpl_2.png"

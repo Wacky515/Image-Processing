@@ -14,13 +14,19 @@ u""" 画像のトリミング"""
 # -*- coding: utf-8 -*-
 
 # モジュール インポート
-import numpy as np
-import cv2
-import cv2.cv as cv
 import os
-import tplmatching as tpm
+# import numpy as np
+
+import cv2
+# import cv2.cv as cv
 
 import sys
+# sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../SaveData')
+sys.path.append("D:\OneDrive\Biz\Python\SaveDate")
+
+# import tplmatching as tpm
+import savedata as sd
+
 # sysモジュール リロード
 reload(sys)
 
@@ -31,21 +37,24 @@ sys.setdefaultencoding("utf-8")
 class Trim:
     u""" トリミング クラス """
 
-    def __init__(self, img, save_name):
-        # 画像読込み用 インスタンス変数郡# {{{
+    def __init__(self, img, name, extension, path):
+        # 画像読込み用 インスタンス変数# {{{
         self.img = img
-        self.save_name = save_name
+        self.name = name
+        self.extension = extension
+        self.path = path
+
         self.image = cv2.imread(self.img, 1)
         self.size = self.image.shape
 # }}}
 
-        # 矩形描画用 インスタンス変数郡# {{{
+        # 矩形描画用 インスタンス変数# {{{
         self.start_x = self.start_y = 0
         self.end_x = self.end_y = 0
         self.length_x = self.length_y = 0
 # }}}
 
-        # テキスト描画用 インスタンス変数郡# {{{
+        # テキスト描画用 インスタンス変数# {{{
         self.text_offset = 10
         self.baseline = 0
         self.baseline_upper = 0
@@ -54,14 +63,14 @@ class Trim:
         self.text3 = "Save: Long press \"s\" key"
 # }}}
 
-        # その他 インスタンス変数郡# {{{
+        # その他 インスタンス変数# {{{
         self.window_name = "Original image"
         self.save_flg = False
         self.save_key = "s"
         self.quit_key = "q"
 # }}}
 
-    def start_trim(self):
+    def trim(self):
         u""" トリミング 開始 """
         cv2.namedWindow(self.window_name, cv2.WINDOW_AUTOSIZE)
         cv2.setMouseCallback(self.window_name, self.mouse_event)
@@ -84,9 +93,7 @@ class Trim:
 
         self.quit_tirm()
 
-        print "Code end"
-        # 静止画の出力保持処理
-        # tpm.termination(0, 0)
+        print "trim() end"
 
     def mouse_event(self, event, coor_x, coor_y, flags, param):
         u""" マウスイベント 取得 """
@@ -158,15 +165,18 @@ class Trim:
             # 各種描画を消去する為 対象画像を再読込み
             self.image = cv2.imread(self.img, 1)
 
-            # 2016/05/25 ここまで 保存処理から！！！
             # トリミング範囲 演算
             height = self.length_y
             width = self.length_x
             trim_image = self.image[height: self.end_y,
                 width: self.end_x]
 
-            # 保存処理と保存フラグ偽処理
-            cv2.imwrite(self.save_name, trim_image)
+            # 2016/05/26 作業終了！！！
+            # 保存処理と保存フラグ -> 偽 処理
+            cv2.imwrite("imwrite.png", trim_image)
+            sda = sd.SaveData(self.name, self.path)
+            sda.save_image(trim_image, self.extension)
+
             self.save_flg = False
 
         self.quit_tirm()
@@ -211,13 +221,15 @@ class Trim:
 
 def main():
     u""" メインルーチン """
+    # テスト出力
+    print "Current directory is..."
     print os.getcwd()
     os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
     print os.getcwd()
 
-    tm = Trim("trim_test.png", "trimed.png")
+    tm = Trim("trim_test.png", "trimed", ".png", ".\\MasterImage")
     # tm = Trim("trim_test2.png")
-    tm.start_trim()
+    tm.trim()
 
 if __name__ == '__main__':
     main()
@@ -225,4 +237,5 @@ if __name__ == '__main__':
 """ FIXME:
 RuntimeError: maximum recursion depth exceeded. 再帰の回数の限界を超えている
 → トリミングモードの開始回数を制限する！！！
+→ 一枚の画像から複数枚保存できる機能は残す（安易にSave -> 終了にしない）
 """
