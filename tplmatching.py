@@ -34,6 +34,10 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 # }}}
 
+master = "masterImage.png"
+extension = ".png"
+master_path = ".\\MasterImage"
+
 
 def termination(cap_name=0, wait_time=33):
     u""" 出力画像 終了処理 """  # {{{
@@ -58,14 +62,14 @@ class GetImage:
             # 画像取得 エラー処理
         except:
             print "Image data not found"
-            trim = tm.Trim(self.image, "masterImage.png", ".png", ".\\MasterImage")
+            # !!!: 要動作確認！！！
+            trim = tm.Trim(self.image, master, extension, master_path)
             trim.trim()
-            # class TrimImage に遷移する処理を入れる！！！
 
     def display(self, window_name, image=0, _type=1):
         u""" 画像・動画 画面出力
-        _type: 0:静止画/動画 切換え"""
-        # ウィンドウ名の引数（window_name）をオミットしたい！！！
+        _type: 0: 静止画 1: 動画 切換え"""
+        # !!!: ウィンドウ名の引数（window_name）をオミットしたい！！！
         # window_name = string(image)！！！
         if image == 0:
             print "Getting image..."
@@ -89,6 +93,7 @@ class ConvertImage(GetImage):
         print "Convert grayscale..."
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         return gray
+        print "Converted"
 
     def adaptive_threashold(self, image):
         u""" 適応的二値化 変換処理 """
@@ -106,10 +111,10 @@ class ConvertImage(GetImage):
         # MeanC:任意の近傍画素を算術平均し閾値を算出
         # }}} """
         algo = cv2.ADAPTIVE_THRESH_GAUSSIAN_C
-       # algo = cv2.ADAPTIVE_THRESH_MEAN_C
+        # algo = cv2.ADAPTIVE_THRESH_MEAN_C
 # 閾値処理
         thresh_type = cv2.THRESH_BINARY
-       # thresh_type = cv2.THRESH_BINARY_INV
+        # thresh_type = cv2.THRESH_BINARY_INV
         # 切取る正方形の一の画素数（3、5、7... 奇数のみ！）
         calc_area = 7
         # 減算定数# {{{
@@ -122,15 +127,7 @@ class ConvertImage(GetImage):
         cat = cv2.adaptiveThreshold
         adpth = cat(gray, max_thresh, algo, thresh_type, calc_area, subtract)
         return adpth
-        # 以下は将来的に削除# {{{
-        #        cv2.namedWindow(name, cv2.WINDOW_AUTOSIZE)
-
-        # ウインドウ表示位置 定義！！！
-        #        cv2.moveWindow(name, 50, 50)
-        #        cv2.imshow(name, adpth)
-        # # 仮の終了処理！！！
-        #        termination(0, 0)
-        # }}}
+        print "Converted"
 
     def bilateral_filter(self, image):
         u""" バイラテラルフィルタ 処理 """
@@ -146,6 +143,7 @@ class ConvertImage(GetImage):
         cvf = cv2.bilateralFilter
         blr = cvf(gray, calc_area, sigma_color, sigma_metric)
         return blr
+        print "Filtered"
 
     def discriminant_analysis(self, image):
         u""" 判別分析法 処理 """
@@ -168,6 +166,7 @@ class ConvertImage(GetImage):
         cth = cv2.threshold
         ret, binz = cth(image, std_thresh, max_thresh, method)
         return binz
+        print "Analysed"
 
     def normalize(self, image):
         u""" 正規化 処理 """
@@ -181,6 +180,7 @@ class ConvertImage(GetImage):
         print "Normalizing..."
         norm = cv2.normalize(image, alpha, beta, algo)
         return norm
+        print "Normalized"
 
 
 class Tplmatching:
@@ -224,7 +224,8 @@ class ImageProcessing:
             #        def set_parameter(value):
             #            max_thresh = cv2.getTrackbarPos(bar_name, window_name)
             #            max_thresh = cv2.setTrackbarPos(bar_name, window_name)
-            #        cv2.createTrackbar(bar_name, window_name, 0, 255, self.max_thresh)
+            #        cv2.createTrackbar(bar_name, window_name,
+            #           0, 255, self.max_thresh)
             #        window_name = "Adaptive Threashold cap"
             # }}}
         cv2.namedWindow(name, cv2.WINDOW_AUTOSIZE)
@@ -242,19 +243,25 @@ class ImageProcessing:
 # }}}
             print "Capture is running..."
             cv2.imshow(name, frame)
-            # 以上までをclassにしたいがwhile内のframeをwhile外に出せないので断念！！！
-            # ↑関数にする(できなかった！！！)？？？
+            # !!!: 以上までをclassにしたいがwhile内のframeをwhile外に出せないので断念！！！
+            #       ↑関数にする(できなかった！！！)？？？
             # }}}
 
             # 動画 変換・画像処理（まとめる）！！！
-            adpth = self.ci.adaptive_threashold(frame)
-            self.ci.display("Adaptive threashold", adpth)
-            dcta = self.ci.discriminant_analysis(frame)
-            self.ci.display("Discriminant analysis", dcta)
-            binz = self.ci.binarization(frame)
-            self.ci.display("Bilateral filter", binz)
-            # ここから再開！！！
-            # master =
+            self.ci.display("Test display", frame)
+            # adpth = self.ci.adaptive_threashold(frame)
+            # self.ci.display("Adaptive threashold", adpth, 1)
+            # dcta = self.ci.discriminant_analysis(frame)
+            # self.ci.display("Discriminant analysis", dcta, 1)
+            # binz = self.ci.binarization(frame)
+            # self.ci.display("Bilateral filter", binz, 1)
+
+            # マスター画像 読込み
+            if master is None:
+                print "Master image not found..."
+                trim = tm.Trim(self.image, master, extension, master_path)
+                trim.trim()
+
             # self.tm.matching(flame, master)
             # print max_value
 
@@ -277,48 +284,51 @@ def main():
     smpl_pic2 = "D:\\OneDrive\\Biz\\Python\\ImageProcessing\\tpl_2.png"
 # }}}
 
-# # マスタ画像の最大枝番 取得# {{{
-   # laitest_data = glob.glob(path + "\\*_*[0-9].png")
-   # print max(laitest_data)# }}}
+    #  # マスタ画像の最大枝番 取得# {{{
+    # laitest_data = glob.glob(path + "\\*_*[0-9].png")
+    # print max(laitest_data)# }}}
 
-# 静止画取得 テスト# {{{
-    gim = GetImage(smpl_pic)
-    gim2 = GetImage("tpl_3.png")
-    # gim.display("Tes1", 0, 0)
-    gim2.display("Tes2", 0, 0)
-    print "Main loop end..."
-# }}}
+#     # 静止画取得 テスト# {{{
+#     gim = GetImage(smpl_pic)
+#     gim2 = GetImage("tpl_3.png")
+#     # gim.display("Tes1", 0, 0)
+#     gim2.display("Tes2", 0, 0)
+#     print "Main loop end..."
+# # }}}
 
 # # 動画取得 テスト# {{{# {{{
-#    cav = CapVideo()
-#    cav.get_video("Capture_test")
-#    frame_test = cav.frame
-#    if frame_test is None:
-#        gm = GetImage(smpl_pic)
-#        gm.get_image()
-#    name = "Test"
-#    Image = cv2.imread(smpl_pic2)
-#    cv2.namedWindow(name, cv2.WINDOW_AUTOSIZE)
-#    cv2.imshow(name, Image)
-#    cv2.imshow(name, frame_test)
-# # 仮の出力保持処理！！！
-#    cv2.waitKey(0)
-#    cv2.destroyAllWindows()
+#     cav = CapVideo()
+#     cav.get_video("Capture_test")
+#     frame_test = cav.frame
+#     if frame_test is None:
+#         gm = GetImage(smpl_pic)
+#         gm.get_image()
+#     name = "Test"
+#     Image = cv2.imread(smpl_pic2)
+#     cv2.namedWindow(name, cv2.WINDOW_AUTOSIZE)
+#     cv2.imshow(name, Image)
+#     cv2.imshow(name, frame_test)
+#     # 仮の出力保持処理！！！
+#     cv2.waitKey(0)
+#     cv2.destroyAllWindows()
 #
-#    image = cv2.imread("tpl_2.png")
-#    ci = ConvertImage()
-#    ci.adaptive_threashold(image, "Adaptive Threashold", 0)
-#    print "Sudah cap"
+#     image = cv2.imread("tpl_2.png")
+#     ci = ConvertImage()
+#     ci.adaptive_threashold(image, "Adaptive Threashold", 0)
+#     print "Sudah cap"
+# # }}}
+
+    # 動画変換 テスト# {{{
+    cip = ImageProcessing()
+    cip.run("Raw capture")
+    print "Movie captcha end..."
+    # gi = GetImage("trim_test.png")
+    # gi.display("Test", 0, 0)
 # }}}
 
-# 動画変換 テスト# {{{
-#   cip = ImageProcessing()
-#   cip.run("Raw capture")
-#   print "Movie captcha end..."
-#   print GetImage.__doc__
-#   print help(__name__)
-#   gi = GetImage("trim_test.png")
-#   gi.display("Test", 0, 0)
+    # # ドキュメントストリング# {{{
+    # print GetImage.__doc__
+    # print help(__name__)
 # }}}
 
 if __name__ == '__main__':
