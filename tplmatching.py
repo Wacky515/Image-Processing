@@ -66,12 +66,12 @@ class GetImage:
             trim = tm.Trim(self.image, master, extension, master_path)
             trim.trim()
 
-    def display(self, window_name, image=0, _type=1):
+    def display(self, window_name, image, _type=1):
         u""" 画像・動画 画面出力
         _type: 0: 静止画 1: 動画 切換え"""
-        # !!!: ウィンドウ名の引数（window_name）をオミットしたい！！！
-        # window_name = string(image)！！！
-        if image == 0:
+        # 静止画無しの処理
+        # is None にした 動作確認！！！
+        if image is None and _type == 0:
             print "Getting image..."
             image = self.get_image()
         print "Display %s..." % window_name
@@ -93,7 +93,6 @@ class ConvertImage(GetImage):
         print "Convert grayscale..."
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         return gray
-        print "Converted"
 
     def adaptive_threashold(self, image):
         u""" 適応的二値化 変換処理 """
@@ -127,7 +126,6 @@ class ConvertImage(GetImage):
         cat = cv2.adaptiveThreshold
         adpth = cat(gray, max_thresh, algo, thresh_type, calc_area, subtract)
         return adpth
-        print "Converted"
 
     def bilateral_filter(self, image):
         u""" バイラテラルフィルタ 処理 """
@@ -143,7 +141,6 @@ class ConvertImage(GetImage):
         cvf = cv2.bilateralFilter
         blr = cvf(gray, calc_area, sigma_color, sigma_metric)
         return blr
-        print "Filtered"
 
     def discriminant_analysis(self, image):
         u""" 判別分析法 処理 """
@@ -166,7 +163,6 @@ class ConvertImage(GetImage):
         cth = cv2.threshold
         ret, binz = cth(image, std_thresh, max_thresh, method)
         return binz
-        print "Analysed"
 
     def normalize(self, image):
         u""" 正規化 処理 """
@@ -180,7 +176,6 @@ class ConvertImage(GetImage):
         print "Normalizing..."
         norm = cv2.normalize(image, alpha, beta, algo)
         return norm
-        print "Normalized"
 
 
 class Tplmatching:
@@ -247,20 +242,19 @@ class ImageProcessing:
             #       ↑関数にする(できなかった！！！)？？？
             # }}}
 
-            # 動画 変換・画像処理（まとめる）！！！
-            self.ci.display("Test display", frame)
-            # adpth = self.ci.adaptive_threashold(frame)
-            # self.ci.display("Adaptive threashold", adpth, 1)
-            # dcta = self.ci.discriminant_analysis(frame)
-            # self.ci.display("Discriminant analysis", dcta, 1)
-            # binz = self.ci.binarization(frame)
-            # self.ci.display("Bilateral filter", binz, 1)
-
             # マスター画像 読込み
             if master is None:
                 print "Master image not found..."
                 trim = tm.Trim(self.image, master, extension, master_path)
                 trim.trim()
+
+            # 動画 変換・画像処理（まとめる）！！！
+            adpth = self.ci.adaptive_threashold(frame)
+            self.ci.display("Adaptive threashold", adpth, 1)
+            dcta = self.ci.discriminant_analysis(frame)
+            self.ci.display("Discriminant analysis", dcta, 1)
+            binz = self.ci.binarization(frame)
+            self.ci.display("Bilateral filter", binz, 1)
 
             # self.tm.matching(flame, master)
             # print max_value
@@ -296,7 +290,7 @@ def main():
 #     print "Main loop end..."
 # # }}}
 
-# # 動画取得 テスト# {{{# {{{
+# # 動画取得 テスト# {{{
 #     cav = CapVideo()
 #     cav.get_video("Capture_test")
 #     frame_test = cav.frame
@@ -324,13 +318,14 @@ def main():
     print "Movie captcha end..."
     # gi = GetImage("trim_test.png")
     # gi.display("Test", 0, 0)
-# }}}
+    # }}}
 
     # # ドキュメントストリング# {{{
     # print GetImage.__doc__
     # print help(__name__)
-# }}}
+    # }}}
 
 if __name__ == '__main__':
     main()
+
 #    unittest.main()
