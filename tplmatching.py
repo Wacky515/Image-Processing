@@ -27,6 +27,10 @@ import cv2.cv as cv
 import trim as tm
 
 import sys
+sys.path.append("D:\OneDrive\Biz\Python\SaveDate")
+
+import savedata as sd
+
 # sysモジュール リロード
 reload(sys)
 
@@ -34,13 +38,9 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 # }}}
 
-master = "masterImage.png"
-extension = ".png"
-master_path = ".\\MasterImage"
-
 
 def termination(cap_name=0, wait_time=33):
-    u""" 出力画像 終了処理 """  # {{{
+    u""" 出力画像 終了処理 """# {{{
     cv2.waitKey(wait_time)
     if cap_name != 0:
         cap_name.release
@@ -63,8 +63,8 @@ class GetImage:
         except:
             print "Image data not found"
             # !!!: 要動作確認！！！
-            trim = tm.Trim(self.image, master, extension, master_path)
-            trim.trim()
+            # trim = tm.Trim(self.image, master, extension, master_path)
+            # trim.trim()
 
     def display(self, window_name, image, _type=1):
         u""" 画像・動画 画面出力
@@ -203,13 +203,13 @@ class ImageProcessing:
     def __init__(self):
         self.ci = ConvertImage()
         self.tm = Tplmatching()
+        self.cap = cv2.VideoCapture(0)
 
-    def run(self, name):
-        u""" 動画取得 処理（メインルーチン） """  # {{{
-        cap = cv2.VideoCapture(0)
+    def init_get_camera_image(self, name):
+        u""" カメラから動画取得 """
         # カメラキャプチャ時のイニシャライズ ディレイ処理
         time.sleep(0.1)
-        if not cap.isOpened():
+        if not self.cap.isOpened():
             print "Can not connect camera"
             termination()
             # トラックバー 定義(できない)！！！# {{{
@@ -224,29 +224,23 @@ class ImageProcessing:
             #        window_name = "Adaptive Threashold cap"
             # }}}
         cv2.namedWindow(name, cv2.WINDOW_AUTOSIZE)
+
+    def run(self, name):
+        u""" 動画取得 処理（メインルーチン） """  # {{{
+        self.init_get_camera_image(name)
+
         while True:
-            get_flg, frame = cap.read()
-            # 動画取得ミス時 スキップ処理# {{{
-            if get_flg is False:
-                print "Can not get end flag"
-                continue
-                # }}}
-            # ループ 終了処理# {{{
-            if frame is None:
-                print "Can not get video size"
+            get_flg, frame = self.cap.read()
+            if self.check_get_flag(get_flg) is False:
                 break
-                # }}}
+            if self.check_frame(frame) is False:
+                continue
+
             print "Capture is running..."
             cv2.imshow(name, frame)
             # !!!: 以上までをclassにしたいがwhile内のframeをwhile外に出せないので断念！！！
             #       ↑関数にする(できなかった！！！)？？？
             # }}}
-
-            # マスター画像 読込み
-            if master is None:
-                print "Master image not found..."
-                trim = tm.Trim(self.image, master, extension, master_path)
-                trim.trim()
 
             # 動画 変換・画像処理（まとめる）！！！
             adpth = self.ci.adaptive_threashold(frame)
@@ -264,9 +258,49 @@ class ImageProcessing:
                 break
                 # termination(cap)
 
+    def get_master(self, image, extension, path):
+        u""" マスター画像 読込み """
+        name = "Get master image"
+        sda = sd.SaveData(image, path)
+        master = sda.get_name_max(extension)
+
+        if master is None:
+            print "Master image not found..."
+            self.init_get_camera_image(name)
+            while True:
+                get_flg, frame = self.cap.read()
+                if self.check_get_flag(get_flg) is False:
+                    break
+                if self.check_frame(frame)is False:
+                    continue
+
+                print "Get master mode"
+                cv2.imshow(name, frame)
+
+                # 仮の終了処理！！！
+                if cv2.waitKey(33) > 0:
+                    break
+
+            # trim = tm.Trim(image, master, extension, path)
+            # trim.trim()
+
+    def check_get_flag(self, flag):
+        u""" 動画取得ミス時 スキップ処理 """  # {{{
+        if flag is False:
+            print "Can not get end flag"
+            return False
+            # }}}
+
+    def check_frame(self, frame):
+        u""" ループ 終了処理 """  # {{{
+        if frame is None:
+            print "Can not get video size"
+            return False
+            # }}}
+
 
 def main():
-    # vimテスト用各変数 定義 # {{{
+    # vimテスト用各変数 定義# {{{
     # テスト出力
     print "Current directory is..."
     print os.getcwd()
@@ -314,10 +348,9 @@ def main():
 
     # 動画変換 テスト# {{{
     cip = ImageProcessing()
-    cip.run("Raw capture")
-    print "Movie captcha end..."
-    # gi = GetImage("trim_test.png")
-    # gi.display("Test", 0, 0)
+    cip.get_master("masterImage", ".png", ".\\MasterImage")
+    # cip.run("Raw capture")
+    # print "Movie captcha end..."
     # }}}
 
     # # ドキュメントストリング# {{{
