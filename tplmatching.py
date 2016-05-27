@@ -274,15 +274,20 @@ class ImageProcessing:
                 if self.check_frame(frame)is False:
                     continue
 
-                print "Get master mode"
+                # TODO: 操作方法説明文 表示！！！
+                print "Master captcha"
                 cv2.imshow(name, frame)
 
-                # 仮の終了処理！！！
-                if cv2.waitKey(33) > 0:
-                    break
+                # 2016/05/27 ここまで！！！ Trim()trimに入れない
+                if cv2.waitKey(33) == ord("t"):
+                    print "Get master mode"
+                    cv2.imshow(name, frame)
+                    trim = tm.Trim(frame, master, extension, path)
+                    trim.trim()
 
-            # trim = tm.Trim(image, master, extension, path)
-            # trim.trim()
+                # 仮の終了処理！！！
+                if cv2.waitKey(33) == ord("q"):
+                    break
 
     def check_get_flag(self, flag):
         u""" 動画取得ミス時 スキップ処理 """  # {{{
@@ -319,7 +324,7 @@ def main():
 #     # 静止画取得 テスト# {{{
 #     gim = GetImage(smpl_pic)
 #     gim2 = GetImage("tpl_3.png")
-#     # gim.display("Tes1", 0, 0)
+#     # gim.diplay("Tes1", 0, 0)
 #     gim2.display("Tes2", 0, 0)
 #     print "Main loop end..."
 # # }}}
