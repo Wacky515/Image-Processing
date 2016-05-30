@@ -203,6 +203,7 @@ class ImageProcessing:
     def __init__(self):
         self.ci = ConvertImage()
         self.tm = Tplmatching()
+        # 動画 取得
         self.cap = cv2.VideoCapture(0)
 
     def init_get_camera_image(self, name):
@@ -229,17 +230,26 @@ class ImageProcessing:
         u""" 動画取得 処理（メインルーチン） """  # {{{
         self.init_get_camera_image(name)
 
+        # !!!: ここから
+        count = 0
         while True:
+            if count < 1:
+                print "Initial delay"
+                time.sleep(.1)
             get_flg, frame = self.cap.read()
+
+            self.check_is_opened(self.cap.isOpened)
             if self.check_get_flag(get_flg) is False:
                 break
-            if self.check_frame(frame) is False:
+            if self.check_get_frame(frame) is False:
                 continue
 
-            print "Capture is running..."
             cv2.imshow(name, frame)
-            # !!!: 以上までをclassにしたいがwhile内のframeをwhile外に出せないので断念！！！
-            #       ↑関数にする(できなかった！！！)？？？
+            print "Capture is running..."
+            count += 1
+        # !!!: 以上までをclassにしたいが"while"内の"frame"を
+        # "while"外に出せないので断念！！！
+        # ↑関数にする(できなかった！！！)？？？
             # }}}
 
             # 動画 変換・画像処理（まとめる）！！！
@@ -250,6 +260,7 @@ class ImageProcessing:
             binz = self.ci.binarization(frame)
             self.ci.display("Bilateral filter", binz, 1)
 
+            # テンプレートマッチング 処理
             # self.tm.matching(flame, master)
             # print max_value
 
@@ -265,29 +276,45 @@ class ImageProcessing:
         master = sda.get_name_max(extension)
 
         if master is None:
-            print "Master image not found..."
+            print "Master image is not found..."
             self.init_get_camera_image(name)
+            count = 0
             while True:
+                if count < 1:
+                    print "Initial delay"
+                    time.sleep(.1)
                 get_flg, frame = self.cap.read()
+
+                self.check_is_opened(self.cap.isOpened)
                 if self.check_get_flag(get_flg) is False:
                     break
-                if self.check_frame(frame)is False:
+                if self.check_get_frame(frame) is False:
                     continue
 
                 # TODO: 操作方法説明文 表示！！！
-                print "Master captcha"
                 cv2.imshow(name, frame)
+                print "Master captcha"
+                count += 1
 
-                # 2016/05/27 ここまで！！！ Trim()trimに入れない
+                # "t"キー押下 静止画撮影処理
                 if cv2.waitKey(33) == ord("t"):
                     print "Get master mode"
-                    cv2.imshow(name, frame)
-                    trim = tm.Trim(frame, master, extension, path)
+                    img = "Master source%s" % extension
+                    cv2.imwrite(img, frame)
+                    # 保存時に名無しの権兵衛になる！！！
+                    trim = tm.Trim(img, master, extension, path)
                     trim.trim()
 
-                # 仮の終了処理！！！
+                # "q"キー押下 終了処理
                 if cv2.waitKey(33) == ord("q"):
                     break
+
+    def check_is_opened(self, isOpened):
+        u""" 動画取得 エラー処理 """  # {{{
+        if not isOpened:
+            print 'Can not open camera'
+            sys.exit()
+            # }}}
 
     def check_get_flag(self, flag):
         u""" 動画取得ミス時 スキップ処理 """  # {{{
@@ -296,10 +323,10 @@ class ImageProcessing:
             return False
             # }}}
 
-    def check_frame(self, frame):
+    def check_get_frame(self, frame):
         u""" ループ 終了処理 """  # {{{
         if frame is None:
-            print "Can not get video size"
+            print "Can not get video frame"
             return False
             # }}}
 
