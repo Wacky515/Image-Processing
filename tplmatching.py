@@ -227,6 +227,7 @@ class ImageProcessing:
     def run(self, name, search, extension=".png", dir_master="MasterImage"):
         u""" 動画取得 処理（メインルーチン） """  # {{{
         # マスター画像 検索
+        # 2016/05/30 ここまで！！！ 検索の枝番がダブる！！！
         cwd = os.getcwd()
         path_master = cwd + "\\" + dir_master
         # path_master = "D:\\OneDrive\\Biz\\Python\\ImageProcessing\\MasterImage"
