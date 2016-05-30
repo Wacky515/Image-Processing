@@ -61,16 +61,14 @@ class GetImage:
             return image
             # 画像取得 エラー処理
         except:
-            print "Image data not found"
-            # !!!: 要動作確認！！！
-            # trim = tm.Trim(self.image, master, extension, master_path)
-            # trim.trim()
+            print "Image data is not found..."
+            return False
 
     def display(self, window_name, image, _type=1):
         u""" 画像・動画 画面出力
         _type: 0: 静止画 1: 動画 切換え"""
         # 静止画無しの処理
-        # is None にした 動作確認！！！
+        # "is None" にした 動作確認！！！
         if image is None and _type == 0:
             print "Getting image..."
             image = self.get_image()
@@ -226,8 +224,18 @@ class ImageProcessing:
             # }}}
         cv2.namedWindow(name, cv2.WINDOW_AUTOSIZE)
 
-    def run(self, name):
+    def run(self, name, search, extension=".png", dir_master="MasterImage"):
         u""" 動画取得 処理（メインルーチン） """  # {{{
+        # マスター画像 検索
+        cwd = os.getcwd()
+        path_master = cwd + "\\" + dir_master
+        # path_master = "D:\\OneDrive\\Biz\\Python\\ImageProcessing\\MasterImage"
+        print "Master directory: " + path_master
+
+        sda = sd.SaveData(search, path_master)
+        master = sda.get_name_max(extension)
+        self.get_master(master, extension, path_master)
+
         self.init_get_camera_image(name)
 
         # !!!: ここから
@@ -238,7 +246,6 @@ class ImageProcessing:
                 time.sleep(.1)
             get_flg, frame = self.cap.read()
 
-            self.check_is_opened(self.cap.isOpened)
             if self.check_get_flag(get_flg) is False:
                 break
             if self.check_get_frame(frame) is False:
@@ -269,46 +276,58 @@ class ImageProcessing:
                 break
                 # termination(cap)
 
-    def get_master(self, image, extension, path):
+    def get_master(self, search, extension, path):
         u""" マスター画像 読込み """
         name = "Get master image"
-        sda = sd.SaveData(image, path)
+        sda = sd.SaveData(search, path)
         master = sda.get_name_max(extension)
+        text2 = "Quit: Long press \"q\" key"
+        text3 = "Save: Long press \"s\" key"
 
-        if master is None:
-            print "Master image is not found..."
-            self.init_get_camera_image(name)
-            count = 0
-            while True:
-                if count < 1:
-                    print "Initial delay"
-                    time.sleep(.1)
-                get_flg, frame = self.cap.read()
+        print "Master image name: " + str(master) + str(extension)
 
-                self.check_is_opened(self.cap.isOpened)
-                if self.check_get_flag(get_flg) is False:
-                    break
-                if self.check_get_frame(frame) is False:
-                    continue
+        # TODO: 不要 将来的に削除！！！
+        # # マスター画像が無い（初回） 処理
+        # if master is None:
+        #     print "Master image is not found..."
+        #     master = str(search)
 
-                # TODO: 操作方法説明文 表示！！！
-                cv2.imshow(name, frame)
-                print "Master captcha"
-                count += 1
+        self.init_get_camera_image(name)
 
-                # "t"キー押下 静止画撮影処理
-                if cv2.waitKey(33) == ord("t"):
-                    print "Get master mode"
-                    img = "Master source%s" % extension
-                    cv2.imwrite(img, frame)
-                    # 保存時に名無しの権兵衛になる！！！
-                    trim = tm.Trim(img, master, extension, path)
-                    trim.trim()
+        count = 0
+        while True:
+            if count < 1:
+                print "Initial delay"
+                time.sleep(.1)
+            get_flg, frame = self.cap.read()
 
-                # "q"キー押下 終了処理
-                if cv2.waitKey(33) == ord("q"):
-                    break
+            if self.check_get_flag(get_flg) is False:
+                break
+            if self.check_get_frame(frame) is False:
+                continue
 
+            # TODO: 操作方法説明文 表示！！！
+            trim = tm.Trim(frame, master, extension, path, 1)
+            origin = (100, 100)
+            trim.write_text(text2, origin)
+
+            cv2.imshow(name, frame)
+            print "Master captcha"
+            count += 1
+
+            # "t"キー押下 静止画撮影処理
+            if cv2.waitKey(33) == ord("t"):
+                print "Get master mode"
+                img = "Master source%s"% extension
+                trim = tm.Trim(img, master, extension, path)
+                cv2.imwrite(img, frame)
+                trim.trim()
+
+            # "q"キー押下 終了処理
+            if cv2.waitKey(33) == ord("q"):
+                break
+
+    # TODO: 重複している 使用しない 将来的に削除！！！
     def check_is_opened(self, isOpened):
         u""" 動画取得 エラー処理 """  # {{{
         if not isOpened:
@@ -338,6 +357,9 @@ def main():
     print os.getcwd()
     os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
     print os.getcwd()
+    print "-------------------------------------------------"
+    print "Start"
+    print "-------------------------------------------------"
 
     path = "D:\\OneDrive\\Biz\\Python\\ImageProcessing"
     smpl_pic = "D:\\OneDrive\\Biz\\Python\\ImageProcessing\\tpl_1.png"
@@ -380,8 +402,7 @@ def main():
 
     # 動画変換 テスト# {{{
     cip = ImageProcessing()
-    cip.get_master("masterImage", ".png", ".\\MasterImage")
-    # cip.run("Raw capture")
+    cip.run("Raw capture", "masterImage")
     # print "Movie captcha end..."
     # }}}
 
