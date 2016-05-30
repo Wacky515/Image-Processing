@@ -33,15 +33,20 @@ sys.setdefaultencoding("utf-8")
 class Trim:
     u""" トリミング クラス """
 
-    def __init__(self, img, name, extension, path):
+    def __init__(self, img, name, extension, path, _type=0):
         # 画像読込み用 インスタンス変数# {{{
+        # _type: 0: 静止画 1: 動画 切換え
         self.img = img
         self.name = name
         self.extension = extension
         self.path = path
 
-        self.image = cv2.imread(self.img, 1)
-        self.size = self.image.shape
+        if _type == 0:
+            self.image = cv2.imread(self.img, 1)
+            self.size = self.image.shape
+        else:
+            self.image = img
+
 # }}}
 
         # 矩形描画用 インスタンス変数# {{{
@@ -167,7 +172,6 @@ class Trim:
             trim_image = self.image[height: self.end_y,
                 width: self.end_x]
 
-            # 2016/05/26 作業終了！！！
             # 保存処理と保存フラグ -> 偽 処理
             cv2.imwrite("imwrite.png", trim_image)
             sda = sd.SaveData(self.name, self.path)
@@ -178,11 +182,11 @@ class Trim:
         self.quit_tirm()
 
     def write_text(self, text, origin,
-            cpt=cv2.putText,
             scale=0.7,
             color_out=(0, 0, 31), color_in=(0, 127, 225),
             thickness_out=3, thickness_in=1):
         u""" テキスト 画面出力 """
+        cpt = cv2.putText
         image = self.image
         font = cv2.FONT_HERSHEY_SIMPLEX
         cpt(image, text, origin, font, scale, color_out, thickness_out)
@@ -230,7 +234,8 @@ def main():
 if __name__ == '__main__':
     main()
 
-""" FIXME:
+"""
+FIXME:
 RuntimeError: maximum recursion depth exceeded. 再帰の回数の限界を超えている
 → トリミングモードの開始回数を制限する！！！
 → 一枚の画像から複数枚保存できる機能は残す（安易にSave -> 終了にしない）
