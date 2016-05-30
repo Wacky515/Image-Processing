@@ -46,7 +46,6 @@ class Trim:
             self.size = self.image.shape
         else:
             self.image = img
-
 # }}}
 
         # 矩形描画用 インスタンス変数# {{{

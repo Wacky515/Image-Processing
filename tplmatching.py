@@ -282,7 +282,7 @@ class ImageProcessing:
         sda = sd.SaveData(search, path)
         master = sda.get_name_max(extension)
         text2 = "Quit: Long press \"q\" key"
-        text3 = "Save: Long press \"s\" key"
+        text3 = "Trim mode: Long press \"t\" key"
 
         print "Master image name: " + str(master) + str(extension)
 
@@ -300,28 +300,42 @@ class ImageProcessing:
                 print "Initial delay"
                 time.sleep(.1)
             get_flg, frame = self.cap.read()
+            draw_get_flg, draw_frame = self.cap.read()
 
             if self.check_get_flag(get_flg) is False:
                 break
             if self.check_get_frame(frame) is False:
                 continue
 
-            # TODO: 操作方法説明文 表示！！！
-            trim = tm.Trim(frame, master, extension, path, 1)
-            origin = (100, 100)
-            trim.write_text(text2, origin)
+            # 操作方法説明文 表示
+            text_offset = 10
+            baseline = frame.shape[0] - text_offset
+            origin = 1, baseline
 
-            cv2.imshow(name, frame)
+            trim = tm.Trim(draw_frame, master, extension, path, 1)
+            text_height = trim.write_text(text2, origin)
+            trim.write_text(text3,\
+                    (origin[0], origin[1] - text_offset - text_height[1]))
+
+            cv2.imshow(name, draw_frame)
             print "Master captcha"
             count += 1
 
             # "t"キー押下 静止画撮影処理
             if cv2.waitKey(33) == ord("t"):
-                print "Get master mode"
-                img = "Master source%s"% extension
-                trim = tm.Trim(img, master, extension, path)
+                img = "master_source%s" % extension
                 cv2.imwrite(img, frame)
+                trim = tm.Trim(img, master, extension, path)
                 trim.trim()
+
+            # TODO: 上記で修正完了 将来的に削除！！！
+            # # "t"キー押下 静止画撮影処理
+            # if cv2.waitKey(33) == ord("t"):
+            #     print "Get master mode"
+            #     img = "Master source%s" % extension
+            #     trim = tm.Trim(img, master, extension, path)
+            #     cv2.imwrite(img, frame)
+            #     trim.trim()
 
             # "q"キー押下 終了処理
             if cv2.waitKey(33) == ord("q"):
