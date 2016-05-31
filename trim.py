@@ -137,7 +137,7 @@ class Trim:
                 + str(self.start_y) + "), ("\
                 + str(self.end_x) + ", "\
                 + str(self.end_y) + ")"
-            print self.save_flg
+            print "Save flag is " + str(self.save_flg)
 
         elif event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON:
             """ 古い矩形描画を消去する為
@@ -213,7 +213,7 @@ class Trim:
         if cv2.waitKey(0) == ord(self.quit_key):
             # テスト出力
             print "Input key \"q\""
-            print "Quit"
+            print "Quit trim mode"
             cv2.destroyWindow(self.window_name)
             sys.exit()
 
