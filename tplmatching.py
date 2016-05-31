@@ -14,6 +14,8 @@ u""" テンプレートマッチングによる画像処理 """
 # -*- coding: utf-8 -*-
 # }}}
 
+# TODO: 文字列の埋込を % 形式から format 形式に変更（Python3系 対応）！！！
+
 # モジュール インポート# {{{
 import numpy as np
 import os
@@ -230,12 +232,16 @@ class ImageProcessing:
         # 2016/05/30 ここまで！！！ 検索の枝番がダブる！！！
         cwd = os.getcwd()
         path_master = cwd + "\\" + dir_master
-        # path_master = "D:\\OneDrive\\Biz\\Python\\ImageProcessing\\MasterImage"
         print "Master directory: " + path_master
 
+        # マスター画像 検索
         sda = sd.SaveData(search, path_master)
-        master = sda.get_name_max(extension)
-        self.get_master(master, extension, path_master)
+        master, match_flg = sda.get_name_max(extension)
+        print "Match name: " + str(master)
+        print "Match extension: " + str(extension)
+        if match_flg is False:
+            print "Get master mode(no master case)"
+            self.get_master(master, extension, path_master)
 
         self.init_get_camera_image(name)
 
@@ -287,12 +293,6 @@ class ImageProcessing:
 
         print "Master image name: " + str(master) + str(extension)
 
-        # TODO: 不要 将来的に削除！！！
-        # # マスター画像が無い（初回） 処理
-        # if master is None:
-        #     print "Master image is not found..."
-        #     master = str(search)
-
         self.init_get_camera_image(name)
 
         count = 0
@@ -329,15 +329,6 @@ class ImageProcessing:
                 trim = tm.Trim(img, master, extension, path)
                 trim.trim()
 
-            # TODO: 上記で修正完了 将来的に削除！！！
-            # # "t"キー押下 静止画撮影処理
-            # if cv2.waitKey(33) == ord("t"):
-            #     print "Get master mode"
-            #     img = "Master source%s" % extension
-            #     trim = tm.Trim(img, master, extension, path)
-            #     cv2.imwrite(img, frame)
-            #     trim.trim()
-
             # "q"キー押下 終了処理
             if cv2.waitKey(33) == ord("q"):
                 break
@@ -368,13 +359,17 @@ class ImageProcessing:
 def main():
     # vimテスト用各変数 定義# {{{
     # テスト出力
-    print "Current directory is..."
+    print "\r\n--------------------------------------------------"
+    print "Information"
+    print "--------------------------------------------------"
+    print "Default current directory is..."
     print os.getcwd()
+    print "\r\nand then...\r\n"
     os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
     print os.getcwd()
-    print "-------------------------------------------------"
-    print "Start"
-    print "-------------------------------------------------"
+    print "\r\n-------------------------------------------------"
+    print "Start main"
+    print "-------------------------------------------------\r\n"
 
     path = "D:\\OneDrive\\Biz\\Python\\ImageProcessing"
     smpl_pic = "D:\\OneDrive\\Biz\\Python\\ImageProcessing\\tpl_1.png"
