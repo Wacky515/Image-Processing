@@ -14,7 +14,10 @@ u""" テンプレートマッチングによる画像処理 """
 # -*- coding: utf-8 -*-
 # }}}
 
-# TODO: 文字列の埋込を % 形式から format 形式に変更（Python3系 対応）！！！
+# TODO: Python3系 対応！！！
+# TODO: 文字列の埋込を % 形式から format 形式に変更
+# TODO: "print" -> "print()" に変更
+# TODO: Unicode文字リテラルを "u"body"" -> ""body"" に変更
 
 # モジュール インポート# {{{
 import numpy as np
@@ -192,6 +195,7 @@ class Tplmatching:
         #                 （テンプレート画像と探索画像の明るさに左右されにくい）
         # }}} """
         algo = cv2.TM_CCOEFF_NORMED
+        # 2016/06/01 作業終了 テンプレートマッチングに入れない！！！
         match = cv2.matchTemplate(image, tpl, algo)
         # 類似度の最小・最大値と各座標 取得
         min_value, max_value, min_loc, max_loc = cv2.minMaxLoc(match)
@@ -229,19 +233,25 @@ class ImageProcessing:
     def run(self, name, search, extension=".png", dir_master="MasterImage"):
         u""" 動画取得 処理（メインルーチン） """  # {{{
         # マスター画像 検索
-        # 2016/05/30 ここまで！！！ 検索の枝番がダブる！！！
+        print ("\r\n-------------------------------------------------")
+        print ("Start template matching")
+        print ("-------------------------------------------------\r\n")
+        print ("\t*** Search master mode ***\r\n")
         cwd = os.getcwd()
         path_master = cwd + "\\" + dir_master
-        print "Master directory: " + path_master
+        print ("Master directory: \r\n\t" + path_master)
 
         # マスター画像 検索
         sda = sd.SaveData(search, path_master)
         master, match_flg = sda.get_name_max(extension)
-        print "Match name: " + str(master)
-        print "Match extension: " + str(extension)
+        print ("\t*** Return search master mode ***\r\n")
         if match_flg is False:
-            print "Get master mode(no master case)"
-            self.get_master(master, extension, path_master)
+            print ("No match master")
+            print ("Go get master mode(no match master case)")
+            self.get_master(search, extension, path_master)
+        else:
+            print ("Match master name: " + str(master))
+            print ("Match master extension: " + str(extension))
 
         self.init_get_camera_image(name)
 
@@ -275,7 +285,7 @@ class ImageProcessing:
             self.ci.display("Bilateral filter", binz, 1)
 
             # テンプレートマッチング 処理
-            # self.tm.matching(flame, master)
+            self.tm.matching(frame, master)
             # print max_value
 
             # 仮の終了処理！！！
@@ -285,20 +295,20 @@ class ImageProcessing:
 
     def get_master(self, search, extension, path):
         u""" マスター画像 読込み """
+        print ("\t*** Start get master mode ***")
+        print ("Search master name: " + str(search))
         name = "Get master image"
-        sda = sd.SaveData(search, path)
-        master = sda.get_name_max(extension)
         text2 = "Quit: Long press \"q\" key"
         text3 = "Trim mode: Long press \"t\" key"
 
-        print "Master image name: " + str(master) + str(extension)
+        print "Master image name: " + str(search)
 
         self.init_get_camera_image(name)
 
         count = 0
         while True:
             if count < 1:
-                print "Initial delay"
+                print ("Initial delay")
                 time.sleep(.1)
             get_flg, frame = self.cap.read()
             draw_get_flg, draw_frame = self.cap.read()
@@ -313,7 +323,7 @@ class ImageProcessing:
             baseline = frame.shape[0] - text_offset
             origin = 1, baseline
 
-            trim = tm.Trim(draw_frame, master, extension, path, 1)
+            trim = tm.Trim(draw_frame, search, extension, path, 1)
             text_height = trim.write_text(text2, origin)
             trim.write_text(text3,\
                     (origin[0], origin[1] - text_offset - text_height[1]))
@@ -326,11 +336,12 @@ class ImageProcessing:
             if cv2.waitKey(33) == ord("t"):
                 img = "master_source%s" % extension
                 cv2.imwrite(img, frame)
-                trim = tm.Trim(img, master, extension, path)
+                trim = tm.Trim(img, search, extension, path)
                 trim.trim()
 
             # "q"キー押下 終了処理
             if cv2.waitKey(33) == ord("q"):
+                print ("\t*** End get master mode ***")
                 break
 
     # TODO: 重複している 使用しない 将来的に削除！！！
@@ -359,17 +370,17 @@ class ImageProcessing:
 def main():
     # vimテスト用各変数 定義# {{{
     # テスト出力
-    print "\r\n--------------------------------------------------"
-    print "Information"
-    print "--------------------------------------------------"
-    print "Default current directory is..."
-    print os.getcwd()
-    print "\r\nand then...\r\n"
+    print ("\r\n--------------------------------------------------")
+    print ("Information")
+    print ("--------------------------------------------------")
+    print ("Default current directory is...")
+    print ("\t" + os.getcwd())
+    print ("\r\nAnd then...")
     os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
-    print os.getcwd()
-    print "\r\n-------------------------------------------------"
-    print "Start main"
-    print "-------------------------------------------------\r\n"
+    print ("\t" + os.getcwd())
+    print ("\r\n-------------------------------------------------")
+    print ("Start main")
+    print ("-------------------------------------------------\r\n")
 
     path = "D:\\OneDrive\\Biz\\Python\\ImageProcessing"
     smpl_pic = "D:\\OneDrive\\Biz\\Python\\ImageProcessing\\tpl_1.png"
