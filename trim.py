@@ -13,6 +13,11 @@ u""" 画像のトリミング"""
 # デフォルトの文字コード 変更
 # -*- coding: utf-8 -*-
 
+# TODO: Python3系 対応！！！
+# TODO: 文字列の埋込を % 形式から format 形式に変更
+# TODO: "print" -> "print()" に変更
+# TODO: Unicode文字リテラルを " u"body" " -> " "body" " に変更
+
 # モジュール インポート
 import os
 
