@@ -20,6 +20,7 @@ u""" 画像のトリミング"""
 
 # モジュール インポート
 import os
+import time
 
 import cv2
 
@@ -159,10 +160,11 @@ class Trim:
                 + str(self.coor_y)
 
         if cv2.waitKey(0) == ord(self.save_key) and self.save_flg is True:
+            time.sleep(1)
             # テスト出力
-            print "Input key \"s\""
+            print "\r\nInput key \"s\""
             print "Save image..."
-            print "Trim range: (" + str(self.start_x) + ", "\
+            print "Trim area: (" + str(self.start_x) + ", "\
                 + str(self.start_y) + "), ("\
                 + str(self.length_x) + ", "\
                 + str(self.length_y) + ")"
@@ -216,11 +218,13 @@ class Trim:
     def quit_tirm(self):
         # 静止画の出力保持&終了処理
         if cv2.waitKey(0) == ord(self.quit_key):
+            time.sleep(1)
             # テスト出力
-            print "Input key \"q\""
+            print "\r\nInput key \"q\""
             print "Quit trim mode"
             cv2.destroyWindow(self.window_name)
-            sys.exit()
+            return False
+            # sys.exit()
 
 
 def main():
