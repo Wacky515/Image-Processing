@@ -15,7 +15,7 @@ u""" テンプレートマッチングによる画像処理 """
 # }}}
 
 # TODO: Python3系 対応！！！
-# TODO: 文字列の埋込を % 形式から format 形式に変更
+# DONE: 文字列の埋込を % 形式から format 形式に変更
 # DONE: "print" -> "print()" に変更
 # TODO: Unicode文字リテラルを " u"body" " -> " "body" " に変更
 
@@ -188,7 +188,7 @@ class Tplmatching:
     def __init__(self):
         pass
 
-    def match(self, image, tpl):
+    def tplmatch(self, image, tpl):
         u""" テンプレートマッチング 処理 """
         # 類似判定アルゴリズム 解説# {{{
         # CV_TM_SQDIFF    :輝度値の差の２乗の合計     小さいほど類似
@@ -197,7 +197,7 @@ class Tplmatching:
         #                 （テンプレート画像と探索画像の明るさに左右されにくい）
         # }}} """
         algo = cv2.TM_CCOEFF_NORMED
-        # 2016/06/01 作業終了 テンプレートマッチングに入れない！！！
+        # 2016/06/02 作業終了 テンプレートマッチングに入れない！！！
         match = cv2.matchTemplate(image, tpl, algo)
         # 類似度の最小・最大値と各座標 取得
         min_value, max_value, min_loc, max_loc = cv2.minMaxLoc(match)
@@ -286,7 +286,10 @@ class ImageProcessing:
             self.ci.display("Bilateral filter", binz, 1)
 
             # テンプレートマッチング 処理
-            # self.tm.match(frame, master)
+            print("Master name: " + str(master))
+            master = cv2.imread(str(master + extension), cv2.IMREAD_COLOR)
+
+            self.tm.tplmatch(frame, master)
             # print (max_value)
 
             # 仮の終了処理！！！
