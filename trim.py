@@ -14,6 +14,8 @@ u""" 画像のトリミング"""
 # -*- coding: utf-8 -*-
 
 # TODO: Python3系 対応！！！
+# TODO: 関数名は動詞にする
+# TODO: 変数は "[大区分]_[小区分]"
 # TODO: 文字列の埋込を % 形式から format 形式に変更
 # TODO: "print" -> "print()" に変更
 # TODO: Unicode文字リテラルを " u"body" " -> " "body" " に変更
@@ -70,16 +72,16 @@ class Trim:
 # }}}
 
         # その他 インスタンス変数# {{{
-        self.window_name = "Original image"
-        self.save_flg = False
-        self.save_key = "s"
-        self.quit_key = "q"
+        self.name_window = "Original image"
+        self.flag_save = False
+        self.key_save = "s"
+        self.key_quit = "q"
 # }}}
 
     def trim(self):
         u""" トリミング 開始 """
-        cv2.namedWindow(self.window_name, cv2.WINDOW_AUTOSIZE)
-        cv2.setMouseCallback(self.window_name, self.mouse_event)
+        cv2.namedWindow(self.name_window, cv2.WINDOW_AUTOSIZE)
+        cv2.setMouseCallback(self.name_window, self.mouse_event)
 
         # 読込み画像の大きさから文字描画のベースライン 取得
         self.baseline = self.size[0] - self.text_offset
@@ -89,7 +91,7 @@ class Trim:
         self.baseline_upper = text_height[1] + self.text_offset / 2
         self.write_text(self.text2, (1, self.baseline_upper))
 
-        cv2.imshow(self.window_name, self.image)
+        cv2.imshow(self.name_window, self.image)
 
         # テスト出力
         print "Trim pos: (" + str(self.start_x) + ", "\
@@ -97,6 +99,10 @@ class Trim:
             + str(self.end_x) + ", "\
             + str(self.end_y) + ")"
 
+        # if self.path_save is\
+        #         self.name_save is\
+        #         self.extension_save is not None:
+        #     return self.path_save, self.name_save, self.extension_save
         self.quit_tirm()
 
         print "Trim.trim() end..."
@@ -113,7 +119,7 @@ class Trim:
             self.image = cv2.imread(self.img, 1)
 
             self.start_x, self.start_y = self.coor_x, self.coor_y
-            self.save_flg = False
+            self.flag_save = False
 
             # テスト出力
             print "Left button down"
@@ -133,8 +139,8 @@ class Trim:
             # 矩形 描画
             self.draw_rectangle()
 
-            cv2.imshow(self.window_name, self.image)
-            self.save_flg = True
+            cv2.imshow(self.name_window, self.image)
+            self.flag_save = True
 
             # テスト出力
             print "Left button up"
@@ -143,7 +149,7 @@ class Trim:
                 + str(self.start_y) + "), ("\
                 + str(self.end_x) + ", "\
                 + str(self.end_y) + ")"
-            print "Save flag is " + str(self.save_flg)
+            print "Save flag is " + str(self.flag_save)
 
         elif event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON:
             """ 古い矩形描画を消去する為
@@ -153,13 +159,13 @@ class Trim:
             # 矩形 描画
             self.draw_rectangle()
 
-            cv2.imshow(self.window_name, self.image)
+            cv2.imshow(self.name_window, self.image)
 
             # テスト出力
             print "Mouse location: " + str(self.coor_x) + ", "\
                 + str(self.coor_y)
 
-        if cv2.waitKey(0) == ord(self.save_key) and self.save_flg is True:
+        if cv2.waitKey(0) == ord(self.key_save) and self.flag_save is True:
             time.sleep(1)
             # テスト出力
             print "\r\nInput key \"s\""
@@ -181,9 +187,10 @@ class Trim:
             # 保存処理と保存フラグ -> 偽 処理
             cv2.imwrite("imwrite.png", trim_image)
             sda = sd.SaveData(self.name, self.path)
-            sda.save_image(trim_image, self.extension)
+            self.path_save, self.name_save, self.extension_save\
+                    = sda.save_image(trim_image, self.extension)
 
-            self.save_flg = False
+            self.flag_save = False
 
         self.quit_tirm()
 
@@ -217,12 +224,12 @@ class Trim:
 
     def quit_tirm(self):
         # 静止画の出力保持&終了処理
-        if cv2.waitKey(0) == ord(self.quit_key):
+        if cv2.waitKey(0) == ord(self.key_quit):
             time.sleep(1)
             # テスト出力
             print "\r\nInput key \"q\""
             print "Quit trim mode"
-            cv2.destroyWindow(self.window_name)
+            cv2.destroyWindow(self.name_window)
             return False
             # sys.exit()
 

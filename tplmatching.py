@@ -15,9 +15,11 @@ u""" テンプレートマッチングによる画像処理 """
 # }}}
 
 # TODO: Python3系 対応！！！
+# TODO: 関数名は動詞にする
+# TODO: 変数は "[大区分]_[小区分]"
+# TODO: Unicode文字リテラルを " u"body" " -> " "body" " に変更
 # DONE: 文字列の埋込を % 形式から format 形式に変更
 # DONE: "print" -> "print()" に変更
-# TODO: Unicode文字リテラルを " u"body" " -> " "body" " に変更
 
 # モジュール インポート# {{{
 import numpy as np
@@ -44,12 +46,12 @@ sys.setdefaultencoding("utf-8")
 # }}}
 
 
-def terminate(cap_name=0, wait_time=33):
+def terminate(name_cap=0, time_wait=33):
     u""" 出力画像 終了処理 """# {{{
-    # cap_name: 0: 静止画 1: 動画
-    cv2.waitKey(wait_time)
-    if cap_name != 0:
-        cap_name.release
+    # name_cap: 0: 静止画 1: 動画
+    cv2.waitKey(time_wait)
+    if name_cap != 0:
+        name_cap.release
     cv2.destroyAllWindows()
     print("Terminated...")
     sys.exit()
@@ -71,16 +73,16 @@ class GetImage:
             print ("Image data is not found...")
             return False
 
-    def display(self, window_name, image, _type=1):
+    def display(self, name_window, image, _type=1):
         u""" 画像・動画 画面出力 """
         # _type: 0: 静止画 1: 動画 切換え
         # 静止画無し判定時 処理 ← "is None" にした 動作確認！！！
         if image is None and _type == 0:
             print ("Getting image...")
             image = self.get_image()
-        print ("Display {}s...".format(window_name))
-        cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
-        cv2.imshow(window_name, image)
+        print ("Display {}s...".format(name_window))
+        cv2.namedWindow(name_window, cv2.WINDOW_AUTOSIZE)
+        cv2.imshow(name_window, image)
         print (u"画像の大きさを取得する処理を実装！！！")
         if _type == 0:
             # 静止画の出力保持処理
@@ -107,7 +109,7 @@ class ConvertImage(GetImage):
         # *** 以上 ***
         # }}} """
         # 最大閾値
-        max_thresh = 255
+        thresh_max = 255
         # 閾値算出アルゴリズム# {{{
         # GaussianC:任意の近傍画素をGaussianによる重付け（近傍を重視）で総和し
         # 閾値を算出
@@ -119,7 +121,7 @@ class ConvertImage(GetImage):
         thresh_type = cv2.THRESH_BINARY
         # thresh_type = cv2.THRESH_BINARY_INV
         # 切取る正方形の一の画素数（3、5、7... 奇数のみ！）
-        calc_area = 7
+        area_calc = 7
         # 減算定数# {{{
         #   周囲が似た色の時、減算して閾値を意図的に突出させ
         #   背景領域のノイズ・色ゆらぎの影響を低減する
@@ -128,7 +130,7 @@ class ConvertImage(GetImage):
         # 適応的二値化 変換処理
         print ("Convert adaptive threashold...")
         cat = cv2.adaptiveThreshold
-        adpth = cat(gray, max_thresh, algo, thresh_type, calc_area, subtract)
+        adpth = cat(gray, thresh_max, algo, thresh_type, area_calc, subtract)
         return adpth
 
     def bilateral_filter(self, image):
@@ -136,36 +138,36 @@ class ConvertImage(GetImage):
         gray = self.grayscale(image)
         # 切取る正方形の一の画素数（3、5、7... 奇数のみ！）
         # 数値が大きいほどぼやける
-        calc_area = 7
+        area_calc = 7
         # 色空間におけるフィルタシグマ      大きくなると色の領域がより大きくなる
-        sigma_color = 12
+        color_sigma = 12
         # 座標空間におけるフィルタシグマ    大きくなるとより遠くの画素同士が影響する
-        sigma_metric = 3
+        metric_sigma = 3
         print ("Bilateral filtering...")
         cvf = cv2.bilateralFilter
-        blr = cvf(gray, calc_area, sigma_color, sigma_metric)
+        blr = cvf(gray, area_calc, color_sigma, metric_sigma)
         return blr
 
     def discriminantanalyse(self, image):
         u""" 判別分析法 処理 """
         image = self.bilateral_filter(image)
-        std_thresh = 40
-        max_thresh = 255
+        thresh_std = 40
+        thresh_max = 255
         method = cv2.THRESH_BINARY + cv2.THRESH_OTSU
         print ("Discriminant analysing...")
         cth = cv2.threshold
-        ret, dcta = cth(image, std_thresh, max_thresh, method)
+        ret, dcta = cth(image, thresh_std, thresh_max, method)
         return dcta
 
     def binarize(self, image):
         u""" 二値化 処理 """
         image = self.bilateral_filter(image)
-        std_thresh = 70
-        max_thresh = 255
+        thresh_std = 70
+        thresh_max = 255
         method = cv2.THRESH_BINARY_INV
         print ("Binarizing...")
         cth = cv2.threshold
-        ret, binz = cth(image, std_thresh, max_thresh, method)
+        ret, binz = cth(image, thresh_std, thresh_max, method)
         return binz
 
     def normalize(self, image):
@@ -199,8 +201,8 @@ class Tplmatching:
         algo = cv2.TM_CCOEFF_NORMED
         match = cv2.matchTemplate(image, tpl, algo)
         # 類似度の最小・最大値と各座標 取得
-        min_value, max_value, min_loc, max_loc = cv2.minMaxLoc(match)
-        return match, min_value, max_value, min_loc, max_loc
+        value_min, value_max, loc_min, loc_max = cv2.minMaxLoc(match)
+        return match, value_min, value_max, loc_min, loc_max
 
 
 class ImageProcessing:
@@ -219,15 +221,15 @@ class ImageProcessing:
             print ("Can not connect camera...")
             terminate()
             # トラックバー 定義(できない)！！！# {{{
-            #        bar_name = "Max threshold"
-            #        print (max_thresh)
+            #        name_bar = "Max threshold"
+            #        print (thresh_max)
             # # トラックバー 生成
             #        def set_parameter(value):
-            #            max_thresh = cv2.getTrackbarPos(bar_name, window_name)
-            #            max_thresh = cv2.setTrackbarPos(bar_name, window_name)
-            #        cv2.createTrackbar(bar_name, window_name,
-            #           0, 255, self.max_thresh)
-            #        window_name = "Adaptive Threashold cap"
+            #            thresh_max = cv2.getTrackbarPos(name_bar, name_window)
+            #            thresh_max = cv2.setTrackbarPos(name_bar, name_window)
+            #        cv2.createTrackbar(name_bar, name_window,
+            #           0, 255, self.thresh_max)
+            #        name_window = "Adaptive Threashold cap"
             # }}}
         cv2.namedWindow(name, cv2.WINDOW_AUTOSIZE)
 
@@ -243,14 +245,16 @@ class ImageProcessing:
 
         # マスター画像 検索
         sda = sd.SaveData(search, path_master)
-        set_name, master_name, match_flag = sda.get_name_max(extension)
+        set_name, name_master, match_flag = sda.get_name_max(extension)
         print ("\t*** Return search master mode ***\r\n")
+
+        # マスター画像有無 判定
         if match_flag is False:
             print ("No match master")
             print ("Go get master mode(no match master case)\r\n")
             self.get_master(search, extension, path_master)
         else:
-            print ("Match master name: " + str(master_name))
+            print ("Match master name: " + str(name_master))
             print ("Match master extension: " + str(extension))
 
         self.init_get_camera_image(name)
@@ -287,15 +291,15 @@ class ImageProcessing:
 # }}}
 
             # テンプレートマッチング 処理
-            print("\r\nMaster name: " + str(master_name) + str(extension) + "\r\n")
+            print("\r\nMaster name: " + str(name_master) + str(extension) + "\r\n")
             master = str(path_master) + ".\\"\
-                    + str(master_name) + str(extension)
+                    + str(name_master) + str(extension)
             master = cv2.imread(str(master), cv2.IMREAD_COLOR)
             self.ci.display("Master", master)
 
-            match, min_value, max_value, min_loc, max_loc \
+            match, value_min, value_max, loc_min, loc_max \
                     = self.tm.tplmatch(frame, master)
-            print (max_value)
+            print (value_max)
 
             # 仮の終了処理！！！
             if cv2.waitKey(33) > 0:
@@ -320,7 +324,7 @@ class ImageProcessing:
                 print ("Initial delay")
                 time.sleep(0.1)
             get_flag, frame = self.cap.read()
-            draw_get_flag, draw_frame = self.cap.read()
+            get_flag_draw, frame_draw = self.cap.read()
 
             if self.check_get_flag(get_flag) is False:
                 break
@@ -333,12 +337,12 @@ class ImageProcessing:
             origin = 1, baseline
 
             # 操作方法説明文 表示
-            trim = tm.Trim(draw_frame, search, extension, path, 1)
+            trim = tm.Trim(frame_draw, search, extension, path, 1)
             text_height = trim.write_text(text2, origin)
             trim.write_text(text3,\
                     (origin[0], origin[1] - text_offset - text_height[1]))
 
-            cv2.imshow(name, draw_frame)
+            cv2.imshow(name, frame_draw)
             print ("Master captcha")
             count += 1
 
