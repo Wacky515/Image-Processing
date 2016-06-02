@@ -197,7 +197,6 @@ class Tplmatching:
         #                 （テンプレート画像と探索画像の明るさに左右されにくい）
         # }}} """
         algo = cv2.TM_CCOEFF_NORMED
-        # 2016/06/02 作業終了 テンプレートマッチングに入れない！！！
         match = cv2.matchTemplate(image, tpl, algo)
         # 類似度の最小・最大値と各座標 取得
         min_value, max_value, min_loc, max_loc = cv2.minMaxLoc(match)
@@ -234,9 +233,9 @@ class ImageProcessing:
 
     def run(self, name, search, extension=".png", dir_master="MasterImage"):
         u""" 動画取得 処理（メインルーチン） """  # {{{
-        print ("\r\n-------------------------------------------------")
+        print ("-------------------------------------------------")
         print ("Start template matching")
-        print ("-------------------------------------------------\r\n")
+        print ("-------------------------------------------------")
         print ("\t*** Search master mode ***\r\n")
         cwd = os.getcwd()
         path_master = cwd + "\\" + dir_master
@@ -244,14 +243,14 @@ class ImageProcessing:
 
         # マスター画像 検索
         sda = sd.SaveData(search, path_master)
-        master, match_flag = sda.get_name_max(extension)
+        set_name, master_name, match_flag = sda.get_name_max(extension)
         print ("\t*** Return search master mode ***\r\n")
         if match_flag is False:
             print ("No match master")
-            print ("Go get master mode(no match master case)")
+            print ("Go get master mode(no match master case)\r\n")
             self.get_master(search, extension, path_master)
         else:
-            print ("Match master name: " + str(master))
+            print ("Match master name: " + str(master_name))
             print ("Match master extension: " + str(extension))
 
         self.init_get_camera_image(name)
@@ -261,7 +260,7 @@ class ImageProcessing:
         while True:
             if count < 1:
                 print ("Initial delay")
-                time.sleep(.1)
+                time.sleep(0.1)
             get_flag, frame = self.cap.read()
 
             if self.check_get_flag(get_flag) is False:
@@ -269,6 +268,7 @@ class ImageProcessing:
             if self.check_get_frame(frame) is False:
                 continue
 
+            # TODO: 操作説明 表示！！！
             cv2.imshow(name, frame)
             print ("Capture is running...")
             count += 1
@@ -277,20 +277,25 @@ class ImageProcessing:
         # ↑関数にする(できなかった！！！)？？？
             # }}}
 
-            # 動画 変換・画像処理（まとめる）！！！
+            # 動画 変換・画像処理（まとめる）！！！# {{{
             adpth = self.ci.adaptive_threashold(frame)
             self.ci.display("Adaptive threashold", adpth, 1)
             dcta = self.ci.discriminantanalyse(frame)
-            self.ci.display("Discriminant analysis", dcta, 1)
+            self.ci.display("Discriminant analyse", dcta, 1)
             binz = self.ci.binarize(frame)
             self.ci.display("Bilateral filter", binz, 1)
+# }}}
 
             # テンプレートマッチング 処理
-            print("Master name: " + str(master))
-            master = cv2.imread(str(master + extension), cv2.IMREAD_COLOR)
+            print("\r\nMaster name: " + str(master_name) + str(extension) + "\r\n")
+            master = str(path_master) + ".\\"\
+                    + str(master_name) + str(extension)
+            master = cv2.imread(str(master), cv2.IMREAD_COLOR)
+            self.ci.display("Master", master)
 
-            self.tm.tplmatch(frame, master)
-            # print (max_value)
+            match, min_value, max_value, min_loc, max_loc \
+                    = self.tm.tplmatch(frame, master)
+            print (max_value)
 
             # 仮の終了処理！！！
             if cv2.waitKey(33) > 0:
@@ -299,7 +304,7 @@ class ImageProcessing:
 
     def get_master(self, search, extension, path):
         u""" マスター画像 読込み """
-        print ("\t*** Start get master mode ***")
+        print ("*** Start get master mode ***\t")
         print ("Search master name: " + str(search))
         name = "Get master image"
         text2 = "Quit: Long press \"q\" key"
@@ -313,7 +318,7 @@ class ImageProcessing:
         while True:
             if count < 1:
                 print ("Initial delay")
-                time.sleep(.1)
+                time.sleep(0.1)
             get_flag, frame = self.cap.read()
             draw_get_flag, draw_frame = self.cap.read()
 
@@ -337,16 +342,19 @@ class ImageProcessing:
             print ("Master captcha")
             count += 1
 
+            # 2016/06/02 ここまで 上手く抜けられない！！！
             # "t"キー押下 静止画撮影処理
             if cv2.waitKey(33) == ord("t"):
-                img = "master_source{}s".format(extension)
+                time.sleep(1)
+                img = "master_source{}".format(extension)
                 cv2.imwrite(img, frame)
                 trim = tm.Trim(img, search, extension, path)
                 trim.trim()
 
             # "q"キー押下 終了処理
             if cv2.waitKey(33) == ord("q"):
-                print ("\t*** End get master mode ***")
+                time.sleep(1)
+                print ("*** End get master mode ***\t\r\n")
                 break
 
     def check_get_flag(self, flag):
@@ -375,9 +383,9 @@ def main():
     print ("\r\nAnd then...")
     os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
     print ("\t" + os.getcwd())
-    print ("\r\n-------------------------------------------------")
+    print (u"\r\n〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓")
     print ("Start main")
-    print ("-------------------------------------------------\r\n")
+    print (u"〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓")
 
     path = "D:\\OneDrive\\Biz\\Python\\ImageProcessing"
     smpl_pic = "D:\\OneDrive\\Biz\\Python\\ImageProcessing\\tpl_1.png"
