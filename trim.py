@@ -166,7 +166,6 @@ class Trim:
                 + str(self.coor_y)
 
         if cv2.waitKey(0) == ord(self.key_save) and self.flag_save is True:
-            time.sleep(1)
             # テスト出力
             print "\r\nInput key \"s\""
             print "Save image..."
@@ -191,6 +190,7 @@ class Trim:
                     = sda.save_image(trim_image, self.extension)
 
             self.flag_save = False
+            time.sleep(0.5)
 
         self.quit_tirm()
 
@@ -229,7 +229,8 @@ class Trim:
             # テスト出力
             print "\r\nInput key \"q\""
             print "Quit trim mode"
-            cv2.destroyWindow(self.name_window)
+            # cv2.destroyWindow(self.name_window)
+            cv2.destroyAllWindows()
             return False
             # sys.exit()
 
