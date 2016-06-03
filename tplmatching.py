@@ -253,6 +253,8 @@ class ImageProcessing:
             print ("No match master")
             print ("Go get master mode(no match master case)\r\n")
             self.get_master(search, extension, path_master)
+            set_name, name_master, match_flag = sda.get_name_max(extension)
+            print ("Get master name: " + str(name_master))
         else:
             print ("Match master name: " + str(name_master))
             print ("Match master extension: " + str(extension))
@@ -301,10 +303,25 @@ class ImageProcessing:
                     = self.tm.tplmatch(frame, master)
             print (value_max)
 
+            # 2016/06/03 ここまで！！！
+            # "t"キー押下 マスター画像取得モード 遷移
+            if cv2.waitKey(33) == ord("t"):
+                time.sleep(1)
+                img = "master_source{}".format(extension)
+                cv2.imwrite(img, frame)
+                trim = tm.Trim(img, search, extension, path)
+                trim.trim()
+
             # 仮の終了処理！！！
-            if cv2.waitKey(33) > 0:
+            # "q"キー押下 終了処理
+            if cv2.waitKey(33) == ord("e"):
+                time.sleep(1)
+                print ("*** End process ***\t\r\n")
                 break
-                # terminate(cap)
+            # if cv2.waitKey(33) > 0:
+            #     break
+            #     # terminate(cap)
+
 
     def get_master(self, search, extension, path):
         u""" マスター画像 読込み """
@@ -346,8 +363,11 @@ class ImageProcessing:
             print ("Master captcha")
             count += 1
 
-            # 2016/06/02 ここまで 上手く抜けられない！！！
-            # "t"キー押下 静止画撮影処理
+            # 2016/06/03 ここまで 上手く抜けられない！！！
+            # マスター画像 トリムで脱出した時にSetできない
+            # 任意にマスター画像取得モードに遷移できない
+
+            # "t"キー押下 マスター画像取得モード 遷移
             if cv2.waitKey(33) == ord("t"):
                 time.sleep(1)
                 img = "master_source{}".format(extension)
