@@ -306,15 +306,21 @@ class ImageProcessing:
             # 2016/06/03 ここまで！！！
             # "t"キー押下 マスター画像取得モード 遷移
             if cv2.waitKey(33) == ord("t"):
+                print "\r\nInput key \"t\""
+                print("Go get master mode\r\r\n")
                 time.sleep(1)
-                img = "master_source{}".format(extension)
-                cv2.imwrite(img, frame)
-                trim = tm.Trim(img, search, extension, path)
-                trim.trim()
+                self.get_master(search, extension, path_master)
+                set_name, name_master, match_flag = sda.get_name_max(extension)
+                print ("Get master name: " + str(name_master))
+                # img = "master_source{}".format(extension)
+                # cv2.imwrite(img, frame)
+                # trim = tm.Trim(img, search, extension, path_master)
+                # trim.trim()
 
             # 仮の終了処理！！！
             # "q"キー押下 終了処理
             if cv2.waitKey(33) == ord("e"):
+                print "\r\nInput key \"e\""
                 time.sleep(1)
                 print ("*** End process ***\t\r\n")
                 break
@@ -363,12 +369,10 @@ class ImageProcessing:
             print ("Master captcha")
             count += 1
 
-            # 2016/06/03 ここまで 上手く抜けられない！！！
-            # マスター画像 トリムで脱出した時にSetできない
-            # 任意にマスター画像取得モードに遷移できない
-
             # "t"キー押下 マスター画像取得モード 遷移
             if cv2.waitKey(33) == ord("t"):
+                print "\r\nInput key \"t\""
+                print("Go master mode")
                 time.sleep(1)
                 img = "master_source{}".format(extension)
                 cv2.imwrite(img, frame)
@@ -377,6 +381,7 @@ class ImageProcessing:
 
             # "q"キー押下 終了処理
             if cv2.waitKey(33) == ord("q"):
+                print "\r\nInput key \"q\""
                 time.sleep(1)
                 print ("*** End get master mode ***\t\r\n")
                 break
