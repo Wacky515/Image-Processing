@@ -1,4 +1,6 @@
-﻿# --------------------------------------------------
+﻿# !/usr/bin/python
+# -*- coding: utf-8 -*-
+# --------------------------------------------------  # {{{
 # Name:        trim.py
 # Purpose:     Trimming master image
 #
@@ -8,19 +10,18 @@
 # Copyright:   (c) SkyDog 2015
 # Licence:     SDS10002.200
 # --------------------------------------------------
-u""" 画像のトリミング"""
-# !/usr/bin/python
-# デフォルトの文字コード 変更
-# -*- coding: utf-8 -*-
+# }}}
+""" 画像のトリミング"""
 
-# TODO: Python3系 対応！！！
 # TODO: 関数名は動詞にする
 # TODO: 変数は "[大区分]_[小区分]"
+
+# TODO: Python3系 対応！！！
 # TODO: 文字列の埋込を % 形式から format 形式に変更
 # TODO: "print" -> "print()" に変更
-# TODO: Unicode文字リテラルを " u"body" " -> " "body" " に変更
+# DONE: Unicode文字リテラルを " u"body" " -> " "body" " に変更
 
-# モジュール インポート
+# モジュール インポート  # {{{
 import os
 import time
 
@@ -36,10 +37,11 @@ reload(sys)
 
 # デフォルトの文字コード 出力
 sys.setdefaultencoding("utf-8")
+# }}}
 
 
 class Trim:
-    u""" トリミング クラス """
+    """ トリミング クラス """
 
     def __init__(self, img, name, extension, path, _type=0):
         # 画像読込み用 インスタンス変数# {{{
@@ -79,7 +81,7 @@ class Trim:
 # }}}
 
     def trim(self):
-        u""" トリミング 開始 """
+        """ トリミング 開始 """
         cv2.namedWindow(self.name_window, cv2.WINDOW_AUTOSIZE)
         cv2.setMouseCallback(self.name_window, self.mouse_event)
 
@@ -108,7 +110,7 @@ class Trim:
         print "Trim.trim() end..."
 
     def mouse_event(self, event, coor_x, coor_y, flags, param):
-        u""" マウスイベント 取得 """
+        """ マウスイベント 取得 """
         self.coor_x = coor_x
         self.coor_y = coor_y
 
@@ -198,7 +200,7 @@ class Trim:
             scale=0.7,
             color_out=(0, 0, 31), color_in=(0, 127, 225),
             thickness_out=3, thickness_in=1):
-        u""" テキスト 画面出力 """
+        """ テキスト 画面出力 """
         cpt = cv2.putText
         image = self.image
         font = cv2.FONT_HERSHEY_SIMPLEX
@@ -209,7 +211,7 @@ class Trim:
         return size
 
     def draw_rectangle(self):
-        u""" 矩形 描画 """
+        """ 矩形 描画 """
         cra = cv2.rectangle
         self.length_x = 2 * self.start_x - self.coor_x
         self.length_y = 2 * self.start_y - self.coor_y
@@ -236,7 +238,7 @@ class Trim:
 
 
 def main():
-    u""" メインルーチン """
+    """ メインルーチン """
     # テスト出力
     print "Current directory is..."
     print os.getcwd()

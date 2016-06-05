@@ -1,5 +1,5 @@
-ï»¿# !/usr/bin/python
-# vim: set fileencoding = utf-8:  # ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®æ–‡å­—ã‚³ãƒ¼ãƒ‰ å¤‰æ›´
+# !/usr/bin/python
+# -*- coding: utf-8 -*-
 # --------------------------------------------------# {{{
 # file_name:   tplmatching
 # Purpose:     TemplateMatching
@@ -10,23 +10,23 @@
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10001.200
 # --------------------------------------------------
-u""" ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒãƒƒãƒãƒ³ã‚°ã«ã‚ˆã‚‹ç”»åƒå‡¦ç† """
 # }}}
+""" ƒeƒ“ƒvƒŒ[ƒgƒ}ƒbƒ`ƒ“ƒO‚É‚æ‚é‰æ‘œˆ— """
 
-# TODO: Python3ç³» å¯¾å¿œï¼ï¼ï¼
-# TODO: é–¢æ•°åã¯å‹•è©ã«ã™ã‚‹
-# TODO: å¤‰æ•°ã¯ "[å¤§åŒºåˆ†]_[å°åŒºåˆ†]"
-# TODO: Unicodeæ–‡å­—ãƒªãƒ†ãƒ©ãƒ«ã‚’ " u"body" " -> " "body" " ã«å¤‰æ›´
-# DONE: æ–‡å­—åˆ—ã®åŸ‹è¾¼ã‚’ % å½¢å¼ã‹ã‚‰ format å½¢å¼ã«å¤‰æ›´
-# DONE: "print" -> "print()" ã«å¤‰æ›´
+# TODO: ŠÖ”–¼‚Í“®Œ‚É‚·‚é
+# TODO: •Ï”‚Í "[‘å‹æ•ª]_[¬‹æ•ª]"
 
-# ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ« ã‚¤ãƒ³ãƒãƒ¼ãƒˆ# {{{
+# DONE: Python3Œn ‘Î‰III
+# DONE: Unicode•¶šƒŠƒeƒ‰ƒ‹‚ğ " u"body" " -> " "body" " ‚É•ÏX
+# DONE: •¶š—ñ‚Ì–„‚ğ % Œ`®‚©‚ç format Œ`®‚É•ÏX
+# DONE: "print" -> "print()" ‚É•ÏX
+
+# ƒ‚ƒWƒ…[ƒ‹ ƒCƒ“ƒ|[ƒg# {{{
 import numpy as np
 import os
 # import glob
 import time
 # import unittest
-import pdb; pdb.set_trace()
 
 import cv2
 # import cv2.cv as cv
@@ -38,17 +38,17 @@ sys.path.append("D:\OneDrive\Biz\Python\SaveDate")
 
 import savedata as sd
 
-# sysãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ« ãƒªãƒ­ãƒ¼ãƒ‰
+# sysƒ‚ƒWƒ…[ƒ‹ ƒŠƒ[ƒh
 reload(sys)
 
-# ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®æ–‡å­—ã‚³ãƒ¼ãƒ‰ å‡ºåŠ›
+# ƒfƒtƒHƒ‹ƒg‚Ì•¶šƒR[ƒh o—Í
 sys.setdefaultencoding("utf-8")
 # }}}
 
 
 def terminate(name_cap=0, time_wait=33):
-    u""" å‡ºåŠ›ç”»åƒ çµ‚äº†å‡¦ç† """# {{{
-    # name_cap: 0: é™æ­¢ç”» 1: å‹•ç”»
+    """ o—Í‰æ‘œ I—¹ˆ— """  # {{{
+    # name_cap: 0: Ã~‰æ 1: “®‰æ
     cv2.waitKey(time_wait)
     if name_cap != 0:
         name_cap.release
@@ -58,172 +58,173 @@ def terminate(name_cap=0, time_wait=33):
 # }}}
 
 
-class GetImage:
-    u""" ç”»åƒãƒ»å‹•ç”» å–å¾—ã‚¯ãƒ©ã‚¹ """
+class GetImage:  # {{{
+    """ ‰æ‘œE“®‰æ æ“¾ƒNƒ‰ƒX """
     def __init__(self, image):
         self.image = image
 
     def get_image(self, conversion=1):
-        u""" ç”»åƒãƒ»å‹•ç”» èª­è¾¼ã¿ """
+        """ ‰æ‘œE“®‰æ “Ç‚İ """
         try:
             image = cv2.imread(self.image, conversion)
             return image
-        # ç”»åƒå–å¾— ã‚¨ãƒ©ãƒ¼å‡¦ç†
+        # ‰æ‘œæ“¾ ƒGƒ‰[ˆ—
         except:
-            print ("Image data is not found...")
+            print("Image data is not found...")
             return False
 
     def display(self, name_window, image, _type=1):
-        u""" ç”»åƒãƒ»å‹•ç”» ç”»é¢å‡ºåŠ› """
-        # _type: 0: é™æ­¢ç”» 1: å‹•ç”» åˆ‡æ›ãˆ
-        # é™æ­¢ç”»ç„¡ã—åˆ¤å®šæ™‚ å‡¦ç† â† "is None" ã«ã—ãŸ å‹•ä½œç¢ºèªï¼ï¼ï¼
+        """ ‰æ‘œE“®‰æ ‰æ–Êo—Í """
+        # _type: 0: Ã~‰æ 1: “®‰æ ØŠ·‚¦
+        # Ã~‰æ–³‚µ”»’è ˆ— © "is None" ‚É‚µ‚½ “®ìŠm”FIII
         if image is None and _type == 0:
-            print ("Getting image...")
+            print("Getting image...")
             image = self.get_image()
-        print ("Display {}s...".format(name_window))
+        print("Display {}s...".format(name_window))
         cv2.namedWindow(name_window, cv2.WINDOW_AUTOSIZE)
         cv2.imshow(name_window, image)
-        print (u"ç”»åƒã®å¤§ãã•ã‚’å–å¾—ã™ã‚‹å‡¦ç†ã‚’å®Ÿè£…ï¼ï¼ï¼")
+        print("‰æ‘œ‚Ì‘å‚«‚³‚ğæ“¾‚·‚éˆ—‚ğÀ‘•III")
         if _type == 0:
-            # é™æ­¢ç”»ã®å‡ºåŠ›ä¿æŒå‡¦ç†
+            # Ã~‰æ‚Ìo—Í•Ûˆ—
             terminate(0, 0)
+# }}}
 
 
 class ConvertImage(GetImage):
-    u""" ç”»åƒãƒ»å‹•ç”» å¤‰æ›ã‚¯ãƒ©ã‚¹ """  # {{{
+    """ ‰æ‘œE“®‰æ •ÏŠ·ƒNƒ‰ƒX """  # {{{
     def __init__(self):
         pass
 
     def grayscale(self, image):
-        u""" ã‚°ãƒ¬ãƒ¼ã‚¹ã‚±ãƒ¼ãƒ« å¤‰æ›å‡¦ç† """
-        print ("Convert grayscale...")
+        """ ƒOƒŒ[ƒXƒP[ƒ‹ •ÏŠ·ˆ— """
+        print("Convert grayscale...")
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         return gray
 
     def adaptive_threashold(self, image):
-        u""" é©å¿œçš„äºŒå€¤åŒ– å¤‰æ›å‡¦ç† """
+        """ “K‰“I“ñ’l‰» •ÏŠ·ˆ— """
         gray = self.grayscale(image)
-        # é©å¿œçš„äºŒå€¤åŒ–(Adaptive Gaussian Thresholding) ãƒ‘ãƒ©ãƒ¡ã‚¿å®šç¾©# {{{
-        # *** é©å¿œçš„äºŒå€¤åŒ– è§£èª¬ ***
-        # 1ç”»ç´ æšã«ã€ä»»æ„ã®è¿‘å‚ç”»ç´ ã‹ã‚‰å€‹åˆ¥ã®é–¾å€¤ã‚’ç®—å‡º
-        # *** ä»¥ä¸Š ***
+        # “K‰“I“ñ’l‰»(Adaptive Gaussian Thresholding) ƒpƒ‰ƒƒ^’è‹`# {{{
+        # *** “K‰“I“ñ’l‰» ‰ğà ***
+        # 1‰æ‘f–‡‚ÉA”CˆÓ‚Ì‹ß–T‰æ‘f‚©‚çŒÂ•Ê‚Ìè‡’l‚ğZo
+        # *** ˆÈã ***
         # }}} """
-        # æœ€å¤§é–¾å€¤
+        # Å‘åè‡’l
         thresh_max = 255
-        # é–¾å€¤ç®—å‡ºã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ # {{{
-        # GaussianC:ä»»æ„ã®è¿‘å‚ç”»ç´ ã‚’Gaussianã«ã‚ˆã‚‹é‡ä»˜ã‘ï¼ˆè¿‘å‚ã‚’é‡è¦–ï¼‰ã§ç·å’Œã—
-        # é–¾å€¤ã‚’ç®—å‡º
-        # MeanC:ä»»æ„ã®è¿‘å‚ç”»ç´ ã‚’ç®—è¡“å¹³å‡ã—é–¾å€¤ã‚’ç®—å‡º
+        # è‡’lZoƒAƒ‹ƒSƒŠƒYƒ€# {{{
+        # GaussianC:”CˆÓ‚Ì‹ß–T‰æ‘f‚ğGaussian‚É‚æ‚éd•t‚¯i‹ß–T‚ğd‹j‚Å‘˜a‚µ
+        # è‡’l‚ğZo
+        # MeanC:”CˆÓ‚Ì‹ß–T‰æ‘f‚ğZp•½‹Ï‚µè‡’l‚ğZo
         # }}} """
         algo = cv2.ADAPTIVE_THRESH_GAUSSIAN_C
         # algo = cv2.ADAPTIVE_THRESH_MEAN_C
-# é–¾å€¤å‡¦ç†
+# è‡’lˆ—
         thresh_type = cv2.THRESH_BINARY
         # thresh_type = cv2.THRESH_BINARY_INV
-        # åˆ‡å–ã‚‹æ­£æ–¹å½¢ã®ä¸€ã®ç”»ç´ æ•°ï¼ˆ3ã€5ã€7... å¥‡æ•°ã®ã¿ï¼ï¼‰
+        # Øæ‚é³•ûŒ`‚Ìˆê‚Ì‰æ‘f”i3A5A7... Šï”‚Ì‚İIj
         area_calc = 7
-        # æ¸›ç®—å®šæ•°# {{{
-        #   å‘¨å›²ãŒä¼¼ãŸè‰²ã®æ™‚ã€æ¸›ç®—ã—ã¦é–¾å€¤ã‚’æ„å›³çš„ã«çªå‡ºã•ã›
-        #   èƒŒæ™¯é ˜åŸŸã®ãƒã‚¤ã‚ºãƒ»è‰²ã‚†ã‚‰ãã®å½±éŸ¿ã‚’ä½æ¸›ã™ã‚‹
+        # Œ¸Z’è”# {{{
+        #   üˆÍ‚ª—‚½F‚ÌAŒ¸Z‚µ‚Äè‡’l‚ğˆÓ}“I‚É“Ëo‚³‚¹
+        #   ”wŒi—Ìˆæ‚ÌƒmƒCƒYEF‚ä‚ç‚¬‚Ì‰e‹¿‚ğ’áŒ¸‚·‚é
         # }}}
         subtract = 4
-        # é©å¿œçš„äºŒå€¤åŒ– å¤‰æ›å‡¦ç†
-        print ("Convert adaptive threashold...")
+        # “K‰“I“ñ’l‰» •ÏŠ·ˆ—
+        print("Convert adaptive threashold...")
         cat = cv2.adaptiveThreshold
         adpth = cat(gray, thresh_max, algo, thresh_type, area_calc, subtract)
         return adpth
 
     def bilateral_filter(self, image):
-        u""" ãƒã‚¤ãƒ©ãƒ†ãƒ©ãƒ«ãƒ•ã‚£ãƒ«ã‚¿ å‡¦ç† """
+        """ ƒoƒCƒ‰ƒeƒ‰ƒ‹ƒtƒBƒ‹ƒ^ ˆ— """
         gray = self.grayscale(image)
-        # åˆ‡å–ã‚‹æ­£æ–¹å½¢ã®ä¸€ã®ç”»ç´ æ•°ï¼ˆ3ã€5ã€7... å¥‡æ•°ã®ã¿ï¼ï¼‰
-        # æ•°å€¤ãŒå¤§ãã„ã»ã©ã¼ã‚„ã‘ã‚‹
+        # Øæ‚é³•ûŒ`‚Ìˆê‚Ì‰æ‘f”i3A5A7... Šï”‚Ì‚İIj
+        # ”’l‚ª‘å‚«‚¢‚Ù‚Ç‚Ú‚â‚¯‚é
         area_calc = 7
-        # è‰²ç©ºé–“ã«ãŠã‘ã‚‹ãƒ•ã‚£ãƒ«ã‚¿ã‚·ã‚°ãƒ      å¤§ãããªã‚‹ã¨è‰²ã®é ˜åŸŸãŒã‚ˆã‚Šå¤§ãããªã‚‹
+        # F‹óŠÔ‚É‚¨‚¯‚éƒtƒBƒ‹ƒ^ƒVƒOƒ}      ‘å‚«‚­‚È‚é‚ÆF‚Ì—Ìˆæ‚ª‚æ‚è‘å‚«‚­‚È‚é
         color_sigma = 12
-        # åº§æ¨™ç©ºé–“ã«ãŠã‘ã‚‹ãƒ•ã‚£ãƒ«ã‚¿ã‚·ã‚°ãƒ    å¤§ãããªã‚‹ã¨ã‚ˆã‚Šé ãã®ç”»ç´ åŒå£«ãŒå½±éŸ¿ã™ã‚‹
+        # À•W‹óŠÔ‚É‚¨‚¯‚éƒtƒBƒ‹ƒ^ƒVƒOƒ}    ‘å‚«‚­‚È‚é‚Æ‚æ‚è‰“‚­‚Ì‰æ‘f“¯m‚ª‰e‹¿‚·‚é
         metric_sigma = 3
-        print ("Bilateral filtering...")
+        print("Bilateral filtering...")
         cvf = cv2.bilateralFilter
         blr = cvf(gray, area_calc, color_sigma, metric_sigma)
         return blr
 
     def discriminantanalyse(self, image):
-        u""" åˆ¤åˆ¥åˆ†ææ³• å‡¦ç† """
+        """ ”»•Ê•ªÍ–@ ˆ— """
         image = self.bilateral_filter(image)
         thresh_std = 40
         thresh_max = 255
         method = cv2.THRESH_BINARY + cv2.THRESH_OTSU
-        print ("Discriminant analysing...")
+        print("Discriminant analysing...")
         cth = cv2.threshold
         ret, dcta = cth(image, thresh_std, thresh_max, method)
         return dcta
 
     def binarize(self, image):
-        u""" äºŒå€¤åŒ– å‡¦ç† """
+        """ “ñ’l‰» ˆ— """
         image = self.bilateral_filter(image)
         thresh_std = 70
         thresh_max = 255
         method = cv2.THRESH_BINARY_INV
-        print ("Binarizing...")
+        print("Binarizing...")
         cth = cv2.threshold
         ret, binz = cth(image, thresh_std, thresh_max, method)
         return binz
 
     def normalize(self, image):
-        u""" æ­£è¦åŒ– å‡¦ç† """
-        # alphaã€beta è§£èª¬ï¼ˆã‚ã‹ã‚‰ã‚“ï¼ï¼ï¼ï¼‰# {{{
-        # alpha:ãƒãƒ«ãƒ æ­£è¦åŒ–ã®å ´åˆã€æ­£è¦åŒ–ã•ã‚Œã‚‹ãƒãƒ«ãƒ å€¤ã€‚ç¯„å›²æ­£è¦åŒ–ã®å ´åˆã€ä¸‹ç•Œ
-        # beta:ãƒãƒ«ãƒ æ­£è¦åŒ–ã®å ´åˆã€ä¸ä½¿ç”¨ã€‚ç¯„å›²æ­£è¦åŒ–ã®å ´åˆã€ã®ä¸Šç•Œ
+        """ ³‹K‰» ˆ— """
+        # alphaAbeta ‰ğài‚í‚©‚ç‚ñIIIj# {{{
+        # alpha:ƒmƒ‹ƒ€³‹K‰»‚Ìê‡A³‹K‰»‚³‚ê‚éƒmƒ‹ƒ€’lB”ÍˆÍ³‹K‰»‚Ìê‡A‰ºŠE
+        # beta:ƒmƒ‹ƒ€³‹K‰»‚Ìê‡A•sg—pB”ÍˆÍ³‹K‰»‚Ìê‡A‚ÌãŠE
         # }}}
         alpha = 0
         beta = 1
         algo = cv2.NORM_MINMAX
-        print ("Normalizing...")
+        print("Normalizing...")
         norm = cv2.normalize(image, alpha, beta, algo)
         return norm
 # }}}
 
 
 class Tplmatching:
-    u""" ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒãƒƒãƒãƒ³ã‚° ã‚¯ãƒ©ã‚¹ """
+    """ ƒeƒ“ƒvƒŒ[ƒgƒ}ƒbƒ`ƒ“ƒO ƒNƒ‰ƒX """
     def __init__(self):
         pass
 
     def tplmatch(self, image, tpl):
-        u""" ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒãƒƒãƒãƒ³ã‚° å‡¦ç† """
-        # é¡ä¼¼åˆ¤å®šã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ  è§£èª¬# {{{
-        # CV_TM_SQDIFF    :è¼åº¦å€¤ã®å·®ã®ï¼’ä¹—ã®åˆè¨ˆ     å°ã•ã„ã»ã©é¡ä¼¼
-        # CV_TM_CCORR     :è¼åº¦å€¤ã®ç›¸é–¢               å¤§ãã„ã»ã©é¡ä¼¼
-        # CV_TM_CCOEFF    :è¼åº¦å€¤ã®å¹³å‡ã‚’å¼•ã„ãŸç›¸é–¢   å¤§ãã„ã»ã©é¡ä¼¼
-        #                 ï¼ˆãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆç”»åƒã¨æ¢ç´¢ç”»åƒã®æ˜ã‚‹ã•ã«å·¦å³ã•ã‚Œã«ãã„ï¼‰
+        """ ƒeƒ“ƒvƒŒ[ƒgƒ}ƒbƒ`ƒ“ƒO ˆ— """
+        # —Ş—”»’èƒAƒ‹ƒSƒŠƒYƒ€ ‰ğà# {{{
+        # CV_TM_SQDIFF    :‹P“x’l‚Ì·‚Ì‚Qæ‚Ì‡Œv     ¬‚³‚¢‚Ù‚Ç—Ş—
+        # CV_TM_CCORR     :‹P“x’l‚Ì‘ŠŠÖ               ‘å‚«‚¢‚Ù‚Ç—Ş—
+        # CV_TM_CCOEFF    :‹P“x’l‚Ì•½‹Ï‚ğˆø‚¢‚½‘ŠŠÖ   ‘å‚«‚¢‚Ù‚Ç—Ş—
+        #                 iƒeƒ“ƒvƒŒ[ƒg‰æ‘œ‚Æ’Tõ‰æ‘œ‚Ì–¾‚é‚³‚É¶‰E‚³‚ê‚É‚­‚¢j
         # }}} """
         algo = cv2.TM_CCOEFF_NORMED
         match = cv2.matchTemplate(image, tpl, algo)
-        # é¡ä¼¼åº¦ã®æœ€å°ãƒ»æœ€å¤§å€¤ã¨å„åº§æ¨™ å–å¾—
+        # —Ş—“x‚ÌÅ¬EÅ‘å’l‚ÆŠeÀ•W æ“¾
         value_min, value_max, loc_min, loc_max = cv2.minMaxLoc(match)
         return match, value_min, value_max, loc_min, loc_max
 
 
 class ImageProcessing:
-    u""" å‹•ç”»å–å¾— ã‚¯ãƒ©ã‚¹ """
+    """ “®‰ææ“¾ ƒNƒ‰ƒX """
     def __init__(self):
         self.ci = ConvertImage()
         self.tm = Tplmatching()
-        # å‹•ç”» å–å¾—
+        # “®‰æ æ“¾
         self.cap = cv2.VideoCapture(0)
 
     def init_get_camera_image(self, name):
-        u""" ã‚«ãƒ¡ãƒ©ã‹ã‚‰å‹•ç”»å–å¾— """
-        # ã‚«ãƒ¡ãƒ©ã‚­ãƒ£ãƒ—ãƒãƒ£æ™‚ã®ã‚¤ãƒ‹ã‚·ãƒ£ãƒ©ã‚¤ã‚º ãƒ‡ã‚£ãƒ¬ã‚¤å‡¦ç†
+        """ ƒJƒƒ‰‚©‚ç“®‰ææ“¾ """
+        # ƒJƒƒ‰ƒLƒƒƒvƒ`ƒƒ‚ÌƒCƒjƒVƒƒƒ‰ƒCƒY ƒfƒBƒŒƒCˆ—
         time.sleep(0.1)
         if not self.cap.isOpened():
-            print ("Can not connect camera...")
+            print("Can not connect camera...")
             terminate()
-            # ãƒˆãƒ©ãƒƒã‚¯ãƒãƒ¼ å®šç¾©(ã§ããªã„)ï¼ï¼ï¼# {{{
+            # ƒgƒ‰ƒbƒNƒo[ ’è‹`(‚Å‚«‚È‚¢)III# {{{
             #        name_bar = "Max threshold"
-            #        print (thresh_max)
-            # # ãƒˆãƒ©ãƒƒã‚¯ãƒãƒ¼ ç”Ÿæˆ
+            #        print(thresh_max)
+            # # ƒgƒ‰ƒbƒNƒo[ ¶¬
             #        def set_parameter(value):
             #            thresh_max = cv2.getTrackbarPos(name_bar, name_window)
             #            thresh_max = cv2.setTrackbarPos(name_bar, name_window)
@@ -234,38 +235,40 @@ class ImageProcessing:
         cv2.namedWindow(name, cv2.WINDOW_AUTOSIZE)
 
     def run(self, name, search, extension=".png", dir_master="MasterImage"):
-        u""" å‹•ç”»å–å¾— å‡¦ç†ï¼ˆãƒ¡ã‚¤ãƒ³ãƒ«ãƒ¼ãƒãƒ³ï¼‰ """  # {{{
-        print ("-------------------------------------------------")
-        print ("Start template matching")
-        print ("-------------------------------------------------")
-        print ("\t*** Search master mode ***\r\n")
+        """ “®‰ææ“¾ ˆ—iƒƒCƒ“ƒ‹[ƒ`ƒ“j """  # {{{
+        print("-------------------------------------------------")
+        print("Start template matching")
+        print("-------------------------------------------------")
+        print("\t*** Search master mode ***\r\n")
         cwd = os.getcwd()
         path_master = cwd + "\\" + dir_master
-        print ("Master directory: \r\n\t" + path_master)
+        print("Master directory: \r\n\t" + path_master)
 
-        # ãƒã‚¹ã‚¿ãƒ¼ç”»åƒ æ¤œç´¢
+        # ƒ}ƒXƒ^[‰æ‘œ ŒŸõ
+        # TODO: •¡”’T¸‚Ì‚Í‚±‚±‚Ì" sda "‚ğƒCƒeƒŒ[ƒgˆ—III
         sda = sd.SaveData(search, path_master)
         set_name, name_master, match_flag = sda.get_name_max(extension)
-        print ("\t*** Return search master mode ***\r\n")
+        print("\t*** Return search master mode ***\r\n")
 
-        # ãƒã‚¹ã‚¿ãƒ¼ç”»åƒæœ‰ç„¡ åˆ¤å®š
+        # ƒ}ƒXƒ^[‰æ‘œ—L–³ ”»’è
         if match_flag is False:
-            print ("No match master")
-            print ("Go get master mode(no match master case)\r\n")
+            print("No match master")
+            print("Go get master mode(no match master case)\r\n")
             self.get_master(search, extension, path_master)
             set_name, name_master, match_flag = sda.get_name_max(extension)
-            print ("Get master name: " + str(name_master))
+            print("Get master name: " + str(name_master))
         else:
-            print ("Match master name: " + str(name_master))
-            print ("Match master extension: " + str(extension))
+            print("Match master name: " + str(name_master))
+            print("Match master extension: " + str(extension))
+        # TODO: ƒCƒeƒŒ[ƒgˆ——\’è ‚±‚±‚Ü‚ÅIII
 
         self.init_get_camera_image(name)
 
-        # !!!: ã“ã“ã‹ã‚‰
+        # !!!: ‚±‚±‚©‚ç
         count = 0
         while True:
             if count < 1:
-                print ("Initial delay")
+                print("Initial delay")
                 time.sleep(0.1)
             get_flag, frame = self.cap.read()
 
@@ -274,16 +277,16 @@ class ImageProcessing:
             if self.check_get_frame(frame) is False:
                 continue
 
-            # TODO: æ“ä½œèª¬æ˜ è¡¨ç¤ºï¼ï¼ï¼
+            # TODO: ‘€ìà–¾ •\¦III
             cv2.imshow(name, frame)
-            print ("Capture is running...")
+            print("Capture is running...")
             count += 1
-        # !!!: ä»¥ä¸Šã¾ã§ã‚’classã«ã—ãŸã„ãŒ"while"å†…ã®"frame"ã‚’
-        # "while"å¤–ã«å‡ºã›ãªã„ã®ã§æ–­å¿µï¼ï¼ï¼
-        # â†‘é–¢æ•°ã«ã™ã‚‹(ã§ããªã‹ã£ãŸï¼ï¼ï¼)ï¼Ÿï¼Ÿï¼Ÿ
+        # !!!: ˆÈã‚Ü‚Å‚ğclass‚É‚µ‚½‚¢‚ª"while"“à‚Ì"frame"‚ğ
+        # "while"ŠO‚Éo‚¹‚È‚¢‚Ì‚Å’f”OIII
+        # ªŠÖ”‚É‚·‚é(‚Å‚«‚È‚©‚Á‚½III)HHH
             # }}}
 
-            # å‹•ç”» å¤‰æ›ãƒ»ç”»åƒå‡¦ç†ï¼ˆã¾ã¨ã‚ã‚‹ï¼‰ï¼ï¼ï¼# {{{
+            # “®‰æ •ÏŠ·E‰æ‘œˆ—i‚Ü‚Æ‚ß‚éjIII# {{{
             adpth = self.ci.adaptive_threashold(frame)
             self.ci.display("Adaptive threashold", adpth, 1)
             dcta = self.ci.discriminantanalyse(frame)
@@ -292,59 +295,57 @@ class ImageProcessing:
             self.ci.display("Bilateral filter", binz, 1)
 # }}}
 
-            # ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒãƒƒãƒãƒ³ã‚° å‡¦ç†
-            print("\r\nMaster name: " + str(name_master) + str(extension) + "\r\n")
+            # ƒeƒ“ƒvƒŒ[ƒgƒ}ƒbƒ`ƒ“ƒO ˆ—
+            print("\r\nMaster name: "\
+                    + str(name_master) + str(extension) + "\r\n")
             master = str(path_master) + ".\\"\
                     + str(name_master) + str(extension)
             master = cv2.imread(str(master), cv2.IMREAD_COLOR)
             self.ci.display("Master", master)
 
+            # ƒeƒ“ƒvƒŒ[ƒgƒ}ƒbƒ`ƒ“ƒO ˆ—
+            # TODO: •¡”’T¸‚Ì‚Í‚±‚±‚Ì" sda "‚ğƒCƒeƒŒ[ƒgˆ—III
             match, value_min, value_max, loc_min, loc_max \
                     = self.tm.tplmatch(frame, master)
-            print (value_max)
+            print(value_max)
 
-            # 2016/06/03 ã“ã“ã¾ã§ï¼ï¼ï¼
-            # "t"ã‚­ãƒ¼æŠ¼ä¸‹ ãƒã‚¹ã‚¿ãƒ¼ç”»åƒå–å¾—ãƒ¢ãƒ¼ãƒ‰ é·ç§»
-            if cv2.waitKey(33) == ord("t"):
-                print "\r\nInput key \"t\""
+            # "m"ƒL[‰Ÿ‰º ƒ}ƒXƒ^[‰æ‘œæ“¾ƒ‚[ƒh ‘JˆÚ
+            if cv2.waitKey(33) == ord("m"):
+                print("\r\nInput key \"m\"")
                 print("Go get master mode\r\r\n")
-                time.sleep(1)
+                time.sleep(0.5)
+                # TODO: •¡”’T¸‚Ì‚Í‚±‚±‚Ì" sda "‚ğƒCƒeƒŒ[ƒgˆ—III
                 self.get_master(search, extension, path_master)
                 set_name, name_master, match_flag = sda.get_name_max(extension)
-                print ("Get master name: " + str(name_master))
-                # img = "master_source{}".format(extension)
-                # cv2.imwrite(img, frame)
-                # trim = tm.Trim(img, search, extension, path_master)
-                # trim.trim()
+                print("Get master name: " + str(name_master))
 
-            # ä»®ã®çµ‚äº†å‡¦ç†ï¼ï¼ï¼
-            # "q"ã‚­ãƒ¼æŠ¼ä¸‹ çµ‚äº†å‡¦ç†
+            # ‰¼‚ÌI—¹ˆ—III
+            # "q"ƒL[‰Ÿ‰º I—¹ˆ—
             if cv2.waitKey(33) == ord("e"):
-                print "\r\nInput key \"e\""
+                print("\r\nInput key \"e\"")
                 time.sleep(1)
-                print ("*** End process ***\t\r\n")
+                print("*** End process ***\t\r\n")
                 break
             # if cv2.waitKey(33) > 0:
             #     break
             #     # terminate(cap)
 
-
     def get_master(self, search, extension, path):
-        u""" ãƒã‚¹ã‚¿ãƒ¼ç”»åƒ èª­è¾¼ã¿ """
-        print ("*** Start get master mode ***\t")
-        print ("Search master name: " + str(search))
+        """ ƒ}ƒXƒ^[‰æ‘œ “Ç‚İ """
+        print("*** Start get master mode ***\t")
+        print("Search master name: " + str(search))
         name = "Get master image"
         text2 = "Quit: Long press \"q\" key"
         text3 = "Trim mode: Long press \"t\" key"
 
-        print ("Master image name: " + str(search))
+        print("Master image name: " + str(search))
 
         self.init_get_camera_image(name)
 
         count = 0
         while True:
             if count < 1:
-                print ("Initial delay")
+                print("Initial delay")
                 time.sleep(0.1)
             get_flag, frame = self.cap.read()
             get_flag_draw, frame_draw = self.cap.read()
@@ -354,24 +355,24 @@ class ImageProcessing:
             if self.check_get_frame(frame) is False:
                 continue
 
-            # æ“ä½œæ–¹æ³•èª¬æ˜æ–‡ è¡¨ç¤ºä½ç½® å–å¾—
+            # ‘€ì•û–@à–¾•¶ •\¦ˆÊ’u æ“¾
             text_offset = 10
             baseline = frame.shape[0] - text_offset
             origin = 1, baseline
 
-            # æ“ä½œæ–¹æ³•èª¬æ˜æ–‡ è¡¨ç¤º
+            # ‘€ì•û–@à–¾•¶ •\¦
             trim = tm.Trim(frame_draw, search, extension, path, 1)
             text_height = trim.write_text(text2, origin)
             trim.write_text(text3,\
                     (origin[0], origin[1] - text_offset - text_height[1]))
 
             cv2.imshow(name, frame_draw)
-            print ("Master captcha")
+            print("Master captcha")
             count += 1
 
-            # "t"ã‚­ãƒ¼æŠ¼ä¸‹ ãƒã‚¹ã‚¿ãƒ¼ç”»åƒå–å¾—ãƒ¢ãƒ¼ãƒ‰ é·ç§»
+            # "t"ƒL[‰Ÿ‰º ƒ}ƒXƒ^[‰æ‘œæ“¾ƒ‚[ƒh ‘JˆÚ
             if cv2.waitKey(33) == ord("t"):
-                print "\r\nInput key \"t\""
+                print("\r\nInput key \"t\"")
                 print("Go master mode")
                 time.sleep(1)
                 img = "master_source{}".format(extension)
@@ -379,63 +380,64 @@ class ImageProcessing:
                 trim = tm.Trim(img, search, extension, path)
                 trim.trim()
 
-            # "q"ã‚­ãƒ¼æŠ¼ä¸‹ çµ‚äº†å‡¦ç†
+            # "q"ƒL[‰Ÿ‰º I—¹ˆ—
             if cv2.waitKey(33) == ord("q"):
-                print "\r\nInput key \"q\""
+                print("\r\nInput key \"q\"")
                 time.sleep(1)
-                print ("*** End get master mode ***\t\r\n")
+                print("*** End get master mode ***\t\r\n")
                 break
 
     def check_get_flag(self, flag):
-        u""" å‹•ç”»å–å¾—ãƒŸã‚¹æ™‚ ã‚¹ã‚­ãƒƒãƒ—å‡¦ç† """  # {{{
+        """ “®‰ææ“¾ƒ~ƒX ƒXƒLƒbƒvˆ— """  # {{{
         if flag is False:
-            print ("Can not get end flag")
+            print("Can not get end flag")
             return False
             # }}}
 
     def check_get_frame(self, frame):
-        u""" ãƒ«ãƒ¼ãƒ— çµ‚äº†å‡¦ç† """  # {{{
+        """ ƒ‹[ƒv I—¹ˆ— """  # {{{
         if frame is None:
-            print ("Can not get video frame")
+            print("Can not get video frame")
             return False
             # }}}
 
 
 def main():
-    # vimãƒ†ã‚¹ãƒˆç”¨å„å¤‰æ•° å®šç¾©# {{{
-    # ãƒ†ã‚¹ãƒˆå‡ºåŠ›
-    print ("\r\n--------------------------------------------------")
-    print ("Information")
-    print ("--------------------------------------------------")
-    print ("Default current directory is...")
-    print ("\t" + os.getcwd())
-    print ("\r\nAnd then...")
+    # vimƒeƒXƒg—pŠe•Ï” ’è‹`# {{{
+    # ƒeƒXƒgo—Í
+    print("\r\n--------------------------------------------------")
+    print("Information")
+    print("--------------------------------------------------")
+    print("Default current directory is...")
+    print("\t" + os.getcwd())
+    print("\r\nAnd then...")
     os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
-    print ("\t" + os.getcwd())
-    print (u"\r\nã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“")
-    print ("Start main")
-    print (u"ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“")
+    print("\t" + os.getcwd())
+    print("\r\n¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬")
+    print("Start main")
+    print("¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬")
+    # import pdb; pdb.set_trace()
 
     path = "D:\\OneDrive\\Biz\\Python\\ImageProcessing"
     smpl_pic = "D:\\OneDrive\\Biz\\Python\\ImageProcessing\\tpl_1.png"
     smpl_pic2 = "D:\\OneDrive\\Biz\\Python\\ImageProcessing\\tpl_2.png"
 # }}}
 
-    # ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒãƒƒãƒãƒ³ã‚° ãƒ†ã‚¹ãƒˆ# {{{
+    # ƒeƒ“ƒvƒŒ[ƒgƒ}ƒbƒ`ƒ“ƒO ƒeƒXƒg# {{{
     cip = ImageProcessing()
     cip.run("Raw capture", "masterImage")
-    # print ("Movie captcha end...")
+    # print("Movie captcha end...")
     # }}}
 
-#     # é™æ­¢ç”»å–å¾— ãƒ†ã‚¹ãƒˆ# {{{
+#     # Ã~‰ææ“¾ ƒeƒXƒg# {{{
 #     gim = GetImage(smpl_pic)
 #     gim2 = GetImage("tpl_3.png")
 #     # gim.diplay("Tes1", 0, 0)
 #     gim2.display("Tes2", 0, 0)
-#     print ("Main loop end...")
+#     print("Main loop end...")
 # # }}}
 
-# # å‹•ç”»å–å¾— ãƒ†ã‚¹ãƒˆ# {{{
+# # “®‰ææ“¾ ƒeƒXƒg# {{{
 #     cav = CapVideo()
 #     cav.get_video("Capture_test")
 #     frame_test = cav.frame
@@ -447,19 +449,19 @@ def main():
 #     cv2.namedWindow(name, cv2.WINDOW_AUTOSIZE)
 #     cv2.imshow(name, Image)
 #     cv2.imshow(name, frame_test)
-#     # ä»®ã®å‡ºåŠ›ä¿æŒå‡¦ç†ï¼ï¼ï¼
+#     # ‰¼‚Ìo—Í•Ûˆ—III
 #     cv2.waitKey(0)
 #     cv2.destroyAllWindows()
 #
 #     image = cv2.imread("tpl_2.png")
 #     ci = ConvertImage()
 #     ci.adaptive_threashold(image, "Adaptive Threashold", 0)
-#     print ("Sudah cap")
+#     print("Sudah cap")
 # # }}}
 
-    # # ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆã‚¹ãƒˆãƒªãƒ³ã‚°# {{{
-    # print (GetImage.__doc__)
-    # print (help(__name__))
+    # # ƒhƒLƒ…ƒƒ“ƒgƒXƒgƒŠƒ“ƒO# {{{
+    # print(GetImage.__doc__)
+    # print(help(__name__))
     # }}}
 
 if __name__ == '__main__':
