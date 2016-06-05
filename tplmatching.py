@@ -1,4 +1,6 @@
-﻿# --------------------------------------------------# {{{
+﻿# !/usr/bin/python
+# vim: set fileencoding = utf-8:  # デフォルトの文字コード 変更
+# --------------------------------------------------# {{{
 # file_name:   tplmatching
 # Purpose:     TemplateMatching
 #
@@ -9,9 +11,6 @@
 # Licence:     SDS10001.200
 # --------------------------------------------------
 u""" テンプレートマッチングによる画像処理 """
-# !/usr/bin/python
-# デフォルトの文字コード 変更
-# -*- coding: utf-8 -*-
 # }}}
 
 # TODO: Python3系 対応！！！
@@ -27,6 +26,7 @@ import os
 # import glob
 import time
 # import unittest
+import pdb; pdb.set_trace()
 
 import cv2
 # import cv2.cv as cv
