@@ -232,6 +232,7 @@ class Trim:
             print "\r\nInput key \"q\""
             print "Quit trim mode"
             # cv2.destroyWindow(self.name_window)
+            # import pdb; pdb.set_trace()
             cv2.destroyAllWindows()
             return False
             # sys.exit()
