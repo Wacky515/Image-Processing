@@ -107,18 +107,17 @@ class ConvertImage(GetImage):
         # 適応的二値化(Adaptive Gaussian Thresholding) パラメタ定義# {{{
         # *** 適応的二値化 解説 ***
         # 1画素枚に、任意の近傍画素から個別の閾値を算出
-        # *** 以上 ***
-        # }}} """
+        # }}}
         # 最大閾値
         thresh_max = 255
         # 閾値算出アルゴリズム# {{{
-        # GaussianC:任意の近傍画素をGaussianによる重付け（近傍を重視）で総和し
-        # 閾値を算出
+        # GaussianC:任意の近傍画素を
+        #           Gaussianによる重み付け（近傍を重視）で総和し閾値を算出
         # MeanC:任意の近傍画素を算術平均し閾値を算出
         # }}} """
         algo = cv2.ADAPTIVE_THRESH_GAUSSIAN_C
         # algo = cv2.ADAPTIVE_THRESH_MEAN_C
-# 閾値処理
+        # 閾値処理のアルゴリズム
         thresh_type = cv2.THRESH_BINARY
         # thresh_type = cv2.THRESH_BINARY_INV
         # 切取る正方形の一の画素数（3、5、7... 奇数のみ！）
@@ -171,14 +170,16 @@ class ConvertImage(GetImage):
         ret, binz = cth(image, thresh_std, thresh_max, method)
         return binz
 
-    def normalize(self, image):
-        """ 正規化 処理 """
-        # alpha、beta 解説（わからん！！！）# {{{
-        # alpha:ノルム正規化の場合、正規化されるノルム値。範囲正規化の場合、下界
-        # beta:ノルム正規化の場合、不使用。範囲正規化の場合、の上界
+    def normalize(self, image, alpha=0, beta=1):
+        """ ノルム正規化 処理 """
+        # alpha、beta 解説# {{{
+        # TODO: わからんから図書館で資料を借りる！！！
+        # TODO: 特にアルファ、ベータの数値の意味合いと妥当性！！！
+        # alpha:ノルム正規化の場合、正規化されるノルム値
+        #        範囲正規化の場合、下界
+        # beta:ノルム正規化の場合、不使用
+        #        範囲正規化の場合、の上界
         # }}}
-        alpha = 0
-        beta = 1
         algo = cv2.NORM_MINMAX
         print("Normalizing...")
         norm = cv2.normalize(image, alpha, beta, algo)
@@ -189,7 +190,7 @@ class ConvertImage(GetImage):
 class Tplmatching:
     """ テンプレートマッチング クラス """
     def __init__(self):
-        pass
+        self.ci = ConvertImage()
 
     def tplmatch(self, image, tpl):
         """ テンプレートマッチング 処理 """
@@ -201,9 +202,24 @@ class Tplmatching:
         # }}} """
         algo = cv2.TM_CCOEFF_NORMED
         match = cv2.matchTemplate(image, tpl, algo)
+        # ノルム正規化 処理
+        norm = self.ci.normalize(match)
         # 類似度の最小・最大値と各座標 取得
-        value_min, value_max, loc_min, loc_max = cv2.minMaxLoc(match)
+        value_min, value_max, loc_min, loc_max = cv2.minMaxLoc(norm)
         return match, value_min, value_max, loc_min, loc_max
+
+    def mask(self):
+        """ マスク 処理（将来的に実装） """
+        pass
+
+    def calc_detect_location(self, loc_max, master, location="center"):
+        height, width, channel = master.shape
+        if location == "center":
+            coord = (loc_max[0] + width / 2, loc_max[1] + height / 2)
+        elif location == "tail":
+            coord = (loc_max[0] + width, loc_max[1] + height)
+        return coord
+    # 2016/06/07 am ここまで！！！
 
 
 class ImageProcessing:
@@ -279,8 +295,10 @@ class ImageProcessing:
 
             # TODO: 操作説明 表示！！！
             cv2.imshow(name, frame)
+            # import pdb; pdb.set_trace()
             print("Capture is running...")
             count += 1
+            # import pdb; pdb.set_trace()
         # !!!: 以上までをclassにしたいが"while"内の"frame"を
         # "while"外に出せないので断念！！！
         # ↑関数にする(できなかった！！！)？？？
@@ -295,7 +313,7 @@ class ImageProcessing:
             self.ci.display("Bilateral filter", binz, 1)
 # }}}
 
-            # テンプレートマッチング 処理
+            # テンプレートマッチング 準備
             print("\r\nMaster name: "\
                     + str(name_master) + str(extension) + "\r\n")
             master = str(path_master) + ".\\"\
@@ -304,10 +322,16 @@ class ImageProcessing:
             self.ci.display("Master", master)
 
             # テンプレートマッチング 処理
+            # 粗探査まで完了、正規化 → 可視化 精探査 を作成
             # TODO: 複数探査の時はここの" sda "をイテレート処理！！！
             match, value_min, value_max, loc_min, loc_max \
                     = self.tm.tplmatch(frame, master)
-            print(value_max)
+            print("\r\nMax similarity: "\
+                    + str(round(value_max * 100, 3)) + "%\r\n")
+            # 正規化
+            cv2.normalize(match, match, 0, 1, cv2.NORM_MINMAX)
+            value_min, value_max, loc_min, loc_max = cv2.minMaxLoc(match)
+            # TODO: イテレート処理予定 ここまで！！！
 
             # "m"キー押下 マスター画像取得モード 遷移
             if cv2.waitKey(33) == ord("m"):
@@ -317,18 +341,16 @@ class ImageProcessing:
                 # TODO: 複数探査の時はここの" sda "をイテレート処理！！！
                 self.get_master(search, extension, path_master)
                 set_name, name_master, match_flag = sda.get_name_max(extension)
+                # TODO: イテレート処理予定 ここまで！！！
+                cv2.destroyAllWindows()
                 print("Get master name: " + str(name_master))
 
             # 仮の終了処理！！！
             # "q"キー押下 終了処理
             if cv2.waitKey(33) == ord("e"):
                 print("\r\nInput key \"e\"")
-                time.sleep(1)
                 print("*** End process ***\t\r\n")
                 break
-            # if cv2.waitKey(33) > 0:
-            #     break
-            #     # terminate(cap)
 
     def get_master(self, search, extension, path):
         """ マスター画像 読込み """
@@ -385,6 +407,7 @@ class ImageProcessing:
                 print("\r\nInput key \"q\"")
                 time.sleep(1)
                 print("*** End get master mode ***\t\r\n")
+                # import pdb; pdb.set_trace()
                 break
 
     def check_get_flag(self, flag):
