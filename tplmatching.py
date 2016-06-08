@@ -13,6 +13,7 @@
 # }}}
 """ テンプレートマッチングによる画像処理 """
 
+# TODO: 複数索敵・多段式判定を実装する
 # TODO: 関数名は動詞にする
 # TODO: 変数は "[大区分]_[小区分]"
 # TODO: 出力ウィンドウの位置を定義する
@@ -87,7 +88,6 @@ class GetImage:
         print("Display {}s...".format(name_window))
         cv2.namedWindow(name_window, cv2.WINDOW_AUTOSIZE)
         cv2.imshow(name_window, image)
-        print("画像の大きさを取得する処理を実装！！！")
         if _type == 0:
             # 静止画の出力保持処理
             terminate(0, 0)
@@ -96,6 +96,18 @@ class GetImage:
 
 class ConvertImage(GetImage):
     """ 画像・動画 変換クラス """  # {{{
+    # 閾値処理 手法リスト
+    THRESH_METHODS = ["cv2.THRESH_BINARY",
+                        "cv2.THRESH_BINARY_INV",
+                        "cv2.THRESH_TRUNC",
+                        "cv2.THRESH_TOZERO",
+                        "cv2.THRESH_TOZERO_INV",
+                        "cv2.THRESH_BINARY + cv2.THRESH_OTSU",
+                        "cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU",
+                        "cv2.THRESH_TRUNC + cv2.THRESH_OTSU",
+                        "cv2.THRESH_TOZERO + cv2.kHRESH_OTSU",
+                        "cv2.THRESH_TOZERO_INV + cv2.THRESH_OTSU"]
+
     def __init__(self):
         pass
 
@@ -105,7 +117,7 @@ class ConvertImage(GetImage):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         return gray
 
-    def adaptive_threashold(self, image):
+    def adaptive_threashold(self, image, algo=1, method=0):
         """ 適応的二値化 変換処理 """
         gray = self.grayscale(image)
         # 適応的二値化(Adaptive Gaussian Thresholding) パラメタ定義# {{{
@@ -113,15 +125,14 @@ class ConvertImage(GetImage):
         # 1画素枚に、任意の近傍画素から個別の閾値を算出
         # }}}
         # 最大閾値
-        thresh_max = 255
+        THRESH_MAX = 255
         # 閾値算出アルゴリズム# {{{
-        # GaussianC:任意の近傍画素を
-        #           Gaussianによる重み付け（近傍を重視）で総和し閾値を算出
-        # MeanC:任意の近傍画素を算術平均し閾値を算出
+        # MeanC:        任意の近傍画素を算術平均し閾値を算出
+        # GaussianC:    任意の近傍画素をGaussianによる重み付け
+        #               （近傍を重視）で総和し閾値を算出
         # }}} """
-        algo = ["cv2.ADAPTIVE_THRESH_MEAN_C", "cv2.ADAPTIVE_THRESH_GAUSSIAN_C"]
-        # 閾値処理のアルゴリズム
-        thresh_type = ["cv2.THRESH_BINARY", "cv2.THRESH_BINARY_INV"]
+        THRESH_ALGOS = ["cv2.ADAPTIVE_THRESH_MEAN_C",
+                        "cv2.ADAPTIVE_THRESH_GAUSSIAN_C"]
         # 切取る正方形の一の画素数（3、5、7... 奇数のみ！）
         area_calc = 7
         # 減算定数# {{{
@@ -132,65 +143,48 @@ class ConvertImage(GetImage):
         # 適応的二値化 変換処理
         print("Convert adaptive threashold...")
         cat = cv2.adaptiveThreshold
-        adpth = cat(gray, thresh_max, algo[1], thresh_type[0],
-                    area_calc, subtract)
+        adpth = cat(gray, THRESH_MAX, THRESH_ALGOS[algo],
+                    self.TRESH_METHODS[method], area_calc, subtract)
         return adpth
 
     def bilateral_filter(self, image):
         """ バイラテラルフィルタ 処理 """
         gray = self.grayscale(image)
         # 切取る正方形の一の画素数（3、5、7... 奇数のみ！）
-        # 数値が大きいほどぼやける
+        #   数値が大きいほどぼやける
         area_calc = 7
         # 色空間におけるフィルタシグマ
-        #       大きくなると色の領域がより大きくなる
+        #   大きくなると色の領域がより大きくなる
         color_sigma = 12
         # 座標空間におけるフィルタシグマ
-        #       大きくなるとより遠くの画素同士が影響する
+        #   大きくなるとより遠くの画素同士が影響する
         metric_sigma = 3
         print("Bilateral filtering...")
         cvf = cv2.bilateralFilter
         blr = cvf(gray, area_calc, color_sigma, metric_sigma)
         return blr
 
-    def discriminantanalyse(self, image):
+    def discriminantanalyse(self, image,
+                            thresh_std=128, method=5):
         """ 判別分析法 処理 """
         image = self.bilateral_filter(image)
-        thresh_std = 40
-        thresh_max = 255
-        method = ["cv2.THRESH_BINARY",
-                    "cv2.THRESH_BINARY_INV",
-                    "cv2.THRESH_TRUNC",
-                    "cv2.THRESH_TOZERO",
-                    "cv2.THRESH_TOZERO_INV",
-                    "cv2.THRESH_BINARY + cv2.THRESH_OTSU",
-                    "cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU",
-                    "cv2.THRESH_TRUNC + cv2.THRESH_OTSU",
-                    "cv2.THRESH_TOZERO + cv2.THRESH_OTSU",
-                    "cv2.THRESH_TOZERO_INV + cv2.THRESH_OTSU"],
         print("Discriminant analysing...")
         cth = cv2.threshold
-        ret, dcta = cth(image, thresh_std, thresh_max, method[5])
+        # 最大閾値
+        THRESH_MAX = 255
+        ret, dcta = cth(image, thresh_std,
+                        THRESH_MAX, self.TRESH_METHODS[method])
         return dcta
 
-    def binarize(self, image):
+    def binarize(self, image, thresh_std=128, method=1):
         """ 二値化 処理 """
         image = self.bilateral_filter(image)
-        thresh_std = 70
-        thresh_max = 255
-        method = ["cv2.THRESH_BINARY",
-                    "cv2.THRESH_BINARY_INV",
-                    "cv2.THRESH_TRUNC",
-                    "cv2.THRESH_TOZERO",
-                    "cv2.THRESH_TOZERO_INV",
-                    "cv2.THRESH_BINARY + cv2.THRESH_OTSU",
-                    "cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU",
-                    "cv2.THRESH_TRUNC + cv2.THRESH_OTSU",
-                    "cv2.THRESH_TOZERO + cv2.kHRESH_OTSU",
-                    "cv2.THRESH_TOZERO_INV + cv2.THRESH_OTSU"]
         print("Binarizing...")
         cth = cv2.threshold
-        ret, binz = cth(image, thresh_std, thresh_max, method[1])
+        # 最大閾値
+        THRESH_MAX = 255
+        ret, binz = cth(image, thresh_std,
+                        THRESH_MAX, self.TRESH_METHODS[method])
         return binz
 
     def normalize(self, image, alpha=0, beta=1):
@@ -215,22 +209,23 @@ class Tplmatching:
     def __init__(self):
         self.ci = ConvertImage()
 
-    def tplmatch(self, image, tpl):
+    def tplmatch(self, image, tpl, algo=5):
         """ テンプレートマッチング 処理 """
-        # 類似判定アルゴリズム 解説# {{{
-        # CV_TM_SQDIFF    :輝度値の差の２乗の合計     小さいほど類似
-        # CV_TM_CCORR     :輝度値の相関               大きいほど類似
-        # CV_TM_CCOEFF    :輝度値の平均を引いた相関   大きいほど類似
+        # 類似度判定アルゴリズム 解説# {{{
+        # cv2.TM_SQDIFF    :輝度値の差の２乗の合計     小さいほど類似
+        # cv2.TM_CCORR     :輝度値の相関               大きいほど類似
+        # cv2.TM_CCOEFF    :輝度値の平均を引いた相関   大きいほど類似
         #                 （テンプレート画像と探索画像の明るさに左右されにくい）
+        # cv2.TM_***_NORMED :上記それぞれの正規化版
         # }}} """
-        algo = ["cv2.TM_SQDIFF",
-                "cv2.TM_SQDIFF_NORMED",
-                "cv2.TM_CCORR",
-                "cv2.TM_CCORR_NORMED",
-                "cv2.TM_CCOEFF",
-                "cv2.TM_CCOEFF_NORMED"]
-        match = cv2.matchTemplate(image, tpl, algo[5])
-        if algo in ["cv2.TM_SQDIFF", "cv2.TM_CCORR", "cv2.TM_CCOEFF"]:
+        ALGOS = ["cv2.TM_SQDIFF",
+                    "cv2.TM_SQDIFF_NORMED",
+                    "cv2.TM_CCORR",
+                    "cv2.TM_CCORR_NORMED",
+                    "cv2.TM_CCOEFF",
+                    "cv2.TM_CCOEFF_NORMED"]
+        match = cv2.matchTemplate(image, tpl, ALGOS[algo])
+        if ALGOS in ["cv2.TM_SQDIFF", "cv2.TM_CCORR", "cv2.TM_CCOEFF"]:
             # ノルム正規化 処理
             norm = self.ci.normalize(match)
             # 類似度の最小・最大値と各座標 取得
@@ -241,6 +236,8 @@ class Tplmatching:
 
     def mask(self):
         """ マスク 処理（将来的に実装） """
+        # 初回でマッチした近傍領域以外にマスク処理し、処理速度向上する
+        # ただし索敵位置が動的に変化しない前提
         pass
 
     def calc_detect_location(self, loc_max, master, location="center"):
@@ -345,9 +342,9 @@ class ImageProcessing:
             # 動画 変換・画像処理（まとめる）！！！# {{{
             adpth = self.ci.adaptive_threashold(frame)
             self.ci.display("Adaptive threashold", adpth, 1)
-            dcta = self.ci.discriminantanalyse(frame)
+            dcta = self.ci.discriminantanalyse(frame, 40)
             self.ci.display("Discriminant analyse", dcta, 1)
-            binz = self.ci.binarize(frame)
+            binz = self.ci.binarize(frame, 70)
             self.ci.display("Bilateral filter", binz, 1)
 # }}}
 
