@@ -259,8 +259,7 @@ class Tplmatching:
         coord, height, width\
             = self.calc_detect_location(loc_max, master, "center")
         detect_frame = frame[loc_max[1]:loc_max[1] + height,
-                loc_max[2]:loc_max[2] + width].copy()
-        detect_frame = cv2.cvtColor(detect_frame, cv2.COLOR_BGR2GRAY)
+                loc_max[0]:loc_max[0] + width].copy()
         return detect_frame
 
 
@@ -369,12 +368,17 @@ class ImageProcessing:
             match, value_min, value_max, loc_min, loc_max\
                     = self.tm.tplmatch(frame, master)
             print("\r\nMax similarity: "\
-                    + str(round(value_max * 100, 3)) + "%\r\n")
+                    + str(round(value_max * 100, 3)) + "%\t\t"\
+                    + str(loc_max))
+            print("Min similarity: "\
+                    + str(round(value_min * 100, 3)) + "%\t"\
+                    + str(loc_min) + "\r\n")
 
             # 探査と掲出範囲のトリム
             detect_frame = self.tm.show_detect_area(loc_max, frame, master)
             adpth_detect_frame = self.ci.adaptive_threashold(detect_frame)
-            # self.ci.display("Adaptive threashold detected", adpth_detect_frame, 1)
+            self.ci.display("Adaptive threashold detected",
+                            adpth_detect_frame, 1)
 
             # TODO: イテレート処理予定 ここまで！！！
 
