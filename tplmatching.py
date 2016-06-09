@@ -143,8 +143,10 @@ class ConvertImage(GetImage):
         # 適応的二値化 変換処理
         print("Convert adaptive threashold...")
         cat = cv2.adaptiveThreshold
-        adpth = cat(gray, THRESH_MAX, THRESH_ALGOS[algo],
-                    self.TRESH_METHODS[method], area_calc, subtract)
+        adpth = cat(gray, THRESH_MAX, eval(THRESH_ALGOS[algo]),
+                    eval(self.THRESH_METHODS[method]), area_calc, subtract)
+        # adpth = cat(gray, THRESH_MAX, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                    # cv2.THRESH_BINARY, area_calc, subtract)
         return adpth
 
     def bilateral_filter(self, image):
@@ -173,7 +175,7 @@ class ConvertImage(GetImage):
         # 最大閾値
         THRESH_MAX = 255
         ret, dcta = cth(image, thresh_std,
-                        THRESH_MAX, self.TRESH_METHODS[method])
+                        THRESH_MAX, eval(self.THRESH_METHODS[method]))
         return dcta
 
     def binarize(self, image, thresh_std=128, method=1):
@@ -184,7 +186,7 @@ class ConvertImage(GetImage):
         # 最大閾値
         THRESH_MAX = 255
         ret, binz = cth(image, thresh_std,
-                        THRESH_MAX, self.TRESH_METHODS[method])
+                        THRESH_MAX, eval(self.THRESH_METHODS[method]))
         return binz
 
     def normalize(self, image, alpha=0, beta=1):
@@ -224,7 +226,7 @@ class Tplmatching:
                     "cv2.TM_CCORR_NORMED",
                     "cv2.TM_CCOEFF",
                     "cv2.TM_CCOEFF_NORMED"]
-        match = cv2.matchTemplate(image, tpl, ALGOS[algo])
+        match = cv2.matchTemplate(image, tpl, eval(ALGOS[algo]))
         if ALGOS in ["cv2.TM_SQDIFF", "cv2.TM_CCORR", "cv2.TM_CCOEFF"]:
             # ノルム正規化 処理
             norm = self.ci.normalize(match)
@@ -241,20 +243,25 @@ class Tplmatching:
         pass
 
     def calc_detect_location(self, loc_max, master, location="center"):
+        """ 検出座標 演算 """
         height, width, channel = master.shape
+        # 中央座標 演算
         if location == "center":
             coord = (loc_max[0] + width / 2, loc_max[1] + height / 2)
+        # 右下座標 演算
         elif location == "tail":
             coord = (loc_max[0] + width, loc_max[1] + height)
         return coord, height, width
 
     def show_detect_area(self, loc_max, frame, master):
+        """ 検出範囲 演算 """
+        # 中央座標 演算
         coord, height, width\
             = self.calc_detect_location(loc_max, master, "center")
-        area = frame[loc_max[1]:loc_max[1] + height,
-                loc_max[2]:loc_max[2] + width]
-        area = cv2.cvtColor(area, cv2.COLOR_BGR2GRAY)
-        return area
+        detect_frame = frame[loc_max[1]:loc_max[1] + height,
+                loc_max[2]:loc_max[2] + width].copy()
+        detect_frame = cv2.cvtColor(detect_frame, cv2.COLOR_BGR2GRAY)
+        return detect_frame
 
 
 class ImageProcessing:
@@ -365,10 +372,9 @@ class ImageProcessing:
                     + str(round(value_max * 100, 3)) + "%\r\n")
 
             # 探査と掲出範囲のトリム
-            area = self.tm.show_detect_area(loc_max, frame, master)
-            area_adpth = self.ci.adaptive_threashold(area)
-            # 2016/06/08 ここまで！！！ 135行目でエラー
-            self.ci.display("Adaptive threashold detected", area_adpth, 1)
+            detect_frame = self.tm.show_detect_area(loc_max, frame, master)
+            adpth_detect_frame = self.ci.adaptive_threashold(detect_frame)
+            # self.ci.display("Adaptive threashold detected", adpth_detect_frame, 1)
 
             # TODO: イテレート処理予定 ここまで！！！
 
