@@ -258,9 +258,9 @@ class Tplmatching:
         # 中央座標 演算
         coord, height, width\
             = self.calc_detect_location(loc_max, master, "center")
-        detect_frame = frame[loc_max[1]:loc_max[1] + height,
+        detect = frame[loc_max[1]:loc_max[1] + height,
                 loc_max[0]:loc_max[0] + width].copy()
-        return detect_frame
+        return detect
 
 
 class ImageProcessing:
@@ -268,6 +268,9 @@ class ImageProcessing:
     def __init__(self):
         self.ci = ConvertImage()
         self.tm = Tplmatching()
+        self.ciadp = self.ci.adaptive_threashold
+        self.cidca = self.ci.discriminantanalyse
+        self.cibiz = self.ci.binarize
         # 動画 取得
         self.cap = cv2.VideoCapture(0)
 
@@ -305,14 +308,17 @@ class ImageProcessing:
         # TODO: 複数探査の時はここの" sda "をイテレート処理！！！
         sda = sd.SaveData(search, path_master)
         set_name, name_master, match_flag = sda.get_name_max(extension)
+
         print("\t*** Return search master mode ***\r\n")
 
         # マスター画像有無 判定
         if match_flag is False:
             print("No match master")
             print("Go get master mode(no match master case)\r\n")
+
             self.get_master(search, extension, path_master)
             set_name, name_master, match_flag = sda.get_name_max(extension)
+
             print("Get master name: " + str(name_master))
         else:
             print("Match master name: " + str(name_master))
@@ -345,40 +351,51 @@ class ImageProcessing:
         # ↑関数にする(できなかった！！！)？？？
             # }}}
 
-            # 動画 変換・画像処理（まとめる）！！！# {{{
-            adpth = self.ci.adaptive_threashold(frame)
-            self.ci.display("Adaptive threashold", adpth, 1)
-            dcta = self.ci.discriminantanalyse(frame, 40)
-            self.ci.display("Discriminant analyse", dcta, 1)
-            binz = self.ci.binarize(frame, 70)
-            self.ci.display("Bilateral filter", binz, 1)
-# }}}
-
-            # マスター画像 セット・表示
+            # マスター画像の検索とセット 表示
             print("\r\nMaster name: "\
                     + str(name_master) + str(extension) + "\r\n")
+
             master = str(path_master) + ".\\"\
                     + str(name_master) + str(extension)
             master = cv2.imread(str(master), cv2.IMREAD_COLOR)
-            self.ci.display("Master", master)
 
             # テンプレートマッチング 処理
             # 粗探査まで完了、可視化 精探査 を作成
-            # TODO: 複数探査の時はここの" sda "をイテレート処理！！！
-            match, value_min, value_max, loc_min, loc_max\
-                    = self.tm.tplmatch(frame, master)
-            print("\r\nMax similarity: "\
-                    + str(round(value_max * 100, 3)) + "%\t\t"\
-                    + str(loc_max))
-            print("Min similarity: "\
-                    + str(round(value_min * 100, 3)) + "%\t"\
-                    + str(loc_min) + "\r\n")
 
-            # 探査と掲出範囲のトリム
-            detect_frame = self.tm.show_detect_area(loc_max, frame, master)
-            adpth_detect_frame = self.ci.adaptive_threashold(detect_frame)
-            self.ci.display("Adaptive threashold detected",
-                            adpth_detect_frame, 1)
+            # TODO: 複数探査の時はここのタプルをマスター画像にする
+            # 評価用 イテレート処理
+            methods = [["Row", None],
+                    ["Adaptive threashold", self.ciadp],
+                    ["Discriminant analyse", self.cidca],
+                    ["Bilateral filter", self.cibiz]]
+            for method in methods:
+
+                if method[1] is not None:
+                    frame_eval = method[1](frame)
+                    master_eval = method[1](master)
+                else:
+                    frame_eval = frame
+                    master_eval = master
+
+                match, value_min, value_max, loc_min, loc_max\
+                        = self.tm.tplmatch(frame_eval, master_eval)
+
+                print("\r\n{}".format(method[0]))
+                print("Max similarity:\t\t"\
+                        + str(round(value_max * 100, 2)) + "%\t\t"\
+                        + str(loc_max))
+                print("Min similarity:\t\t"\
+                        + str(round(value_min * 100, 2)) + "%\t\t"\
+                        + str(loc_min) + "\r\n")
+
+                # マッチング領域 トリム処理
+                detect = self.tm.show_detect_area(loc_max, frame, master)
+                if method[1] is not None:
+                    detect = method[1](detect)
+
+                self.ci.display(str(method[0] + " frame"), frame_eval)
+                self.ci.display(str(method[0] + " master"), master_eval)
+                self.ci.display("Detected " + str(method[0]), detect, 1)
 
             # TODO: イテレート処理予定 ここまで！！！
 
