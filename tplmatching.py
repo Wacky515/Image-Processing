@@ -306,7 +306,7 @@ class ImageProcessing:
         path_master = cwd + "\\" + dir_master
         print("Master directory: \r\n\t" + path_master)
 
-        # マスター画像 検索
+        # 最終枝番のマスター画像 取得
         # TODO: 複数探査の時はここの" sda "をイテレート処理！！！
         sda = sd.SaveData(search, path_master)
         set_name, name_master, match_flag = sda.get_name_max(extension)
@@ -322,6 +322,7 @@ class ImageProcessing:
             set_name, name_master, match_flag = sda.get_name_max(extension)
 
             print("Get master name: " + str(name_master))
+
         else:
             print("Match master name: " + str(name_master))
             print("Match master extension: " + str(extension))
@@ -343,7 +344,7 @@ class ImageProcessing:
                 continue
 
             # TODO: 操作説明 表示！！！
-            cv2.imshow(name, frame)
+            self.ci.display(name, frame)
             # import pdb; pdb.set_trace()
             print("Capture is running...")
             count += 1
@@ -396,6 +397,13 @@ class ImageProcessing:
                 n = 4
 
                 # マッチ 判定
+                judge = 0.75
+                if value_max > judge:
+                    # 2016/06/10 ここまで！！！
+                    pass
+                else:
+                    pass
+
                 # 画面表示
                 self.ci.display(str(method[0] + " frame"), frame_eval)
                 self.ci.display(str(method[0] + " master"), master_eval)
@@ -465,7 +473,7 @@ class ImageProcessing:
             trim.write_text(text3,\
                     (origin[0], origin[1] - text_offset - text_height[1]))
 
-            cv2.imshow(name, frame_draw)
+            self.ci.display(name, frame_draw)
             print("Master captcha")
             count += 1
 
