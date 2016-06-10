@@ -201,7 +201,7 @@ class ConvertImage(GetImage):
         # }}}
         algo = cv2.NORM_MINMAX
         print("Normalizing...")
-        norm = cv2.normalize(image, alpha, beta, algo)
+        norm = cv2.normalize(image, image, alpha, beta, algo)
         return norm
 # }}}
 
@@ -243,7 +243,7 @@ class Tplmatching:
         pass
 
     def calc_detect_location(self, loc_max, master, location="center"):
-        """ 検出座標 演算 """
+        """ 補足座標 演算 """
         height, width, channel = master.shape
         # 中央座標 演算
         if location == "center":
@@ -254,7 +254,7 @@ class Tplmatching:
         return coord, height, width
 
     def show_detect_area(self, loc_max, frame, master):
-        """ 検出範囲 演算 """
+        """ 補足範囲 演算 """
         # 中央座標 演算
         coord, height, width\
             = self.calc_detect_location(loc_max, master, "center")
@@ -271,6 +271,8 @@ class ImageProcessing:
         self.ciadp = self.ci.adaptive_threashold
         self.cidca = self.ci.discriminantanalyse
         self.cibiz = self.ci.binarize
+        self.cinor = self.ci.normalize
+
         # 動画 取得
         self.cap = cv2.VideoCapture(0)
 
@@ -359,17 +361,18 @@ class ImageProcessing:
                     + str(name_master) + str(extension)
             master = cv2.imread(str(master), cv2.IMREAD_COLOR)
 
-            # テンプレートマッチング 処理
-            # 粗探査まで完了、可視化 精探査 を作成
+            # テンプレートマッチング イテレート処理
 
-            # TODO: 複数探査の時はここのタプルをマスター画像にする
-            # 評価用 イテレート処理
-            methods = [["Row", None],
-                    ["Adaptive threashold", self.ciadp],
-                    ["Discriminant analyse", self.cidca],
-                    ["Bilateral filter", self.cibiz]]
+            # TODO: 複数探査の時はここのタプルにマスターを入れる
+            # 評価用 処理リスト
+            methods = [
+                    ["Row", None],
+                    # ["Adaptive threashold", self.ciadp],
+                    # ["Discriminant analyse", self.cidca],
+                    # ["Bilateral filter", self.cibiz]
+                    ]
+
             for method in methods:
-
                 if method[1] is not None:
                     frame_eval = method[1](frame)
                     master_eval = method[1](master)
@@ -377,8 +380,27 @@ class ImageProcessing:
                     frame_eval = frame
                     master_eval = master
 
+                # テンプレートマッチング 処理
                 match, value_min, value_max, loc_min, loc_max\
                         = self.tm.tplmatch(frame_eval, master_eval)
+
+                # 補足範囲 正規化（補足強調表示用）
+                norm = self.cinor(match)
+
+                # マッチング領域 トリム処理
+                detect = self.tm.show_detect_area(loc_max, frame, master)
+                if method[1] is not None:
+                    detect = method[1](detect)
+
+                # 正規化（強調表示）の強調度
+                n = 4
+
+                # マッチ 判定
+                # 画面表示
+                self.ci.display(str(method[0] + " frame"), frame_eval)
+                self.ci.display(str(method[0] + " master"), master_eval)
+                self.ci.display("Detected " + str(method[0]), detect, 1)
+                self.ci.display("Normalize " + str(method[0]), norm ** n, 1)
 
                 print("\r\n{}".format(method[0]))
                 print("Max similarity:\t\t"\
@@ -387,17 +409,6 @@ class ImageProcessing:
                 print("Min similarity:\t\t"\
                         + str(round(value_min * 100, 2)) + "%\t\t"\
                         + str(loc_min) + "\r\n")
-
-                # マッチング領域 トリム処理
-                detect = self.tm.show_detect_area(loc_max, frame, master)
-                if method[1] is not None:
-                    detect = method[1](detect)
-
-                self.ci.display(str(method[0] + " frame"), frame_eval)
-                self.ci.display(str(method[0] + " master"), master_eval)
-                self.ci.display("Detected " + str(method[0]), detect, 1)
-
-            # TODO: イテレート処理予定 ここまで！！！
 
             # "m"キー押下 マスター画像取得モード 遷移
             if cv2.waitKey(33) == ord("m"):
