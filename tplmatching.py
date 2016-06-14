@@ -287,6 +287,9 @@ class ImageProcessing:
         self.judge = 0.70
         # 正規化（強調表示）の強調度
         self.highlight = 4
+        # OKの安定判定時間
+        self.ok_time = 3
+        self.ok_count = 0
 
     def init_get_camera_image(self, name):
         """ カメラから動画取得 """
@@ -317,6 +320,9 @@ class ImageProcessing:
         cwd = os.getcwd()
         path_master = cwd + "\\" + dir_master
         print("Master directory: \r\n\t" + path_master)
+
+        text2 = "End: Long press \"e\" key"
+        text3 = "Mastering: Long press \"m\" key"
 
         # 最終枝番のマスター画像 取得
         # TODO: 複数探査の時はここの" sda "をイテレート処理！！！
@@ -355,9 +361,6 @@ class ImageProcessing:
             if self.check_get_frame(frame) is False:
                 continue
 
-            # TODO: 操作説明 表示！！！
-            self.ci.display(name, frame)
-            # import pdb; pdb.set_trace()
             print("Capture is running...")
             count += 1
             # import pdb; pdb.set_trace()
@@ -411,29 +414,34 @@ class ImageProcessing:
                 if value_max > self.judge:
 
                     # TODO: 判定OKの安定時間測定 処理！！！
+                    # self.ok_count += 1
+                    # if self.ok_count == 1:
+                    #     ok_start = time.time()
+                    # elif ok_start - time.time() == self.ok_time:
 
-                    # 判定結果 表示
-                    trim.write_text("OK", (0, "height"), 2,
-                                    "white", "green", 5, 4, (0, 10))
-                    # 検出位置 矩形表示
-                    trim.draw_rectangle(left_up, right_bottom,
-                                        "white", "green")
-                    # 類似度 表示
-                    similarity = round(value_max * 100, 1)
-                    trim.write_text(str(similarity) + "%",
-                                    (right_bottom[0], "height"),
-                                    scale=0.6,
-                                    color_out="white",
-                                    color_in="green",
-                                    thickness_out=3,
-                                    thickness_in=2,
-                                    gap=(0, right_bottom[1] + 5))
+                        # 判定結果 表示
+                        trim.write_text("OK", (0, "height"), 2,
+                                        "white", "green", 5, 4, (0, 10))
+                        # 検出位置 矩形表示
+                        trim.draw_rectangle(left_up, right_bottom,
+                                            "white", "green")
+                        # 類似度 表示
+                        similarity = round(value_max * 100, 1)
+                        trim.write_text(str(similarity) + "%",
+                                        (right_bottom[0], "height"),
+                                        scale=0.6,
+                                        color_out="white",
+                                        color_in="green",
+                                        thickness_out=3,
+                                        thickness_in=2,
+                                        gap=(0, right_bottom[1] + 5))
 
-                    # TODO: OK音 出力！！！
+                        # TODO: OK音 出力！！！
 
-                    # TODO: ログ 出力！！！
+                        # TODO: ログ 出力！！！
 
                 else:
+                    self.ok_count = 0
                     # 判定結果 表示
                     trim.write_text("NG", (0, "height"), 2,
                                     "white", "red", 5, 4, (0, 10))
@@ -442,12 +450,26 @@ class ImageProcessing:
 
                     # TODO: ログ 出力！！！
 
-                # 画面表示
+                # 評価処理 画面表示
                 self.ci.display(str(method[0] + " frame"), frame_eval)
                 self.ci.display(str(method[0] + " master"), master_eval)
                 self.ci.display("Detected " + str(method[0]), detect, 1)
                 self.ci.display("Normalize " + str(method[0]),
                                 norm ** self.highlight, 1)  # frameよりmaster分縮む
+
+                # 操作方法説明文 表示位置 取得
+                text_offset = 10
+                baseline = frame.shape[0] - text_offset
+                origin = 1, baseline
+
+                # 操作方法説明文 表示
+                operation = frame
+                trim = tm.Trim(operation, None, None, None, 1)
+                text_height = trim.write_text(text2, origin)
+                trim.write_text(text3,\
+                        (origin[0], origin[1] - text_offset - text_height[1]))
+                self.ci.display(name, operation)
+                # import pdb; pdb.set_trace()
 
                 print("\r\n{}".format(method[0]))
                 print("Max similarity:\t\t"\
@@ -482,7 +504,7 @@ class ImageProcessing:
         print("Search master name: " + str(search))
         name = "Get master image"
         text2 = "Quit: Long press \"q\" key"
-        text3 = "Trim mode: Long press \"t\" key"
+        text3 = "Trimming: Long press \"t\" key"
 
         print("Master image name: " + str(search))
 
