@@ -207,13 +207,6 @@ class Trim:
         if type(color_in) is str:
             color_in = self.convert_color(color_in)
 
-        # if color_in == "red":
-        #     color_in = (0, 0, 255)
-        # elif color_in == "green":
-        #     color_in = (0, 255, 0)
-        # elif color_in == "white":
-        #     color_in = (255, 255, 255)
-
         # 戻り値にフォントサイズを指定
         font = cv2.FONT_HERSHEY_SIMPLEX
         size, baseline = cv2.getTextSize(text, font, scale, thickness_out)

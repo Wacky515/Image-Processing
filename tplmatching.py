@@ -283,12 +283,16 @@ class ImageProcessing:
         # 動画 取得
         self.cap = cv2.VideoCapture(0)
 
-        # 判定値
+        # 操作説明文
+        self.text2 = "End: Long press \"e\" key"
+        self.text3 = "Mastering: Long press \"m\" key"
+
+        # マッチ判定値
         self.judge = 0.70
         # 正規化（強調表示）の強調度
         self.highlight = 4
-        # OKの安定判定時間
-        self.ok_time = 3
+        # OKと判定する時間
+        self.ok_time = 2
         self.ok_count = 0
 
     def init_get_camera_image(self, name):
@@ -316,13 +320,14 @@ class ImageProcessing:
         print("-------------------------------------------------")
         print("Start template matching")
         print("-------------------------------------------------")
-        print("\t*** Search master mode ***\r\n")
+        print("\t")
+        print("*** Search master mode ***")
+        print("\r\n")
         cwd = os.getcwd()
         path_master = cwd + "\\" + dir_master
-        print("Master directory: \r\n\t" + path_master)
-
-        text2 = "End: Long press \"e\" key"
-        text3 = "Mastering: Long press \"m\" key"
+        print("Master directory:")
+        print(" \r\n\t")
+        print(path_master)
 
         # 最終枝番のマスター画像 取得
         # TODO: 複数探査の時はここの" sda "をイテレート処理！！！
@@ -413,28 +418,38 @@ class ImageProcessing:
                 trim = tm.Trim(frame_eval, None, None, None, 1)
                 if value_max > self.judge:
 
-                    # TODO: 判定OKの安定時間測定 処理！！！
-                    # self.ok_count += 1
-                    # if self.ok_count == 1:
-                    #     ok_start = time.time()
-                    # elif ok_start - time.time() == self.ok_time:
-
-                        # 判定結果 表示
-                        trim.write_text("OK", (0, "height"), 2,
-                                        "white", "green", 5, 4, (0, 10))
-                        # 検出位置 矩形表示
-                        trim.draw_rectangle(left_up, right_bottom,
-                                            "white", "green")
-                        # 類似度 表示
-                        similarity = round(value_max * 100, 1)
-                        trim.write_text(str(similarity) + "%",
-                                        (right_bottom[0], "height"),
-                                        scale=0.6,
-                                        color_out="white",
-                                        color_in="green",
-                                        thickness_out=3,
-                                        thickness_in=2,
-                                        gap=(0, right_bottom[1] + 5))
+                    # TODO: n秒間OKで画面表示！！！
+                    self.ok_count += 1
+                    if self.ok_count == 1:
+                        self.ok_start = time.time()
+                        print("\r\n")
+                        print("Start OK time: " + str(self.ok_start))
+                        print("\r\n")
+                    else:
+                        print("\r\n")
+                        print("OK frame count: " + str(self.ok_count))
+                        print("Start OK time: " + str(self.ok_start))
+                        print("OK time: " + str(time.time() - self.ok_start))
+                        print("\r\n")
+                        if time.time() - self.ok_start > self.ok_time:
+                            print("\r\n")
+                            print("Display OK")
+                            # 判定結果 表示
+                            trim.write_text("OK", (0, "height"), 2,
+                                            "white", "green", 5, 4, (0, 10))
+                            # 検出位置 矩形表示
+                            trim.draw_rectangle(left_up, right_bottom,
+                                                "white", "green")
+                            # 類似度 表示
+                            similarity = round(value_max * 100, 1)
+                            trim.write_text(str(similarity) + "%",
+                                            (right_bottom[0], "height"),
+                                            scale=0.6,
+                                            color_out="white",
+                                            color_in="green",
+                                            thickness_out=3,
+                                            thickness_in=2,
+                                            gap=(0, right_bottom[1] + 5))
 
                         # TODO: OK音 出力！！！
 
@@ -442,6 +457,7 @@ class ImageProcessing:
 
                 else:
                     self.ok_count = 0
+                    ok_start = 0
                     # 判定結果 表示
                     trim.write_text("NG", (0, "height"), 2,
                                     "white", "red", 5, 4, (0, 10))
@@ -465,9 +481,11 @@ class ImageProcessing:
                 # 操作方法説明文 表示
                 operation = frame
                 trim = tm.Trim(operation, None, None, None, 1)
-                text_height = trim.write_text(text2, origin)
-                trim.write_text(text3,\
+                text_height = trim.write_text(self.text2, origin)
+                trim.write_text(self.text3,\
                         (origin[0], origin[1] - text_offset - text_height[1]))
+
+                # メイン画面 表示
                 self.ci.display(name, operation)
                 # import pdb; pdb.set_trace()
 
