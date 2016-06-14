@@ -13,6 +13,8 @@
 # }}}
 """ テンプレートマッチングによる画像処理 """
 
+# TODO: OCR 実装
+# TODO: ワークを動体検出後に判定開始する
 # TODO: 複数索敵・多段式判定を実装する
 # TODO: 関数名は動詞にする
 # TODO: 変数は "[大区分]_[小区分]"
@@ -258,9 +260,11 @@ class Tplmatching:
         # 中央座標 演算
         coord, height, width\
             = self.calc_detect_location(loc_max, master, "center")
+        left_up = loc_max[1] + height
+        right_bottom = loc_max[0] + width
         detect = frame[loc_max[1]:loc_max[1] + height,
-                loc_max[0]:loc_max[0] + width].copy()
-        return detect
+                        loc_max[0]:loc_max[0] + width].copy()
+        return detect, left_up, right_bottom
 
 
 class ImageProcessing:
@@ -275,6 +279,11 @@ class ImageProcessing:
 
         # 動画 取得
         self.cap = cv2.VideoCapture(0)
+
+        # 判定値
+        self.judge = 0.70
+        # 正規化（強調表示）の強調度
+        self.highlight = 4
 
     def init_get_camera_image(self, name):
         """ カメラから動画取得 """
@@ -389,26 +398,41 @@ class ImageProcessing:
                 norm = self.cinor(match)
 
                 # マッチング領域 トリム処理
-                detect = self.tm.show_detect_area(loc_max, frame, master)
+                detect, left_up, right_bottom\
+                        = self.tm.show_detect_area(loc_max, frame, master)
                 if method[1] is not None:
                     detect = method[1](detect)
 
-                # 正規化（強調表示）の強調度
-                n = 4
-
                 # マッチ 判定
-                judge = 0.75
-                if value_max > judge:
-                    # 2016/06/10 ここまで！！！
-                    pass
+                trim = tm.Trim(frame_eval, None, None, None, 1)
+                if value_max > self.judge:
+
+                    # TODO:判定OKの安定時間測定 処理！！！
+
+                    # 判定結果 表示
+                    trim.write_text("OK", (0, "height"), 2,
+                            "white", "green", 5, 4, (0, 10))
+                    # trim.draw_rectangle()
+
+                    # TODO:OK音 出力！！！
+
+                    # TODO:ログ 出力！！！
+
                 else:
-                    pass
+                    # 判定結果 表示
+                    trim.write_text("NG", (0, "height"), 2,
+                            "white", "red", 5, 4, (0, 10))
+
+                    # TODO:NG音 出力！！！
+
+                    # TODO:ログ 出力！！！
 
                 # 画面表示
                 self.ci.display(str(method[0] + " frame"), frame_eval)
                 self.ci.display(str(method[0] + " master"), master_eval)
                 self.ci.display("Detected " + str(method[0]), detect, 1)
-                self.ci.display("Normalize " + str(method[0]), norm ** n, 1)
+                # self.ci.display("Normalize " + str(method[0]), norm ** self.highlight, 1)
+                self.ci.display("Normalize " + str(method[0]), norm, 1)
 
                 print("\r\n{}".format(method[0]))
                 print("Max similarity:\t\t"\

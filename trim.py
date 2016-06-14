@@ -199,28 +199,50 @@ class Trim:
     def write_text(self, text, origin,
             scale=0.7,
             color_out=(0, 0, 31), color_in=(0, 127, 225),
-            thickness_out=3, thickness_in=1):
+            thickness_out=3, thickness_in=1,
+            gap=(0, 0)):
         """ テキスト 画面出力 """
+        if color_out == "red":
+            color_out = (0, 0, 255)
+        elif color_out == "green":
+            color_out = (0, 255, 0)
+        elif color_out == "white":
+            color_out = (255, 255, 255)
+
+        if color_in == "red":
+            color_in = (0, 0, 255)
+        elif color_in == "green":
+            color_in = (0, 255, 0)
+        elif color_in == "white":
+            color_in = (255, 255, 255)
+
+        # 戻り値にフォントサイズを指定
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        size, baseline = cv2.getTextSize(text, font, scale, thickness_out)
+        # 描画y座標が"height"なら文字自体の高さを代入
+        if origin[1] == "height":
+            # 要素書換えのためタプルをリストに変換後、復元
+            origin = list(origin)
+            origin[1] = size[1] + gap[1]
+            origin = tuple(origin)
+
         cpt = cv2.putText
         image = self.image
-        font = cv2.FONT_HERSHEY_SIMPLEX
         cpt(image, text, origin, font, scale, color_out, thickness_out)
         cpt(image, text, origin, font, scale, color_in, thickness_in)
-        # 戻り値にフォントサイズを指定
-        size, baseline = cv2.getTextSize(text, font, scale, thickness_out)
         return size
 
-    def draw_rectangle(self):
+    def draw_rectangle(self,
+            start_point=None, end_point=None,
+            color_out=(0, 0, 31), color_in=(0, 127, 225),
+            thickness_out=2, thickness_in=1):
         """ 矩形 描画 """
-        cra = cv2.rectangle
-        self.length_x = 2 * self.start_x - self.coor_x
-        self.length_y = 2 * self.start_y - self.coor_y
-        start_point = (self.length_x, self.length_y)
-        end_point = (self.coor_x, self.coor_y)
-        color_out = (0, 0, 31)
-        color_in = (0, 127, 255)
-        thickness_out = 2
-        thickness_in = 1
+        if start_point is end_point is None:
+            cra = cv2.rectangle
+            self.length_x = 2 * self.start_x - self.coor_x
+            self.length_y = 2 * self.start_y - self.coor_y
+            start_point = (self.length_x, self.length_y)
+            end_point = (self.coor_x, self.coor_y)
         cra(self.image, start_point, end_point, color_out, thickness_out)
         cra(self.image, start_point, end_point, color_in, thickness_in)
 
