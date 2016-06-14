@@ -9,6 +9,7 @@
 
 ・OCR機能
 
+
 Sudah
 
 ・?OK時にBeep音
