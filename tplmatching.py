@@ -20,7 +20,10 @@
 # TODO: 変数は "[大区分]_[小区分]"
 # TODO: 出力ウィンドウの位置を定義する
 # TODO: ワーク検出は背景差分で行う
-# TODO: "matchTemplate" の "TM_CCOEFF_NORMED" は正規化する必要があるのか調査
+# TODO: 色識別 実装
+# TODO: GUI 実装
+
+# DONE: "matchTemplate" の "TM_CCOEFF_NORMED" は正規化する必要があるのか調査
 #       "***_NORMED"以外は正規化している
 
 # DONE: Python3系 対応！！！
@@ -260,8 +263,8 @@ class Tplmatching:
         # 中央座標 演算
         coord, height, width\
             = self.calc_detect_location(loc_max, master, "center")
-        left_up = loc_max[1] + height
-        right_bottom = loc_max[0] + width
+        left_up = (loc_max[0], loc_max[1])
+        right_bottom = (loc_max[0] + width, loc_max[1] + height)
         detect = frame[loc_max[1]:loc_max[1] + height,
                         loc_max[0]:loc_max[0] + width].copy()
         return detect, left_up, right_bottom
@@ -407,32 +410,44 @@ class ImageProcessing:
                 trim = tm.Trim(frame_eval, None, None, None, 1)
                 if value_max > self.judge:
 
-                    # TODO:判定OKの安定時間測定 処理！！！
+                    # TODO: 判定OKの安定時間測定 処理！！！
 
                     # 判定結果 表示
                     trim.write_text("OK", (0, "height"), 2,
-                            "white", "green", 5, 4, (0, 10))
-                    # trim.draw_rectangle()
+                                    "white", "green", 5, 4, (0, 10))
+                    # 検出位置 矩形表示
+                    trim.draw_rectangle(left_up, right_bottom,
+                                        "white", "green")
+                    # 類似度 表示
+                    similarity = round(value_max * 100, 1)
+                    trim.write_text(str(similarity) + "%",
+                                    (right_bottom[0], "height"),
+                                    scale=0.6,
+                                    color_out="white",
+                                    color_in="green",
+                                    thickness_out=3,
+                                    thickness_in=2,
+                                    gap=(0, right_bottom[1] + 5))
 
-                    # TODO:OK音 出力！！！
+                    # TODO: OK音 出力！！！
 
-                    # TODO:ログ 出力！！！
+                    # TODO: ログ 出力！！！
 
                 else:
                     # 判定結果 表示
                     trim.write_text("NG", (0, "height"), 2,
-                            "white", "red", 5, 4, (0, 10))
+                                    "white", "red", 5, 4, (0, 10))
 
-                    # TODO:NG音 出力！！！
+                    # TODO: NG音 出力！！！
 
-                    # TODO:ログ 出力！！！
+                    # TODO: ログ 出力！！！
 
                 # 画面表示
                 self.ci.display(str(method[0] + " frame"), frame_eval)
                 self.ci.display(str(method[0] + " master"), master_eval)
                 self.ci.display("Detected " + str(method[0]), detect, 1)
-                # self.ci.display("Normalize " + str(method[0]), norm ** self.highlight, 1)
-                self.ci.display("Normalize " + str(method[0]), norm, 1)
+                self.ci.display("Normalize " + str(method[0]),
+                                norm ** self.highlight, 1)  # frameよりmaster分縮む
 
                 print("\r\n{}".format(method[0]))
                 print("Max similarity:\t\t"\

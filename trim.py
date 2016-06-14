@@ -202,19 +202,17 @@ class Trim:
             thickness_out=3, thickness_in=1,
             gap=(0, 0)):
         """ テキスト 画面出力 """
-        if color_out == "red":
-            color_out = (0, 0, 255)
-        elif color_out == "green":
-            color_out = (0, 255, 0)
-        elif color_out == "white":
-            color_out = (255, 255, 255)
+        if type(color_out) is str:
+            color_out = self.convert_color(color_out)
+        if type(color_in) is str:
+            color_in = self.convert_color(color_in)
 
-        if color_in == "red":
-            color_in = (0, 0, 255)
-        elif color_in == "green":
-            color_in = (0, 255, 0)
-        elif color_in == "white":
-            color_in = (255, 255, 255)
+        # if color_in == "red":
+        #     color_in = (0, 0, 255)
+        # elif color_in == "green":
+        #     color_in = (0, 255, 0)
+        # elif color_in == "white":
+        #     color_in = (255, 255, 255)
 
         # 戻り値にフォントサイズを指定
         font = cv2.FONT_HERSHEY_SIMPLEX
@@ -237,14 +235,29 @@ class Trim:
             color_out=(0, 0, 31), color_in=(0, 127, 225),
             thickness_out=2, thickness_in=1):
         """ 矩形 描画 """
+        if type(color_out) is str:
+            color_out = self.convert_color(color_out)
+        if type(color_in) is str:
+            color_in = self.convert_color(color_in)
+
+        cra = cv2.rectangle
         if start_point is end_point is None:
-            cra = cv2.rectangle
             self.length_x = 2 * self.start_x - self.coor_x
             self.length_y = 2 * self.start_y - self.coor_y
             start_point = (self.length_x, self.length_y)
             end_point = (self.coor_x, self.coor_y)
         cra(self.image, start_point, end_point, color_out, thickness_out)
         cra(self.image, start_point, end_point, color_in, thickness_in)
+
+    def convert_color(self, color):
+        if color == "red":
+            color = (0, 0, 255)
+        elif color == "green":
+            color = (0, 255, 0)
+        elif color == "white":
+            color = (255, 255, 255)
+        else: color = (0, 0, 0)
+        return color
 
     def quit_tirm(self):
         # 静止画の出力保持&終了処理
