@@ -55,6 +55,8 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 # }}}
 
+print_col = 50
+
 
 def terminate(name_cap=0, time_wait=33):
     """ 出力画像 終了処理 """  # {{{
@@ -317,38 +319,41 @@ class ImageProcessing:
 
     def run(self, name, search, extension=".png", dir_master="MasterImage"):
         """ 動画取得 処理（メインルーチン） """  # {{{
-        print("-------------------------------------------------")
-        print("Start template matching")
-        print("-------------------------------------------------")
-        print("\t")
-        print("*** Search master mode ***")
-        print("\r\n")
+        print("-" * 50)
+        print("START TEMPLATE MATCHING".center(print_col, " "))
+        print("-" * 50)
+        print("")
+        print(" SEARCH MASTER MODE ".center(print_col, "*"))
+        print("")
         cwd = os.getcwd()
         path_master = cwd + "\\" + dir_master
         print("Master directory:")
-        print(" \r\n\t")
-        print(path_master)
+        print(path_master.rjust(print_col, " "))
 
         # 最終枝番のマスター画像 取得
         # TODO: 複数探査の時はここの" sda "をイテレート処理！！！
         sda = sd.SaveData(search, path_master)
         set_name, name_master, match_flag = sda.get_name_max(extension)
 
-        print("\t*** Return search master mode ***\r\n")
+        print(" RETURN TEMPLATE MATCHING ".center(print_col, "*"))
+        print("")
 
         # マスター画像有無 判定
         if match_flag is False:
             print("No match master")
-            print("Go get master mode(no match master case)\r\n")
+            print("Go get master mode(no match master case)")
+            print("")
 
             self.get_master(search, extension, path_master)
             set_name, name_master, match_flag = sda.get_name_max(extension)
 
             print("Get master name: " + str(name_master))
+            print("")
 
         else:
             print("Match master name: " + str(name_master))
             print("Match master extension: " + str(extension))
+            print("")
         # TODO: イテレート処理予定 ここまで！！！
 
         self.init_get_camera_image(name)
@@ -375,7 +380,8 @@ class ImageProcessing:
             # }}}
 
             # マスター画像の検索とセット 表示
-            print("\r\nMaster name: "\
+            print("")
+            print("Master name: "\
                     + str(name_master) + str(extension) + "\r\n")
 
             master = str(path_master) + ".\\"\
@@ -418,22 +424,22 @@ class ImageProcessing:
                 trim = tm.Trim(frame_eval, None, None, None, 1)
                 if value_max > self.judge:
 
-                    # TODO: n秒間OKで画面表示！！！
+                    # TODO: *秒間OKで画面表示！！！
                     self.ok_count += 1
                     if self.ok_count == 1:
                         self.ok_start = time.time()
-                        print("\r\n")
+                        print("")
                         print("Start OK time: " + str(self.ok_start))
-                        print("\r\n")
+                        print("")
                     else:
-                        print("\r\n")
+                        wait_ok = time.time() - self.ok_start
+                        print("")
                         print("OK frame count: " + str(self.ok_count))
                         print("Start OK time: " + str(self.ok_start))
-                        print("OK time: " + str(time.time() - self.ok_start))
-                        print("\r\n")
-                        if time.time() - self.ok_start > self.ok_time:
-                            print("\r\n")
-                            print("Display OK")
+                        print("OK time: " + str(round(wait_ok, 2)) + "[sec]")
+                        print("")
+                        if wait_ok > self.ok_time:
+
                             # 判定結果 表示
                             trim.write_text("OK", (0, "height"), 2,
                                             "white", "green", 5, 4, (0, 10))
@@ -457,7 +463,7 @@ class ImageProcessing:
 
                 else:
                     self.ok_count = 0
-                    ok_start = 0
+                    self.ok_start = 0
                     # 判定結果 表示
                     trim.write_text("NG", (0, "height"), 2,
                                     "white", "red", 5, 4, (0, 10))
@@ -489,18 +495,23 @@ class ImageProcessing:
                 self.ci.display(name, operation)
                 # import pdb; pdb.set_trace()
 
-                print("\r\n{}".format(method[0]))
-                print("Max similarity:\t\t"\
-                        + str(round(value_max * 100, 2)) + "%\t\t"\
-                        + str(loc_max))
-                print("Min similarity:\t\t"\
-                        + str(round(value_min * 100, 2)) + "%\t\t"\
-                        + str(loc_min) + "\r\n")
+                simil_max = str(round(value_max * 100, 2)) + "%"
+                simil_min = str(round(value_min * 100, 2)) + "%"
+                print("")
+                print("{}".format(method[0]))
+                print("Max similarity:")
+                print(str(simil_max.rjust(print_col, " ")))
+                print(str(loc_max).rjust(print_col, " "))
+                print("Min similarity:")
+                print(str(simil_min.rjust(print_col, " ")))
+                print(str(loc_min).rjust(print_col, " "))
 
             # "m"キー押下 マスター画像取得モード 遷移
             if cv2.waitKey(33) == ord("m"):
-                print("\r\nInput key \"m\"")
-                print("Go get master mode\r\r\n")
+                print("")
+                print("Input key \"m\"")
+                print("Go get master mode")
+                print("")
                 time.sleep(0.5)
                 # TODO: 複数探査の時はここの" sda "をイテレート処理！！！
                 self.get_master(search, extension, path_master)
@@ -512,18 +523,20 @@ class ImageProcessing:
             # 仮の終了処理！！！
             # "q"キー押下 終了処理
             if cv2.waitKey(33) == ord("e"):
-                print("\r\nInput key \"e\"")
-                print("*** End process ***\t\r\n")
+                print("")
+                print("Input key \"e\"")
+                print(" END PROCESS ".center(print_col, "*"))
                 break
 
     def get_master(self, search, extension, path):
         """ マスター画像 読込み """
-        print("*** Start get master mode ***\t")
-        print("Search master name: " + str(search))
         name = "Get master image"
         text2 = "Quit: Long press \"q\" key"
         text3 = "Trimming: Long press \"t\" key"
 
+        print("")
+        print(" START GET MASTER MODE ".center(print_col, "*"))
+        print("Search master name: " + str(search))
         print("Master image name: " + str(search))
 
         self.init_get_camera_image(name)
@@ -558,7 +571,8 @@ class ImageProcessing:
 
             # "t"キー押下 マスター画像取得モード 遷移
             if cv2.waitKey(33) == ord("t"):
-                print("\r\nInput key \"t\"")
+                print("")
+                print("Input key \"t\"")
                 print("Go master mode")
                 time.sleep(1)
                 img = "master_source{}".format(extension)
@@ -568,9 +582,11 @@ class ImageProcessing:
 
             # "q"キー押下 終了処理
             if cv2.waitKey(33) == ord("q"):
-                print("\r\nInput key \"q\"")
+                print("")
+                print("Input key \"q\"")
                 time.sleep(1)
-                print("*** End get master mode ***\t\r\n")
+                print(" END GET MASTER MODE ".center(print_col, "*"))
+                print("")
                 # import pdb; pdb.set_trace()
                 break
 
@@ -591,18 +607,23 @@ class ImageProcessing:
 
 def main():
     # vimテスト用各変数 定義# {{{
-    # テスト出力
-    print("\r\n--------------------------------------------------")
-    print("Information")
-    print("--------------------------------------------------")
-    print("Default current directory is...")
-    print("\t" + os.getcwd())
-    print("\r\nAnd then...")
+    # イニシャル情報 出力
+    print("")
+    print("".center(print_col, "-"))
+    print("INFORMATION".center(print_col, " "))
+    print("".center(print_col, "-"))
+    print("Default current directory:")
+    print(os.getcwd().rjust(print_col, " "))
+    print("")
+    print("And then...")
     os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
-    print("\t" + os.getcwd())
-    print("\r\n〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓")
-    print("Start main")
-    print("〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓")
+    print(os.getcwd().rjust(print_col, " "))
+
+    print("")
+    print("〓" * int(print_col / 2))
+    print("START MAIN".center(print_col, " "))
+    print("〓" * int(print_col / 2))
+    print("")
     # import pdb; pdb.set_trace()
 
     path = "D:\\OneDrive\\Biz\\Python\\ImageProcessing"
@@ -653,5 +674,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-#    unittest.main()
