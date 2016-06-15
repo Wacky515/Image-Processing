@@ -233,6 +233,7 @@ class Tplmatching:
                     "cv2.TM_CCORR_NORMED",
                     "cv2.TM_CCOEFF",
                     "cv2.TM_CCOEFF_NORMED"]
+        # DONE: マスター画像とらないで抜けるとエラー！！！
         match = cv2.matchTemplate(image, tpl, eval(ALGOS[algo]))
         if ALGOS in ["cv2.TM_SQDIFF", "cv2.TM_CCORR", "cv2.TM_CCOEFF"]:
             # ノルム正規化 処理
@@ -341,12 +342,12 @@ class ImageProcessing:
         # マスター画像有無 判定
         if match_flag is False:
             print("No match master")
-            print("Go get master mode(no match master case)")
-            print("")
+            print("Go get master mode(None master case)")
 
             # マスター画像取得モード 遷移
-            self.get_master(search, extension, path_master)
-            set_name, name_master, match_flag = sda.get_name_max(extension)
+            while match_flag is False:
+                self.get_master(search, extension, path_master)
+                set_name, name_master, match_flag = sda.get_name_max(extension)
 
             print("Get master name: " + str(name_master))
             print("")
