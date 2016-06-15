@@ -254,7 +254,8 @@ class Trim:
             color = (0, 255, 0)
         elif color == "white":
             color = (255, 255, 255)
-        else: color = (0, 0, 0)
+        else:
+            color = (0, 0, 0)
         return color
 
     def quit_tirm(self):
@@ -288,9 +289,9 @@ def main():
     print(os.getcwd().rjust(print_col, " "))
 
     print("")
-    print("〓" * int(print_col / 2))
+    print(u"〓" * int(print_col / 2))
     print("START MAIN".center(print_col, " "))
-    print("〓" * int(print_col / 2))
+    print(u"〓" * int(print_col / 2))
     print("")
     # import pdb; pdb.set_trace()
 
