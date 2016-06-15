@@ -14,14 +14,12 @@
 """ テンプレートマッチングによる画像処理 """
 
 # TODO: OCR 実装
-# TODO: ワークを動体検出後に判定開始する
+# TODO: GUI 実装
+# TODO: 出力ウィンドウの位置を定義する
 # TODO: 複数索敵・多段式判定を実装する
+# TODO: 色識別 実装
 # TODO: 関数名は動詞にする
 # TODO: 変数は "[大区分]_[小区分]"
-# TODO: 出力ウィンドウの位置を定義する
-# TODO: ワーク検出は背景差分で行う
-# TODO: 色識別 実装
-# TODO: GUI 実装
 
 # DONE: "matchTemplate" の "TM_CCOEFF_NORMED" は正規化する必要があるのか調査
 #       "***_NORMED"以外は正規化している
@@ -30,6 +28,8 @@
 # DONE: Unicode文字リテラルを " u"body" " -> " "body" " に変更
 # DONE: 文字列の埋込を % 形式から format 形式に変更
 # DONE: "print" -> "print()" に変更
+# ABORT: ワークを動体検出後に判定開始する
+# ABORT: ワーク検出は背景差分で行う
 
 # モジュール インポート# {{{
 import numpy as np
@@ -45,8 +45,10 @@ import trim as tm
 
 import sys
 sys.path.append("D:\OneDrive\Biz\Python\SaveDate")
+sys.path.append("D:\OneDrive\Biz\Python\Sound")
 
 import savedata as sd
+import judgesound as js
 
 # sysモジュール リロード
 reload(sys)
@@ -282,6 +284,7 @@ class ImageProcessing:
         self.cidca = self.ci.discriminantanalyse
         self.cibiz = self.ci.binarize
         self.cinor = self.ci.normalize
+        self.jsd = js.JudgeSound()
 
         # 動画 取得
         self.cap = cv2.VideoCapture(0)
@@ -291,12 +294,17 @@ class ImageProcessing:
         self.text3 = "Mastering: Long press \"m\" key"
 
         # マッチ判定値
-        self.judge = 0.70
+        self.judge_detect = 0.30
+        self.judge_ok = 0.70
         # 正規化（強調表示）の強調度
         self.highlight = 4
         # OKと判定する時間
         self.ok_time = 2
         self.ok_count = 0
+        # OK/NG 表示固定flag
+        self.flag_judge = True
+        # Beep音 再生回数固定用 カウンタ
+        self.beep_count = 0
 
     def init_get_camera_image(self, name):
         """ カメラから動画取得 """
@@ -423,8 +431,9 @@ class ImageProcessing:
                 # マッチ 判定
                 trim = tm.Trim(frame_eval, None, None, None, 1)
 
-                # OK 処理
-                if value_max > self.judge:
+                # ワーク 検出処理
+                if value_max > self.judge_detect:
+                    match_heigh = trim.write_text("Matching...", (0, "height"))
                     # *秒間OKで画面表示！！！
                     self.ok_count += 1
                     if self.ok_count == 1:
@@ -441,39 +450,60 @@ class ImageProcessing:
                         print("")
                         if wait_ok > self.ok_time:
 
-                            # OK 表示
-                            trim.write_text("OK", (0, "height"), 2,
-                                            "white", "green", 5, 4, (0, 10))
-                            # 検出位置 矩形表示
-                            trim.draw_rectangle(left_up, right_bottom,
-                                                "white", "green")
-                            # 類似度 表示
-                            similarity = round(value_max * 100, 1)
-                            trim.write_text(str(similarity) + "%",
-                                            (right_bottom[0], "height"),
-                                            scale=0.6,
-                                            color_out="white",
-                                            color_in="green",
-                                            thickness_out=3,
-                                            thickness_in=2,
-                                            gap=(0, right_bottom[1] + 5))
+                            # OK/NG 判定処理
+                            if value_max > self.judge_ok and\
+                                    self.flag_judge is True:
+                                self.beep_count += 1
+                                # OK 表示
+                                trim.write_text("OK", (0, "height"), 2,
+                                                "white", "green",
+                                                5, 4, (0, 10 + match_heigh[1]))
+                                # 検出位置 矩形表示
+                                trim.draw_rectangle(left_up, right_bottom,
+                                                    "white", "green")
+                                # 類似度 表示
+                                similarity = round(value_max * 100, 1)
+                                trim.write_text(str(similarity) + "%",
+                                                (right_bottom[0], "height"),
+                                                scale=0.6,
+                                                color_out="white",
+                                                color_in="green",
+                                                thickness_out=3,
+                                                thickness_in=2,
+                                                gap=(0, right_bottom[1] + 5))
 
-                        # TODO: OK音 出力！！！
+                                # OK音 出力
+                                if self.beep_count == 2:
+                                    self.jsd.beep_ok()
 
-                        # TODO: ログ 出力！！！
+                                # TODO: ログ 出力！！！
+                                # 2016/06/15 ここまで！！！
+                                # 保存画像は数を制限する
+                                ok_image = cv2.imread(frame_eval, 1)
+                                sd.save_image(ok_image, self.extension)
 
-                else:
-                    # NG 処理
+
+                            else:
+                                self.beep_count += 1
+                                # NG 表示
+                                self.flag_judge = False
+                                trim.write_text("NG", (0, "height"), 2,
+                                                "white", "red",
+                                                5, 4, (0, 10 + match_heigh[1]))
+
+                                # NG音 出力
+                                if self.beep_count == 2:
+                                    self.jsd.beep_ng()
+
+                                # TODO: ログ 出力！！！
+
+                # 検索中 表示
+                if value_max < self.judge_detect:
+                    trim.write_text("Searching...", (0, "height"))
                     self.ok_count = 0
                     self.ok_start = 0
-
-                    # NG 表示
-                    trim.write_text("NG", (0, "height"), 2,
-                                    "white", "red", 5, 4, (0, 10))
-
-                    # TODO: NG音 出力！！！
-
-                    # TODO: ログ 出力！！！
+                    self.beep_count = 0
+                    self.flag_judge = True
 
                 # 評価処理 画面表示
                 self.ci.display(str(method[0] + " frame"), frame_eval)
@@ -580,6 +610,8 @@ class ImageProcessing:
                 print("Go master mode")
                 time.sleep(1)
                 img = "master_source{}".format(extension)
+                # 文字描画消去の為 再読込み
+                get_flag, frame = self.cap.read()
                 cv2.imwrite(img, frame)
                 trim = tm.Trim(img, search, extension, path)
                 trim.trim()
