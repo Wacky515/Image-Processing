@@ -319,9 +319,9 @@ class ImageProcessing:
 
     def run(self, name, search, extension=".png", dir_master="MasterImage"):
         """ 動画取得 処理（メインルーチン） """  # {{{
-        print("-" * 50)
+        print("-" * print_col)
         print("START TEMPLATE MATCHING".center(print_col, " "))
-        print("-" * 50)
+        print("-" * print_col)
         print("")
         print(" SEARCH MASTER MODE ".center(print_col, "*"))
         print("")
@@ -344,6 +344,7 @@ class ImageProcessing:
             print("Go get master mode(no match master case)")
             print("")
 
+            # マスター画像取得モード 遷移
             self.get_master(search, extension, path_master)
             set_name, name_master, match_flag = sda.get_name_max(extension)
 
@@ -376,7 +377,6 @@ class ImageProcessing:
             # import pdb; pdb.set_trace()
         # !!!: 以上までをclassにしたいが"while"内の"frame"を
         # "while"外に出せないので断念！！！
-        # ↑関数にする(できなかった！！！)？？？
             # }}}
 
             # マスター画像の検索とセット 表示
@@ -389,7 +389,6 @@ class ImageProcessing:
             master = cv2.imread(str(master), cv2.IMREAD_COLOR)
 
             # テンプレートマッチング イテレート処理
-
             # TODO: 複数探査の時はここのタプルにマスターを入れる
             # 評価用 処理リスト
             methods = [
@@ -414,7 +413,7 @@ class ImageProcessing:
                 # 補足範囲 正規化（補足強調表示用）
                 norm = self.cinor(match)
 
-                # マッチング領域 トリム処理
+                # マッチ領域 トリム処理
                 detect, left_up, right_bottom\
                         = self.tm.show_detect_area(loc_max, frame, master)
                 if method[1] is not None:
@@ -422,9 +421,10 @@ class ImageProcessing:
 
                 # マッチ 判定
                 trim = tm.Trim(frame_eval, None, None, None, 1)
-                if value_max > self.judge:
 
-                    # TODO: *秒間OKで画面表示！！！
+                # OK 処理
+                if value_max > self.judge:
+                    # *秒間OKで画面表示！！！
                     self.ok_count += 1
                     if self.ok_count == 1:
                         self.ok_start = time.time()
@@ -440,7 +440,7 @@ class ImageProcessing:
                         print("")
                         if wait_ok > self.ok_time:
 
-                            # 判定結果 表示
+                            # OK 表示
                             trim.write_text("OK", (0, "height"), 2,
                                             "white", "green", 5, 4, (0, 10))
                             # 検出位置 矩形表示
@@ -462,9 +462,11 @@ class ImageProcessing:
                         # TODO: ログ 出力！！！
 
                 else:
+                    # NG 処理
                     self.ok_count = 0
                     self.ok_start = 0
-                    # 判定結果 表示
+
+                    # NG 表示
                     trim.write_text("NG", (0, "height"), 2,
                                     "white", "red", 5, 4, (0, 10))
 
@@ -495,6 +497,7 @@ class ImageProcessing:
                 self.ci.display(name, operation)
                 # import pdb; pdb.set_trace()
 
+                # 結果 出力
                 simil_max = str(round(value_max * 100, 2)) + "%"
                 simil_min = str(round(value_min * 100, 2)) + "%"
                 print("")
@@ -520,8 +523,7 @@ class ImageProcessing:
                 cv2.destroyAllWindows()
                 print("Get master name: " + str(name_master))
 
-            # 仮の終了処理！！！
-            # "q"キー押下 終了処理
+            # "e"キー押下 終了処理
             if cv2.waitKey(33) == ord("e"):
                 print("")
                 print("Input key \"e\"")
@@ -547,7 +549,7 @@ class ImageProcessing:
                 print("Initial delay")
                 time.sleep(0.1)
             get_flag, frame = self.cap.read()
-            get_flag_draw, frame_draw = self.cap.read()
+            # get_flag_draw, frame_draw = self.cap.read()
 
             if self.check_get_flag(get_flag) is False:
                 break
@@ -560,6 +562,7 @@ class ImageProcessing:
             origin = 1, baseline
 
             # 操作方法説明文 表示
+            frame_draw = frame
             trim = tm.Trim(frame_draw, search, extension, path, 1)
             text_height = trim.write_text(text2, origin)
             trim.write_text(text3,\
