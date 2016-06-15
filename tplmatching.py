@@ -609,6 +609,7 @@ class ImageProcessing:
 
 
 def main():
+    """ メインルーチン """
     # vimテスト用各変数 定義# {{{
     # イニシャル情報 出力
     print("")
