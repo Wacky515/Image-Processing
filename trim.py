@@ -13,13 +13,14 @@
 # }}}
 """ 画像のトリミング"""
 
-# TODO: 関数名は動詞にする
 # TODO: 変数は "[大区分]_[小区分]"
 
 # TODO: Python3系 対応！！！
 # TODO: 文字列の埋込を % 形式から format 形式に変更
 # TODO: "print" -> "print()" に変更
+
 # DONE: Unicode文字リテラルを " u"body" " -> " "body" " に変更
+# DONE: 関数名は動詞にする
 
 # モジュール インポート  # {{{
 import os
@@ -38,6 +39,8 @@ reload(sys)
 # デフォルトの文字コード 出力
 sys.setdefaultencoding("utf-8")
 # }}}
+
+print_col = 50
 
 
 class Trim:
@@ -96,24 +99,21 @@ class Trim:
         cv2.imshow(self.name_window, self.image)
 
         # テスト出力
-        print "Trim pos: (" + str(self.start_x) + ", "\
+        print("Trim pos: (" + str(self.start_x) + ", "\
             + str(self.start_y) + "), ("\
             + str(self.end_x) + ", "\
-            + str(self.end_y) + ")"
+            + str(self.end_y) + ")")
 
-        # if self.path_save is\
-        #         self.name_save is\
-        #         self.extension_save is not None:
-        #     return self.path_save, self.name_save, self.extension_save
         self.quit_tirm()
 
-        print "Trim.trim() end..."
+        print("Trim.trim() end...")
 
     def mouse_event(self, event, coor_x, coor_y, flags, param):
         """ マウスイベント 取得 """
         self.coor_x = coor_x
         self.coor_y = coor_y
 
+        # 左クリック押下 処理
         if event == cv2.EVENT_LBUTTONDOWN:
             self.start_x = self.start_y = self.end_x = self.end_y = 0
             """ 2回目以降に古い描画を消去する為
@@ -121,12 +121,13 @@ class Trim:
             self.image = cv2.imread(self.img, 1)
 
             self.start_x, self.start_y = self.coor_x, self.coor_y
+
             self.flag_save = False
 
-            # テスト出力
-            print "Left button down"
-            print "Start: " + str(self.start_x) + ", " + str(self.start_y)
+            print("Left button down")
+            print("Start: " + str(self.start_x) + ", " + str(self.start_y))
 
+        # 左クリック押上 処理
         elif event == cv2.EVENT_LBUTTONUP:
             self.end_x, self.end_y = self.coor_x, self.coor_y
             self.image = cv2.imread(self.img, 1)
@@ -140,19 +141,19 @@ class Trim:
 
             # 矩形 描画
             self.draw_rectangle()
-
             cv2.imshow(self.name_window, self.image)
+
             self.flag_save = True
 
-            # テスト出力
-            print "Left button up"
-            print "End: " + str(self.end_x) + ", " + str(self.end_y)
-            print "Trim area: (" + str(self.start_x) + ", "\
-                + str(self.start_y) + "), ("\
-                + str(self.end_x) + ", "\
-                + str(self.end_y) + ")"
-            print "Save flag is " + str(self.flag_save)
+            print("Left button up")
+            print("End: " + str(self.end_x) + ", " + str(self.end_y))
+            print("Trim area: (" + str(self.start_x) + ", "\
+                    + str(self.start_y) + "), ("\
+                    + str(self.end_x) + ", "\
+                    + str(self.end_y) + ")")
+            print("Save flag is " + str(self.flag_save))
 
+        # マウス移動 処理
         elif event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON:
             """ 古い矩形描画を消去する為
             マウス移動イベント毎に対象画像を読込み """
@@ -163,18 +164,18 @@ class Trim:
 
             cv2.imshow(self.name_window, self.image)
 
-            # テスト出力
-            print "Mouse location: " + str(self.coor_x) + ", "\
-                + str(self.coor_y)
+            print("Mouse location: " + str(self.coor_x) + ", "\
+                + str(self.coor_y))
 
+        # 保存 処理
         if cv2.waitKey(0) == ord(self.key_save) and self.flag_save is True:
-            # テスト出力
-            print "\r\nInput key \"s\""
-            print "Save image..."
-            print "Trim area: (" + str(self.start_x) + ", "\
-                + str(self.start_y) + "), ("\
-                + str(self.length_x) + ", "\
-                + str(self.length_y) + ")"
+            print("")
+            print("Input key \"s\"")
+            print("Save image...")
+            print("Trim area: (" + str(self.start_x) + ", "\
+                    + str(self.start_y) + "), ("\
+                    + str(self.length_x) + ", "\
+                    + str(self.length_y) + ")")
 
             # 各種描画を消去する為 対象画像を再読込み
             self.image = cv2.imread(self.img, 1)
@@ -183,9 +184,9 @@ class Trim:
             height = self.length_y
             width = self.length_x
             trim_image = self.image[height: self.end_y,
-                width: self.end_x]
+                                    width: self.end_x]
 
-            # 保存処理と保存フラグ -> 偽 処理
+            # 保存処理と保存フラグ "真" -> "偽" 処理
             cv2.imwrite("imwrite.png", trim_image)
             sda = sd.SaveData(self.name, self.path)
             self.path_save, self.name_save, self.extension_save\
@@ -202,6 +203,7 @@ class Trim:
             thickness_out=3, thickness_in=1,
             gap=(0, 0)):
         """ テキスト 画面出力 """
+        # 色指定のニーモニック 呼出し
         if type(color_out) is str:
             color_out = self.convert_color(color_out)
         if type(color_in) is str:
@@ -210,6 +212,7 @@ class Trim:
         # 戻り値にフォントサイズを指定
         font = cv2.FONT_HERSHEY_SIMPLEX
         size, baseline = cv2.getTextSize(text, font, scale, thickness_out)
+
         # 描画y座標が"height"なら文字自体の高さを代入
         if origin[1] == "height":
             # 要素書換えのためタプルをリストに変換後、復元
@@ -228,6 +231,7 @@ class Trim:
             color_out=(0, 0, 31), color_in=(0, 127, 225),
             thickness_out=2, thickness_in=1):
         """ 矩形 描画 """
+        # 色指定のニーモニック 呼出し
         if type(color_out) is str:
             color_out = self.convert_color(color_out)
         if type(color_in) is str:
@@ -243,6 +247,7 @@ class Trim:
         cra(self.image, start_point, end_point, color_in, thickness_in)
 
     def convert_color(self, color):
+        """ 色指定のニーモニック """
         if color == "red":
             color = (0, 0, 255)
         elif color == "green":
@@ -253,26 +258,46 @@ class Trim:
         return color
 
     def quit_tirm(self):
-        # 静止画の出力保持&終了処理
+        """ 静止画の出力保持 & 終了処理 """
         if cv2.waitKey(0) == ord(self.key_quit):
             time.sleep(1)
-            # テスト出力
-            print "\r\nInput key \"q\""
-            print "Quit trim mode"
-            # cv2.destroyWindow(self.name_window)
-            # import pdb; pdb.set_trace()
+
+            print("")
+            print("Input key \"q\"")
+            print("Quit trim mode")
+            print("")
             cv2.destroyAllWindows()
+            # import pdb; pdb.set_trace()
+
             return False
-            # sys.exit()
 
 
 def main():
     """ メインルーチン """
-    # テスト出力
-    print "Current directory is..."
-    print os.getcwd()
+    # vimテスト用各変数 定義# {{{
+    # イニシャル情報 出力
+    print("")
+    print("".center(print_col, "-"))
+    print("INFORMATION".center(print_col, " "))
+    print("".center(print_col, "-"))
+    print("Default current directory:")
+    print(os.getcwd().rjust(print_col, " "))
+    print("")
+    print("And then...")
     os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
-    print os.getcwd()
+    print(os.getcwd().rjust(print_col, " "))
+
+    print("")
+    print("〓" * int(print_col / 2))
+    print("START MAIN".center(print_col, " "))
+    print("〓" * int(print_col / 2))
+    print("")
+    # import pdb; pdb.set_trace()
+
+    path = "D:\\OneDrive\\Biz\\Python\\ImageProcessing"
+    smpl_pic = "D:\\OneDrive\\Biz\\Python\\ImageProcessing\\tpl_1.png"
+    smpl_pic2 = "D:\\OneDrive\\Biz\\Python\\ImageProcessing\\tpl_2.png"
+# }}}
 
     tm = Trim("trim_test.png", "trimed", ".png", ".\\MasterImage")
     # tm = Trim("trim_test2.png")
