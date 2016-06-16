@@ -15,21 +15,23 @@
 
 # TODO: OCR 実装
 # TODO: GUI 実装
-# TODO: 出力ウィンドウの位置を定義する
+# TODO: 画像出力ウィンドウの位置を定義（固定）する
 # TODO: 複数索敵・多段式判定を実装する
+#       -> インスタンスをイテレートする？
 # TODO: 色識別 実装
 # TODO: 関数名は動詞にする
 # TODO: 変数は "[大区分]_[小区分]"
 
+# {{{
 # DONE: "matchTemplate" の "TM_CCOEFF_NORMED" は正規化する必要があるのか調査
 #       "***_NORMED"以外は正規化している
-
 # DONE: Python3系 対応！！！
 # DONE: Unicode文字リテラルを " u"body" " -> " "body" " に変更
 # DONE: 文字列の埋込を % 形式から format 形式に変更
 # DONE: "print" -> "print()" に変更
 # ABORT: ワークを動体検出後に判定開始する
 # ABORT: ワーク検出は背景差分で行う
+# }}}
 
 # モジュール インポート# {{{
 import numpy as np
@@ -218,7 +220,7 @@ class ConvertImage(GetImage):
 class Tplmatching:
     """ テンプレートマッチング クラス """
     def __init__(self):
-        self.ci = ConvertImage()
+        self.cim = ConvertImage()
 
     def tplmatch(self, image, tpl, algo=5):
         """ テンプレートマッチング 処理 """
@@ -239,7 +241,7 @@ class Tplmatching:
         match = cv2.matchTemplate(image, tpl, eval(ALGOS[algo]))
         if ALGOS in ["cv2.TM_SQDIFF", "cv2.TM_CCORR", "cv2.TM_CCOEFF"]:
             # ノルム正規化 処理
-            norm = self.ci.normalize(match)
+            norm = self.cim.normalize(match)
             # 類似度の最小・最大値と各座標 取得
             value_min, value_max, loc_min, loc_max = cv2.minMaxLoc(norm)
         else:
@@ -278,33 +280,38 @@ class Tplmatching:
 class ImageProcessing:
     """ 動画取得 クラス """
     def __init__(self):
-        self.ci = ConvertImage()
-        self.tm = Tplmatching()
-        self.ciadp = self.ci.adaptive_threashold
-        self.cidca = self.ci.discriminantanalyse
-        self.cibiz = self.ci.binarize
-        self.cinor = self.ci.normalize
+        self.cim = ConvertImage()
+        self.tmc = Tplmatching()
         self.jsd = js.JudgeSound()
+
+        self.ciadp = self.cim.adaptive_threashold
+        self.cidca = self.cim.discriminantanalyse
+        self.cibiz = self.cim.binarize
+        self.cinor = self.cim.normalize
 
         # 動画 取得
         self.cap = cv2.VideoCapture(0)
-
-        # 操作説明文
-        self.text2 = "End: Long press \"e\" key"
         self.text3 = "Mastering: Long press \"m\" key"
 
         # マッチ判定値
         self.judge_detect = 0.30
         self.judge_ok = 0.70
-        # 正規化（強調表示）の強調度
-        self.highlight = 4
+
         # OKと判定する時間
         self.ok_time = 2
         self.ok_count = 0
+
         # OK/NG 表示固定flag
         self.flag_judge = True
+
         # Beep音 再生回数固定用 カウンタ
         self.beep_count = 0
+
+        # 正規化（強調表示）の強調度
+        self.highlight = 4
+
+        # 操作説明文
+        self.text2 = "End: Long press \"e\" key"
 
     def init_get_camera_image(self, name):
         """ カメラから動画取得 """
@@ -326,7 +333,8 @@ class ImageProcessing:
             # }}}
         cv2.namedWindow(name, cv2.WINDOW_AUTOSIZE)
 
-    def run(self, name, search, extension=".png", dir_master="MasterImage"):
+    def run(self, name, search, extension=".png",
+            dir_master="MasterImage", dir_judge="JudgeImage"):
         """ 動画取得 処理（メインルーチン） """  # {{{
         print("-" * print_col)
         print("START TEMPLATE MATCHING".center(print_col, " "))
@@ -395,7 +403,7 @@ class ImageProcessing:
 
             master = str(path_master) + ".\\"\
                     + str(name_master) + str(extension)
-            master = cv2.imread(str(master), cv2.IMREAD_COLOR)
+            master = cv2.imread(str(master), 1)
 
             # テンプレートマッチング イテレート処理
             # TODO: 複数探査の時はここのタプルにマスターを入れる
@@ -417,14 +425,14 @@ class ImageProcessing:
 
                 # テンプレートマッチング 処理
                 match, value_min, value_max, loc_min, loc_max\
-                        = self.tm.tplmatch(frame_eval, master_eval)
+                        = self.tmc.tplmatch(frame_eval, master_eval)
 
                 # 補足範囲 正規化（補足強調表示用）
                 norm = self.cinor(match)
 
                 # マッチ領域 トリム処理
                 detect, left_up, right_bottom\
-                        = self.tm.show_detect_area(loc_max, frame, master)
+                        = self.tmc.show_detect_area(loc_max, frame, master)
                 if method[1] is not None:
                     detect = method[1](detect)
 
@@ -433,7 +441,10 @@ class ImageProcessing:
 
                 # ワーク 検出処理
                 if value_max > self.judge_detect:
-                    match_heigh = trim.write_text("Matching...", (0, "height"))
+                    msg_heigh, msg_base\
+                            = trim.write_text("Matching...",
+                            (0, "height"), offset=(0, 5))
+                    judge_origin = (0, 15 + msg_base)
                     # *秒間OKで画面表示！！！
                     self.ok_count += 1
                     if self.ok_count == 1:
@@ -457,7 +468,7 @@ class ImageProcessing:
                                 # OK 表示
                                 trim.write_text("OK", (0, "height"), 2,
                                                 "white", "green",
-                                                5, 4, (0, 10 + match_heigh[1]))
+                                                5, 4, judge_origin)
                                 # 検出位置 矩形表示
                                 trim.draw_rectangle(left_up, right_bottom,
                                                     "white", "green")
@@ -470,18 +481,16 @@ class ImageProcessing:
                                                 color_in="green",
                                                 thickness_out=3,
                                                 thickness_in=2,
-                                                gap=(0, right_bottom[1] + 5))
+                                                offset=(0, right_bottom[1] + 5))
 
                                 # OK音 出力
                                 if self.beep_count == 2:
                                     self.jsd.beep_ok()
 
-                                # TODO: ログ 出力！！！
-                                # 2016/06/15 ここまで！！！
-                                # 保存画像は数を制限する
-                                ok_image = cv2.imread(frame_eval, 1)
-                                sd.save_image(ok_image, self.extension)
-
+                                    # TODO: ログ 出力！！！
+                                    # 保存画像は数を制限する
+                                    sda_ok = sd.SaveData("ok_log", dir_judge)
+                                    sda_ok.save_image(frame_eval, extension)
 
                             else:
                                 self.beep_count += 1
@@ -489,7 +498,7 @@ class ImageProcessing:
                                 self.flag_judge = False
                                 trim.write_text("NG", (0, "height"), 2,
                                                 "white", "red",
-                                                5, 4, (0, 10 + match_heigh[1]))
+                                                5, 4, judge_origin)
 
                                 # NG音 出力
                                 if self.beep_count == 2:
@@ -499,17 +508,18 @@ class ImageProcessing:
 
                 # 検索中 表示
                 if value_max < self.judge_detect:
-                    trim.write_text("Searching...", (0, "height"))
+                    trim.write_text("Searching...",
+                                    (0, "height"), offset=(0, 5))
                     self.ok_count = 0
                     self.ok_start = 0
                     self.beep_count = 0
                     self.flag_judge = True
 
                 # 評価処理 画面表示
-                self.ci.display(str(method[0] + " frame"), frame_eval)
-                self.ci.display(str(method[0] + " master"), master_eval)
-                self.ci.display("Detected " + str(method[0]), detect, 1)
-                self.ci.display("Normalize " + str(method[0]),
+                self.cim.display(str(method[0] + " frame"), frame_eval)
+                self.cim.display(str(method[0] + " master"), master_eval)
+                self.cim.display("Detected " + str(method[0]), detect, 1)
+                self.cim.display("Normalize " + str(method[0]),
                                 norm ** self.highlight, 1)  # frameよりmaster分縮む
 
                 # 操作方法説明文 表示位置 取得
@@ -525,7 +535,7 @@ class ImageProcessing:
                         (origin[0], origin[1] - text_offset - text_height[1]))
 
                 # メイン画面 表示
-                self.ci.display(name, operation)
+                self.cim.display(name, operation)
                 # import pdb; pdb.set_trace()
 
                 # 結果 出力
@@ -558,7 +568,9 @@ class ImageProcessing:
             if cv2.waitKey(33) == ord("e"):
                 print("")
                 print("Input key \"e\"")
+                print("")
                 print(" END PROCESS ".center(print_col, "*"))
+                print("")
                 break
 
     def get_master(self, search, extension, path):
@@ -580,7 +592,6 @@ class ImageProcessing:
                 print("Initial delay")
                 time.sleep(0.1)
             get_flag, frame = self.cap.read()
-            # get_flag_draw, frame_draw = self.cap.read()
 
             if self.check_get_flag(get_flag) is False:
                 break
@@ -599,7 +610,7 @@ class ImageProcessing:
             trim.write_text(text3,\
                     (origin[0], origin[1] - text_offset - text_height[1]))
 
-            self.ci.display(name, frame_draw)
+            self.cim.display(name, frame_draw)
             print("Master captcha")
             count += 1
 
@@ -699,8 +710,8 @@ def main():
 #     cv2.destroyAllWindows()
 #
 #     image = cv2.imread("tpl_2.png")
-#     ci = ConvertImage()
-#     ci.adaptive_threashold(image, "Adaptive Threashold", 0)
+#     cim = ConvertImage()
+#     cim.adaptive_threashold(image, "Adaptive Threashold", 0)
 #     print("Sudah cap")
 # # }}}
 
