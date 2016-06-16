@@ -187,7 +187,7 @@ class Trim:
                                     width: self.end_x]
 
             # 保存処理と保存フラグ "真" -> "偽" 処理
-            cv2.imwrite("imwrite.png", trim_image)
+            cv2.imwrite("imwrite.png", trim_iage)
             sda = sd.SaveData(self.name, self.path)
             self.path_save, self.name_save, self.extension_save\
                     = sda.save_image(trim_image, self.extension)
@@ -201,7 +201,7 @@ class Trim:
             scale=0.7,
             color_out=(0, 0, 31), color_in=(0, 127, 225),
             thickness_out=3, thickness_in=1,
-            gap=(0, 0)):
+            offset=(0, 0)):
         """ テキスト 画面出力 """
         # 色指定のニーモニック 呼出し
         if type(color_out) is str:
@@ -217,7 +217,7 @@ class Trim:
         if origin[1] == "height":
             # 要素書換えのためタプルをリストに変換後、復元
             origin = list(origin)
-            origin[1] = size[1] + gap[1]
+            origin[1] = size[1] + offset[1]
             origin = tuple(origin)
 
         cpt = cv2.putText
