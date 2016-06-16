@@ -20,7 +20,7 @@
 #       -> インスタンスをイテレートする？
 # TODO: 色識別 実装
 # TODO: 関数名は動詞にする
-# TODO: 変数は "[大区分]_[小区分]"
+# TODO: 変数は "[大区分/固有]_[小区分/汎用]"
 
 # {{{
 # DONE: "matchTemplate" の "TM_CCOEFF_NORMED" は正規化する必要があるのか調査
@@ -89,16 +89,16 @@ class GetImage:
             print("Image data is not found...")
             return False
 
-    def display(self, name_window, image, _type=1):
+    def display(self, window_name, image, _type=1):
         """ 画像・動画 画面出力 """
         # _type: 0: 静止画 1: 動画 切換え
         # 静止画無し判定時 処理 ← "is None" にした 動作確認！！！
         if image is None and _type == 0:
             print("Getting image...")
             image = self.get_image()
-        print("Display {}s...".format(name_window))
-        cv2.namedWindow(name_window, cv2.WINDOW_AUTOSIZE)
-        cv2.imshow(name_window, image)
+        print("Display {}s...".format(window_name))
+        cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
+        cv2.imshow(window_name, image)
         if _type == 0:
             # 静止画の出力保持処理
             terminate(0, 0)
@@ -296,13 +296,12 @@ class ImageProcessing:
         # マッチ判定値
         self.judge_detect = 0.30
         self.judge_ok = 0.70
+        # OK/NG 表示固定flag
+        self.judge_flag = True
 
         # OKと判定する時間
         self.ok_time = 2
         self.ok_count = 0
-
-        # OK/NG 表示固定flag
-        self.flag_judge = True
 
         # Beep音 再生回数固定用 カウンタ
         self.beep_count = 0
@@ -313,7 +312,7 @@ class ImageProcessing:
         # 操作説明文
         self.text2 = "End: Long press \"e\" key"
 
-    def init_get_camera_image(self, name):
+    def get_camera_image_init(self, name):
         """ カメラから動画取得 """
         # カメラキャプチャ時のイニシャライズ ディレイ処理
         time.sleep(0.1)
@@ -321,15 +320,15 @@ class ImageProcessing:
             print("Can not connect camera...")
             terminate()
             # トラックバー 定義(できない)！！！# {{{
-            #        name_bar = "Max threshold"
+            #        bar_name = "Max threshold"
             #        print(thresh_max)
             # # トラックバー 生成
             #        def set_parameter(value):
-            #            thresh_max = cv2.getTrackbarPos(name_bar, name_window)
-            #            thresh_max = cv2.setTrackbarPos(name_bar, name_window)
-            #        cv2.createTrackbar(name_bar, name_window,
+            #            thresh_max = cv2.getTrackbarPos(bar_name, window_name)
+            #            thresh_max = cv2.setTrackbarPos(bar_name, window_name)
+            #        cv2.createTrackbar(bar_name, window_name,
             #           0, 255, self.thresh_max)
-            #        name_window = "Adaptive Threashold cap"
+            #        window_name = "Adaptive Threashold cap"
             # }}}
         cv2.namedWindow(name, cv2.WINDOW_AUTOSIZE)
 
@@ -350,7 +349,7 @@ class ImageProcessing:
         # 最終枝番のマスター画像 取得
         # TODO: 複数探査の時はここの" sda "をイテレート処理！！！
         sda = sd.SaveData(search, path_master)
-        set_name, name_master, match_flag = sda.get_name_max(extension)
+        set_name, master_name, match_flag = sda.get_name_max(extension)
 
         print(" RETURN TEMPLATE MATCHING ".center(print_col, "*"))
         print("")
@@ -363,18 +362,18 @@ class ImageProcessing:
             # マスター画像取得モード 遷移
             while match_flag is False:
                 self.get_master(search, extension, path_master)
-                set_name, name_master, match_flag = sda.get_name_max(extension)
+                set_name, master_name, match_flag = sda.get_name_max(extension)
 
-            print("Get master name: " + str(name_master))
+            print("Get master name: " + str(master_name))
             print("")
 
         else:
-            print("Match master name: " + str(name_master))
+            print("Match master name: " + str(master_name))
             print("Match master extension: " + str(extension))
             print("")
         # TODO: イテレート処理予定 ここまで！！！
 
-        self.init_get_camera_image(name)
+        self.get_camera_image_init(name)
 
         # !!!: ここから
         count = 0
@@ -399,10 +398,10 @@ class ImageProcessing:
             # マスター画像の検索とセット 表示
             print("")
             print("Master name: "\
-                    + str(name_master) + str(extension) + "\r\n")
+                    + str(master_name) + str(extension) + "\r\n")
 
             master = str(path_master) + ".\\"\
-                    + str(name_master) + str(extension)
+                    + str(master_name) + str(extension)
             master = cv2.imread(str(master), 1)
 
             # テンプレートマッチング イテレート処理
@@ -463,7 +462,7 @@ class ImageProcessing:
 
                             # OK/NG 判定処理
                             if value_max > self.judge_ok and\
-                                    self.flag_judge is True:
+                                    self.judge_flag is True:
                                 self.beep_count += 1
                                 # OK 表示
                                 trim.write_text("OK", (0, "height"), 2,
@@ -489,13 +488,13 @@ class ImageProcessing:
 
                                     # TODO: ログ 出力！！！
                                     # 保存画像は数を制限する
-                                    sda_ok = sd.SaveData("ok_log", dir_judge)
+                                    sda_ok = sd.SaveData("ok_image", dir_judge)
                                     sda_ok.save_image(frame_eval, extension)
 
                             else:
                                 self.beep_count += 1
                                 # NG 表示
-                                self.flag_judge = False
+                                self.judge_flag = False
                                 trim.write_text("NG", (0, "height"), 2,
                                                 "white", "red",
                                                 5, 4, judge_origin)
@@ -513,7 +512,7 @@ class ImageProcessing:
                     self.ok_count = 0
                     self.ok_start = 0
                     self.beep_count = 0
-                    self.flag_judge = True
+                    self.judge_flag = True
 
                 # 評価処理 画面表示
                 self.cim.display(str(method[0] + " frame"), frame_eval)
@@ -559,10 +558,10 @@ class ImageProcessing:
                 time.sleep(0.5)
                 # TODO: 複数探査の時はここの" sda "をイテレート処理！！！
                 self.get_master(search, extension, path_master)
-                set_name, name_master, match_flag = sda.get_name_max(extension)
+                set_name, master_name, match_flag = sda.get_name_max(extension)
                 # TODO: イテレート処理予定 ここまで！！！
                 cv2.destroyAllWindows()
-                print("Get master name: " + str(name_master))
+                print("Get master name: " + str(master_name))
 
             # "e"キー押下 終了処理
             if cv2.waitKey(33) == ord("e"):
@@ -574,7 +573,7 @@ class ImageProcessing:
                 break
 
     def get_master(self, search, extension, path):
-        """ マスター画像 読込み """
+        """ マスター画像 読込み """  # {{{
         name = "Get master image"
         text2 = "Quit: Long press \"q\" key"
         text3 = "Trimming: Long press \"t\" key"
@@ -584,7 +583,7 @@ class ImageProcessing:
         print("Search master name: " + str(search))
         print("Master image name: " + str(search))
 
-        self.init_get_camera_image(name)
+        self.get_camera_image_init(name)
 
         count = 0
         while True:
@@ -636,6 +635,7 @@ class ImageProcessing:
                 print("")
                 # import pdb; pdb.set_trace()
                 break
+# }}}
 
     def check_get_flag(self, flag):
         """ 動画取得ミス時 スキップ処理 """  # {{{
@@ -674,9 +674,9 @@ def main():
     print("")
     # import pdb; pdb.set_trace()
 
-    path = "D:\\OneDrive\\Biz\\Python\\ImageProcessing"
-    smpl_pic = "D:\\OneDrive\\Biz\\Python\\ImageProcessing\\tpl_1.png"
-    smpl_pic2 = "D:\\OneDrive\\Biz\\Python\\ImageProcessing\\tpl_2.png"
+    # path = "D:\\OneDrive\\Biz\\Python\\ImageProcessing"
+    # pic_smpl_1 = "D:\\OneDrive\\Biz\\Python\\ImageProcessing\\tpl_1.png"
+    # pic_smpl_2 = "D:\\OneDrive\\Biz\\Python\\ImageProcessing\\tpl_2.png"
 # }}}
 
     # テンプレートマッチング テスト# {{{
@@ -686,7 +686,7 @@ def main():
     # }}}
 
 #     # 静止画取得 テスト# {{{
-#     gim = GetImage(smpl_pic)
+#     gim = GetImage(pic_smpl_1)
 #     gim2 = GetImage("tpl_3.png")
 #     # gim.diplay("Tes1", 0, 0)
 #     gim2.display("Tes2", 0, 0)
@@ -698,10 +698,10 @@ def main():
 #     cav.get_video("Capture_test")
 #     frame_test = cav.frame
 #     if frame_test is None:
-#         gm = GetImage(smpl_pic)
+#         gm = GetImage(pic_smpl_1)
 #         gm.get_image()
 #     name = "Test"
-#     Image = cv2.imread(smpl_pic2)
+#     Image = cv2.imread(pic_smpl_2)
 #     cv2.namedWindow(name, cv2.WINDOW_AUTOSIZE)
 #     cv2.imshow(name, Image)
 #     cv2.imshow(name, frame_test)
