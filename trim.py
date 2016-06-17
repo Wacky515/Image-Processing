@@ -13,14 +13,12 @@
 # }}}
 """ 画像のトリミング"""
 
-# TODO: 変数は "[大区分]_[小区分]"
-
-# TODO: Python3系 対応！！！
-# TODO: 文字列の埋込を % 形式から format 形式に変更
-# TODO: "print" -> "print()" に変更
+# TODO: 変数は "[大区分/固有]_[小区分/汎用]"
 
 # DONE: Unicode文字リテラルを " u"body" " -> " "body" " に変更
 # DONE: 関数名は動詞にする
+# DONE: "print" -> "print()" に変更
+# DONE: 文字列の埋込を % 形式から format 形式に変更
 
 # モジュール インポート  # {{{
 import os
@@ -77,16 +75,16 @@ class Trim:
 # }}}
 
         # その他 インスタンス変数# {{{
-        self.name_window = "Original image"
-        self.flag_save = False
+        self.window_name = "Original image"
+        self.save_flag = False
         self.key_save = "s"
         self.key_quit = "q"
 # }}}
 
     def trim(self):
-        """ トリミング 開始 """
-        cv2.namedWindow(self.name_window, cv2.WINDOW_AUTOSIZE)
-        cv2.setMouseCallback(self.name_window, self.mouse_event)
+        """ トリミング 処理 """
+        cv2.namedWindow(self.window_name, cv2.WINDOW_AUTOSIZE)
+        cv2.setMouseCallback(self.window_name, self.mouse_event)
 
         # 読込み画像の大きさから文字描画のベースライン 取得
         self.baseline = self.size[0] - self.text_offset
@@ -96,35 +94,38 @@ class Trim:
         self.baseline_upper = text_height[1] + self.text_offset / 2
         self.write_text(self.text2, (1, self.baseline_upper))
 
-        cv2.imshow(self.name_window, self.image)
+        cv2.imshow(self.window_name, self.image)
 
-        # テスト出力
-        print("Trim pos: (" + str(self.start_x) + ", "\
-            + str(self.start_y) + "), ("\
-            + str(self.end_x) + ", "\
-            + str(self.end_y) + ")")
+        print("Trim pos: (" + str(self.start_x) + ", "
+                + str(self.start_y) + "), ("
+                + str(self.end_x) + ", "
+                + str(self.end_y) + ")")
 
         self.quit_tirm()
 
         print("Trim.trim() end...")
+        print("")
 
     def mouse_event(self, event, coor_x, coor_y, flags, param):
         """ マウスイベント 取得 """
+        # マウス座標を代入（"__init__"ではない！！！）
         self.coor_x = coor_x
         self.coor_y = coor_y
 
         # 左クリック押下 処理
         if event == cv2.EVENT_LBUTTONDOWN:
             self.start_x = self.start_y = self.end_x = self.end_y = 0
-            """ 2回目以降に古い描画を消去する為
-            左クリック押下毎に対象画像を読込み """
+            # 2回目以降に古い描画を消去する為
+            # 左クリック押下毎に対象画像を読込み
             self.image = cv2.imread(self.img, 1)
 
             self.start_x, self.start_y = self.coor_x, self.coor_y
-
-            self.flag_save = False
-
+            print("")
             print("Left button down")
+            print("")
+
+            self.save_flag = False
+            print("Save flag is " + str(self.save_flag))
             print("Start: " + str(self.start_x) + ", " + str(self.start_y))
 
         # 左クリック押上 処理
@@ -141,60 +142,36 @@ class Trim:
 
             # 矩形 描画
             self.draw_rectangle()
-            cv2.imshow(self.name_window, self.image)
+            cv2.imshow(self.window_name, self.image)
 
-            self.flag_save = True
+            self.save_flag = True
 
+            print("")
             print("Left button up")
             print("End: " + str(self.end_x) + ", " + str(self.end_y))
-            print("Trim area: (" + str(self.start_x) + ", "\
-                    + str(self.start_y) + "), ("\
-                    + str(self.end_x) + ", "\
+            print("Trim area: (" + str(self.start_x) + ", "
+                    + str(self.start_y) + "), ("
+                    + str(self.end_x) + ", "
                     + str(self.end_y) + ")")
-            print("Save flag is " + str(self.flag_save))
+            print("Save flag is " + str(self.save_flag))
 
         # マウス移動 処理
         elif event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON:
-            """ 古い矩形描画を消去する為
-            マウス移動イベント毎に対象画像を読込み """
+            # 古い矩形描画を消去する為
+            # マウス移動イベント毎に対象画像を読込み
             self.image = cv2.imread(self.img, 1)
 
             # 矩形 描画
             self.draw_rectangle()
 
-            cv2.imshow(self.name_window, self.image)
+            cv2.imshow(self.window_name, self.image)
 
-            print("Mouse location: " + str(self.coor_x) + ", "\
+            print("Mouse location: " + str(self.coor_x) + ", "
                 + str(self.coor_y))
 
         # 保存 処理
-        if cv2.waitKey(0) == ord(self.key_save) and self.flag_save is True:
-            print("")
-            print("Input key \"s\"")
-            print("Save image...")
-            print("Trim area: (" + str(self.start_x) + ", "\
-                    + str(self.start_y) + "), ("\
-                    + str(self.length_x) + ", "\
-                    + str(self.length_y) + ")")
-
-            # 各種描画を消去する為 対象画像を再読込み
-            self.image = cv2.imread(self.img, 1)
-
-            # トリミング範囲 演算
-            height = self.length_y
-            width = self.length_x
-            trim_image = self.image[height: self.end_y,
-                                    width: self.end_x]
-
-            # 保存処理と保存フラグ "真" -> "偽" 処理
-            cv2.imwrite("imwrite.png", trim_iage)
-            sda = sd.SaveData(self.name, self.path)
-            self.path_save, self.name_save, self.extension_save\
-                    = sda.save_image(trim_image, self.extension)
-
-            self.flag_save = False
-            time.sleep(0.5)
-
+        self.save_trim()
+        # 終了 処理
         self.quit_tirm()
 
     def write_text(self, text, origin,
@@ -202,7 +179,7 @@ class Trim:
             color_out=(0, 0, 31), color_in=(0, 127, 225),
             thickness_out=3, thickness_in=1,
             offset=(0, 0)):
-        """ テキスト 画面出力 """
+        """ テキスト 描画 """
         # 色指定のニーモニック 呼出し
         if type(color_out) is str:
             color_out = self.convert_color(color_out)
@@ -247,7 +224,7 @@ class Trim:
         cra(self.image, start_point, end_point, color_in, thickness_in)
 
     def convert_color(self, color):
-        """ 色指定のニーモニック """
+        """ 指定色 （ニーモニック）変換 """
         if color == "red":
             color = (0, 0, 255)
         elif color == "green":
@@ -258,13 +235,43 @@ class Trim:
             color = (0, 0, 0)
         return color
 
+    def save_trim(self):
+        """ 保存 処理 """
+        if cv2.waitKey(0) == ord(self.key_save) and self.save_flag is True:
+            print("")
+            print("Input key \"{}\"".format(self.key_save))
+            print("Save image...")
+            print("Trim area: (" + str(self.start_x) + ", "
+                    + str(self.start_y) + "), ("
+                    + str(self.length_x) + ", "
+                    + str(self.length_y) + ")")
+
+            # 各種描画を消去する為 対象画像を再読込み
+            self.image = cv2.imread(self.img, 1)
+
+            # トリミング範囲 演算
+            height = self.length_y
+            width = self.length_x
+            image_trim = self.image[height: self.end_y,
+                                    width: self.end_x]
+
+            # 保存処理と保存フラグ "真" -> "偽" 処理
+            cv2.imwrite("imwrite.png", image_trim)
+            sda = sd.SaveData(self.name, self.path)
+            sda.save_image(image_trim, self.extension)
+
+            self.save_flag = False
+
+            time.sleep(0.5)
+            self.quit_tirm()
+
     def quit_tirm(self):
         """ 静止画の出力保持 & 終了処理 """
         if cv2.waitKey(0) == ord(self.key_quit):
             time.sleep(1)
 
             print("")
-            print("Input key \"q\"")
+            print("Input key \"{}\"".format(self.key_quit))
             print("Quit trim mode")
             print("")
             cv2.destroyAllWindows()
@@ -294,10 +301,6 @@ def main():
     print(u"〓" * int(print_col / 2))
     print("")
     # import pdb; pdb.set_trace()
-
-    path = "D:\\OneDrive\\Biz\\Python\\ImageProcessing"
-    smpl_pic = "D:\\OneDrive\\Biz\\Python\\ImageProcessing\\tpl_1.png"
-    smpl_pic2 = "D:\\OneDrive\\Biz\\Python\\ImageProcessing\\tpl_2.png"
 # }}}
 
     tm = Trim("trim_test.png", "trimed", ".png", ".\\MasterImage")

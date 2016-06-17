@@ -13,6 +13,8 @@
 # }}}
 """ テンプレートマッチングによる画像処理 """
 
+# TODO: 変数は "[大区分/固有]_[小区分/汎用]"
+
 # TODO: OCR 実装
 # TODO: GUI 実装
 # TODO: 画像出力ウィンドウの位置を定義（固定）する
@@ -20,7 +22,6 @@
 #       -> インスタンスをイテレートする？
 # TODO: 色識別 実装
 # TODO: 関数名は動詞にする
-# TODO: 変数は "[大区分/固有]_[小区分/汎用]"
 
 # {{{
 # DONE: "matchTemplate" の "TM_CCOEFF_NORMED" は正規化する必要があるのか調査
@@ -280,6 +281,7 @@ class Tplmatching:
 class ImageProcessing:
     """ 動画取得 クラス """
     def __init__(self):
+
         self.cim = ConvertImage()
         self.tmc = Tplmatching()
         self.jsd = js.JudgeSound()
@@ -312,7 +314,7 @@ class ImageProcessing:
         # 操作説明文
         self.text2 = "End: Long press \"e\" key"
 
-    def get_camera_image_init(self, name):
+    def get_camera_image_init(self, name, gen_window=0):
         """ カメラから動画取得 """
         # カメラキャプチャ時のイニシャライズ ディレイ処理
         time.sleep(0.1)
@@ -330,10 +332,11 @@ class ImageProcessing:
             #           0, 255, self.thresh_max)
             #        window_name = "Adaptive Threashold cap"
             # }}}
-        cv2.namedWindow(name, cv2.WINDOW_AUTOSIZE)
+        if gen_window != 0:
+            cv2.namedWindow(name, cv2.WINDOW_AUTOSIZE)
 
     def run(self, name, search, extension=".png",
-            dir_master="MasterImage", dir_judge="JudgeImage"):
+            dir_master="MasterImage", dir_judge="LogImage"):
         """ 動画取得 処理（メインルーチン） """  # {{{
         print("-" * print_col)
         print("START TEMPLATE MATCHING".center(print_col, " "))
@@ -361,7 +364,7 @@ class ImageProcessing:
 
             # マスター画像取得モード 遷移
             while match_flag is False:
-                self.get_master(search, extension, path_master)
+                self.get_master(search, extension, path_master, 1)
                 set_name, master_name, match_flag = sda.get_name_max(extension)
 
             print("Get master name: " + str(master_name))
@@ -378,7 +381,7 @@ class ImageProcessing:
         # !!!: ここから
         count = 0
         while True:
-            if count < 1:
+            if count == 0:
                 print("Initial delay")
                 time.sleep(0.1)
             get_flag, frame = self.cap.read()
@@ -487,7 +490,7 @@ class ImageProcessing:
                                     self.jsd.beep_ok()
 
                                     # TODO: ログ 出力！！！
-                                    # 保存画像は数を制限する
+                                    # TODO: 保存画像は数を制限する
                                     sda_ok = sd.SaveData("ok_image", dir_judge)
                                     sda_ok.save_image(frame_eval, extension)
 
@@ -557,7 +560,7 @@ class ImageProcessing:
                 print("")
                 time.sleep(0.5)
                 # TODO: 複数探査の時はここの" sda "をイテレート処理！！！
-                self.get_master(search, extension, path_master)
+                self.get_master(search, extension, path_master, 1)
                 set_name, master_name, match_flag = sda.get_name_max(extension)
                 # TODO: イテレート処理予定 ここまで！！！
                 cv2.destroyAllWindows()
@@ -572,8 +575,12 @@ class ImageProcessing:
                 print("")
                 break
 
-    def get_master(self, search, extension, path):
+    def get_master(self, search, extension, path, mode=0):
         """ マスター画像 読込み """  # {{{
+        self.search = search
+        self.extension = extension
+        self.path = path
+
         name = "Get master image"
         text2 = "Quit: Long press \"q\" key"
         text3 = "Trimming: Long press \"t\" key"
@@ -587,7 +594,7 @@ class ImageProcessing:
 
         count = 0
         while True:
-            if count < 1:
+            if count == 0:
                 print("Initial delay")
                 time.sleep(0.1)
             get_flag, frame = self.cap.read()
@@ -596,6 +603,11 @@ class ImageProcessing:
                 break
             if self.check_get_frame(frame) is False:
                 continue
+
+            # マスター画像取得モード 直接遷移
+            if mode != 0:
+                self.go_get_master_mode()
+                break
 
             # 操作方法説明文 表示位置 取得
             text_offset = 10
@@ -615,22 +627,13 @@ class ImageProcessing:
 
             # "t"キー押下 マスター画像取得モード 遷移
             if cv2.waitKey(33) == ord("t"):
-                print("")
-                print("Input key \"t\"")
-                print("Go master mode")
-                time.sleep(1)
-                img = "master_source{}".format(extension)
-                # 文字描画消去の為 再読込み
-                get_flag, frame = self.cap.read()
-                cv2.imwrite(img, frame)
-                trim = tm.Trim(img, search, extension, path)
-                trim.trim()
+                self.go_get_mastner_mode()
 
             # "q"キー押下 終了処理
             if cv2.waitKey(33) == ord("q"):
                 print("")
                 print("Input key \"q\"")
-                time.sleep(1)
+                time.sleep(0.5)
                 print(" END GET MASTER MODE ".center(print_col, "*"))
                 print("")
                 # import pdb; pdb.set_trace()
@@ -650,6 +653,22 @@ class ImageProcessing:
             print("Can not get video frame")
             return False
             # }}}
+
+    def go_get_master_mode(self):
+        """ マスター画像取得モード 遷移 """  # {{{
+        print("")
+        print("Input key \"t\"")
+        print("Go master mode")
+        time.sleep(0.5)
+        img = "master_source{}".format(self.extension)
+
+        # 文字描画消去の為 再読込み
+        get_flag, frame = self.cap.read()
+
+        cv2.imwrite(img, frame)
+        trim = tm.Trim(img, self.search, self.extension, self.path)
+        trim.trim()
+        # }}}
 
 
 def main():
