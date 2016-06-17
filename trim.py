@@ -44,7 +44,7 @@ print_col = 50
 class Trim:
     """ トリミング クラス """
 
-    def __init__(self, img, name, extension, path, _type=0):
+    def __init__(self, img, name, extension, path, _type=0, mode=0):
         # 画像読込み用 インスタンス変数# {{{
         # _type: 0: 静止画 1: 動画 切換え
         self.img = img
@@ -57,6 +57,8 @@ class Trim:
             self.size = self.image.shape
         else:
             self.image = img
+
+        self.mode = mode
 # }}}
 
         # 矩形描画用 インスタンス変数# {{{
@@ -103,7 +105,7 @@ class Trim:
 
         self.quit_tirm()
 
-        print("Trim.trim() end...")
+        print("Trim end...")
         print("")
 
     def mouse_event(self, event, coor_x, coor_y, flags, param):
@@ -224,7 +226,7 @@ class Trim:
         cra(self.image, start_point, end_point, color_in, thickness_in)
 
     def convert_color(self, color):
-        """ 指定色 （ニーモニック）変換 """
+        """ 指定色（ニーモニック） 変換 """
         if color == "red":
             color = (0, 0, 255)
         elif color == "green":
@@ -265,10 +267,15 @@ class Trim:
             time.sleep(0.5)
             self.quit_tirm()
 
+            # 2016/06/17 ここまで！！！
+            # ウィンドウ自動消しと保存画像出力から！！！
+            if self.mode != 0:
+                cv2.destroyAllWindows()
+
     def quit_tirm(self):
         """ 静止画の出力保持 & 終了処理 """
         if cv2.waitKey(0) == ord(self.key_quit):
-            time.sleep(1)
+            time.sleep(0.5)
 
             print("")
             print("Input key \"{}\"".format(self.key_quit))
@@ -303,7 +310,7 @@ def main():
     # import pdb; pdb.set_trace()
 # }}}
 
-    tm = Trim("trim_test.png", "trimed", ".png", ".\\MasterImage")
+    tm = Trim("trim_test.png", "trimed", ".png", ".\\MasterImage", mode=1)
     # tm = Trim("trim_test2.png")
     tm.trim()
 
