@@ -61,6 +61,7 @@ sys.setdefaultencoding("utf-8")
 # }}}
 
 print_col = 50
+save_lim = 2
 
 
 def terminate(name_cap=0, time_wait=33):
@@ -238,7 +239,6 @@ class Tplmatching:
                     "cv2.TM_CCORR_NORMED",
                     "cv2.TM_CCOEFF",
                     "cv2.TM_CCOEFF_NORMED"]
-        # DONE: マスター画像とらないで抜けるとエラー！！！
         match = cv2.matchTemplate(image, tpl, eval(ALGOS[algo]))
         if ALGOS in ["cv2.TM_SQDIFF", "cv2.TM_CCORR", "cv2.TM_CCOEFF"]:
             # ノルム正規化 処理
@@ -492,7 +492,7 @@ class ImageProcessing:
                                     # TODO: ログ 出力！！！
                                     # TODO: 保存画像は数を制限する
                                     sda_ok = sd.SaveData("ok_image", dir_judge)
-                                    sda_ok.save_image(frame_eval, extension)
+                                    sda_ok.save_image(frame_eval, extension, mode=3)
 
                             else:
                                 self.beep_count += 1
@@ -518,7 +518,7 @@ class ImageProcessing:
                     self.judge_flag = True
 
                 # 評価処理 画面表示
-                self.cim.display(str(method[0] + " frame"), frame_eval)
+                # self.cim.display(str(method[0] + " frame"), frame_eval)
                 self.cim.display(str(method[0] + " master"), master_eval)
                 self.cim.display("Detected " + str(method[0]), detect, 1)
                 self.cim.display("Normalize " + str(method[0]),
@@ -666,7 +666,7 @@ class ImageProcessing:
         get_flag, frame = self.cap.read()
 
         cv2.imwrite(img, frame)
-        trim = tm.Trim(img, self.search, self.extension, self.path)
+        trim = tm.Trim(img, self.search, self.extension, self.path, mode=1)
         trim.trim()
         # }}}
 

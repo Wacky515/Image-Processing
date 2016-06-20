@@ -14,11 +14,14 @@
 """ 画像のトリミング"""
 
 # TODO: 変数は "[大区分/固有]_[小区分/汎用]"
+# FIXME: print("Quit trim mode") がループする
+#       ただし、実用上は支障なし
 
 # DONE: Unicode文字リテラルを " u"body" " -> " "body" " に変更
 # DONE: 関数名は動詞にする
 # DONE: "print" -> "print()" に変更
 # DONE: 文字列の埋込を % 形式から format 形式に変更
+# DONE: マスター画像保存時に画面表示
 
 # モジュール インポート  # {{{
 import os
@@ -44,7 +47,7 @@ print_col = 50
 class Trim:
     """ トリミング クラス """
 
-    def __init__(self, img, name, extension, path, _type=0, mode=0):
+    def __init__(self, img, name, extension, path, _type=0, end_process=0):
         # 画像読込み用 インスタンス変数# {{{
         # _type: 0: 静止画 1: 動画 切換え
         self.img = img
@@ -58,7 +61,7 @@ class Trim:
         else:
             self.image = img
 
-        self.mode = mode
+        self.end_process = end_process
 # }}}
 
         # 矩形描画用 インスタンス変数# {{{
@@ -158,6 +161,7 @@ class Trim:
             print("Save flag is " + str(self.save_flag))
 
         # マウス移動 処理
+        # FIXME: "RuntimeError"になる（再起が深すぎる）！！！
         elif event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON:
             # 古い矩形描画を消去する為
             # マウス移動イベント毎に対象画像を読込み
@@ -264,27 +268,32 @@ class Trim:
 
             self.save_flag = False
 
-            time.sleep(0.5)
+            # トリムウィンドウ 自動消去
+            if self.end_process != 0:
+                cv2.destroyAllWindows()
+                cv2.imshow("Save image", image_trim)
+                time.sleep(1)
+                self.quit_tirm(1)
+
+            cv2.imshow("Save image", image_trim)
+            time.sleep(0.1)
             self.quit_tirm()
 
-            # 2016/06/17 ここまで！！！
-            # ウィンドウ自動消しと保存画像出力から！！！
-            if self.mode != 0:
-                cv2.destroyAllWindows()
-
-    def quit_tirm(self):
+    def quit_tirm(self, mode=0):
         """ 静止画の出力保持 & 終了処理 """
-        if cv2.waitKey(0) == ord(self.key_quit):
-            time.sleep(0.5)
+        if mode == 0:
+            if cv2.waitKey(0) == ord(self.key_quit):
+                time.sleep(0.1)
 
-            print("")
-            print("Input key \"{}\"".format(self.key_quit))
-            print("Quit trim mode")
-            print("")
-            cv2.destroyAllWindows()
-            # import pdb; pdb.set_trace()
+        print("")
+        print("Input key \"{}\"".format(self.key_quit))
+        print("Quit trim mode")
+        print("!!!")
+        print("")
+        cv2.destroyAllWindows()
+        # import pdb; pdb.set_trace()
 
-            return False
+        return False
 
 
 def main():
@@ -310,7 +319,8 @@ def main():
     # import pdb; pdb.set_trace()
 # }}}
 
-    tm = Trim("trim_test.png", "trimed", ".png", ".\\MasterImage", mode=1)
+    tm = Trim("trim_test.png", "trimed", ".png", ".\\MasterImage", end_process=1)
+    # tm = Trim("trim_test.png", "trimed", ".png", ".\\MasterImage")
     # tm = Trim("trim_test2.png")
     tm.trim()
 
