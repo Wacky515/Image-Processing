@@ -296,7 +296,7 @@ class ImageProcessing:
         self.text3 = "Mastering: Long press \"m\" key"
 
         # マッチ判定値
-        self.judge_detect = 0.30
+        self.judge_detect = 0.40
         self.judge_ok = 0.70
         # OK/NG 表示固定flag
         self.judge_flag = True
@@ -489,10 +489,17 @@ class ImageProcessing:
                                 if self.beep_count == 2:
                                     self.jsd.beep_ok()
 
-                                    # TODO: ログ 出力！！！
-                                    # TODO: 保存画像は数を制限する
-                                    sda_ok = sd.SaveData("ok_image", dir_judge)
-                                    sda_ok.save_image(frame_eval, extension, mode=3)
+                                    # OKログ 出力
+                                    # DONE: 保存画像は数を制限する
+                                    sda_ok_image = sd.SaveData("ok_image", dir_judge)
+                                    sda_ok_text = sd.SaveData("judge_log", os.getcwd())
+                                    sda_ok_image.save_image(frame_eval,
+                                                                extension,
+                                                                mode=100)
+                                    sda_ok_text.save_text(
+                                            "OK, {}, {}, {}, {}"
+                                            .format(value_max, loc_max,
+                                                    value_min, loc_min))
 
                             else:
                                 self.beep_count += 1
@@ -506,7 +513,16 @@ class ImageProcessing:
                                 if self.beep_count == 2:
                                     self.jsd.beep_ng()
 
-                                # TODO: ログ 出力！！！
+                                    # NGログ 出力
+                                    sda_ng_image = sd.SaveData("ng_image", dir_judge)
+                                    sda_ng_text = sd.SaveData("judge_log", os.getcwd())
+                                    sda_ng_image.save_image(frame_eval,
+                                                                extension,
+                                                                mode=100)
+                                    sda_ng_text.save_text(
+                                            "NG, {}, {}, {}, {}"
+                                            .format(value_max, loc_max,
+                                                    value_min, loc_min))
 
                 # 検索中 表示
                 if value_max < self.judge_detect:
