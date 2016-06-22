@@ -15,12 +15,20 @@
 
 # TODO: 変数は "[大区分/固有]_[小区分/汎用]"
 
+# TODO: シリアル通信機能 実装（プリンタのプロトコルまで）
 # TODO: OCR 実装
 # TODO: GUI 実装
+# TODO: バーコード読取り機能 実装
+# TODO: デフォルト引数は "None" にする
+#       ↑ discriminantanalyse まで
+# TODO: __inin__.pyの作成
+# TODO: "pprint" を使用する
+# TODO: メインループのネストが深すぎる
 # TODO: 画像出力ウィンドウの位置を定義（固定）する
 # TODO: 複数索敵・多段式判定を実装する
 #       -> インスタンスをイテレートする？
 # TODO: 色識別 実装
+
 # TODO: 関数名は動詞にする
 
 # {{{
@@ -47,11 +55,14 @@ import cv2
 import trim as tm
 
 import sys
+# TODO: ここは__init__.pyにする！！！
 sys.path.append("D:\OneDrive\Biz\Python\SaveDate")
 sys.path.append("D:\OneDrive\Biz\Python\Sound")
+sys.path.append("D:\OneDrive\Biz\Python\Serial")
 
 import savedata as sd
 import judgesound as js
+import serialcom as sc
 
 # sysモジュール リロード
 reload(sys)
@@ -64,8 +75,14 @@ print_col = 50
 save_lim = 2
 
 
-def terminate(name_cap=0, time_wait=33):
+# def terminate(name_cap=0, time_wait=33):
+def terminate(name_cap=None, time_wait=None):
     """ 出力画像 終了処理 """  # {{{
+    if name_cap is None:
+        name_cap = 0
+    if time_wait is None:
+        time_wait = 33
+
     # name_cap: 0: 静止画 1: 動画
     cv2.waitKey(time_wait)
     if name_cap != 0:
@@ -81,8 +98,10 @@ class GetImage:
     def __init__(self, image):
         self.image = image
 
-    def get_image(self, conversion=1):
+    def get_image(self, conversion=None):
         """ 画像・動画 読込み """
+        if conversion is None:
+            conversion=1
         try:
             image = cv2.imread(self.image, conversion)
             return image
@@ -91,8 +110,11 @@ class GetImage:
             print("Image data is not found...")
             return False
 
-    def display(self, window_name, image, _type=1):
+    def display(self, window_name, image, _type=None):
         """ 画像・動画 画面出力 """
+        if _type is None:
+            _type = 1
+
         # _type: 0: 静止画 1: 動画 切換え
         # 静止画無し判定時 処理 ← "is None" にした 動作確認！！！
         if image is None and _type == 0:
@@ -130,8 +152,12 @@ class ConvertImage(GetImage):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         return gray
 
-    def adaptive_threashold(self, image, algo=1, method=0):
+    def adaptive_threashold(self, image, algo=None, method=None):
         """ 適応的二値化 変換処理 """
+        if algo is None:
+            algo = 1
+        if method is None:
+            method = 0
         gray = self.grayscale(image)
         # 適応的二値化(Adaptive Gaussian Thresholding) パラメタ定義# {{{
         # *** 適応的二値化 解説 ***
@@ -500,6 +526,15 @@ class ImageProcessing:
                                             "OK, {}, {}, {}, {}"
                                             .format(value_max, loc_max,
                                                     value_min, loc_min))
+                                    try:
+                                        src = sc.SerialCom()
+                                        port = 2
+                                        src.send_tsc("JPN_OK!", port)
+                                    except:
+                                        print("")
+                                        print("BARCODE PRINT OUT ERROR"
+                                                .center(print_col, "*"))
+                                        print("")
 
                             else:
                                 self.beep_count += 1
@@ -528,6 +563,8 @@ class ImageProcessing:
                 if value_max < self.judge_detect:
                     trim.write_text("Searching...",
                                     (0, "height"), offset=(0, 5))
+
+                    # 判定諸元初期化 TODO:メソッドに切り出す
                     self.ok_count = 0
                     self.ok_start = 0
                     self.beep_count = 0
@@ -606,6 +643,12 @@ class ImageProcessing:
         print("Search master name: " + str(search))
         print("Master image name: " + str(search))
 
+        # 判定諸元初期化 TODO:メソッドに切り出す
+        self.ok_count = 0
+        self.ok_start = 0
+        self.beep_count = 0
+        self.judge_flag = True
+
         self.get_camera_image_init(name)
 
         count = 0
@@ -676,13 +719,13 @@ class ImageProcessing:
         print("Input key \"t\"")
         print("Go master mode")
         time.sleep(0.5)
-        img = "master_source{}".format(self.extension)
+        img = "{}\\master_source{}".format(self.path, self.extension)
 
         # 文字描画消去の為 再読込み
         get_flag, frame = self.cap.read()
 
         cv2.imwrite(img, frame)
-        trim = tm.Trim(img, self.search, self.extension, self.path, mode=1)
+        trim = tm.Trim(img, self.search, self.extension, self.path, end_process=1)
         trim.trim()
         # }}}
 

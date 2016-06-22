@@ -262,7 +262,8 @@ class Trim:
                                     width: self.end_x]
 
             # 保存処理と保存フラグ "真" -> "偽" 処理
-            cv2.imwrite("imwrite.png", image_trim)
+            # FIXME: 以下の "imrite" はミス？ 不要か確認
+            # cv2.imwrite("imwrite.png", image_trim)
             sda = sd.SaveData(self.name, self.path)
             sda.save_image(image_trim, self.extension)
 
