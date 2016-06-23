@@ -1,0 +1,20 @@
+Save time: 2016-06-17 10:15:59.728000 
+Save time: 2016-06-17 10:16:05.098000 
+Save time: 2016-06-17 10:16:48.776000 
+Save time: 2016-06-17 10:16:51.363000 
+Save time: 2016-06-17 10:21:16.724000, <open file 'D:\\OneDrive\\Biz\\Python\\ImageProcessing\\MasterImage\\MasterPic_00000.txt', mode 'a' at 0x02AAD758> 
+Save time: 2016-06-17 10:31:33.745000, None 
+Save time: 2016-06-17 11:17:41.457000, None 
+Save time: 2016-06-20 08:56:02.635000, None 
+Save time: 2016-06-20 08:58:46.139000, None 
+Save time: 2016-06-20 09:05:42.466000, None 
+Save time: 2016-06-20 09:06:41.119000, None 
+Save time: 2016-06-20 09:08:14.208000, None 
+Save time: 2016-06-20 09:08:54.958000, None 
+Save time: 2016-06-20 10:27:25.232000, None 
+Save time: 2016-06-20 10:32:16.808000, None 
+Save time: 2016-06-20 10:37:39.747000, None 
+Save time: 2016-06-20 10:57:52.881000, None 
+Save time: 2016-06-20 11:45:21.768000, None 
+Save time: 2016-06-20 12:01:29.488000, None 
+Save time: 2016-06-20 13:26:48.767000, None 
