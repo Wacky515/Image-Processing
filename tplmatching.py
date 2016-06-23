@@ -16,9 +16,9 @@
 # TODO: 変数は "[大区分/固有]_[小区分/汎用]"
 
 # TODO: シリアル通信機能 実装（プリンタのプロトコルまで）
-# TODO: OCR 実装
 # TODO: GUI 実装
-# TODO: バーコード読取り機能 実装
+# TODO: OCR 実装（module 発見し、実験まで完了）
+# TODO: バーコード読取り機能 実装（module 発見し、実験まで完了）
 # TODO: デフォルト引数は "None" にする
 #       ↑ discriminantanalyse まで
 # TODO: __inin__.pyの作成
@@ -110,8 +110,10 @@ class GetImage:
             print("Image data is not found...")
             return False
 
-    def display(self, window_name, image, _type=None):
+    def display(self, window_name, image=None, _type=None):
         """ 画像・動画 画面出力 """
+        if image is None:
+            image = self.image
         if _type is None:
             _type = 1
 
