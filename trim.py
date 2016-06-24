@@ -30,7 +30,7 @@ import time
 import cv2
 
 import sys
-sys.path.append("D:\OneDrive\Biz\Python\SaveDate")
+sys.path.append("D:\OneDrive\Biz\Python\SaveData")
 
 import savedata as sd
 

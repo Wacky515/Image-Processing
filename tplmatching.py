@@ -23,6 +23,7 @@
 #       ↑ discriminantanalyse まで
 # TODO: __inin__.pyの作成
 # TODO: "pprint" を使用する
+# TODO: 例外処理の記述を "Python3" 形式にする ", " → "as"
 # TODO: メインループのネストが深すぎる
 # TODO: 画像出力ウィンドウの位置を定義（固定）する
 # TODO: 複数索敵・多段式判定を実装する
@@ -43,10 +44,11 @@
 # }}}
 
 # モジュール インポート# {{{
-import numpy as np
 import os
-# import glob
 import time
+# import glob
+import numpy as np
+from pprint import pprint
 # import unittest
 
 import cv2
@@ -55,12 +57,18 @@ import cv2
 import trim as tm
 
 import sys
-# TODO: ここは__init__.pyにする！！！
-sys.path.append("D:\OneDrive\Biz\Python\SaveDate")
+print("Default search path:")
+pprint(sys.path)
+sys.path.append("D:\OneDrive\Biz\Python")
+sys.path.append("D:\OneDrive\Biz\Python\SaveData")
 sys.path.append("D:\OneDrive\Biz\Python\Sound")
 sys.path.append("D:\OneDrive\Biz\Python\Serial")
 
-import savedata as sd
+print("And then...")
+pprint(sys.path)
+
+from SaveData import savedata as sd
+# from Sound.judgesound import judgesound as js
 import judgesound as js
 import serialcom as sc
 
@@ -115,7 +123,7 @@ class GetImage:
         if image is None:
             image = self.image
         if _type is None:
-            _type = 1
+            _type = 0
 
         # _type: 0: 静止画 1: 動画 切換え
         # 静止画無し判定時 処理 ← "is None" にした 動作確認！！！
@@ -123,6 +131,7 @@ class GetImage:
             print("Getting image...")
             image = self.get_image()
         print("Display {}s...".format(window_name))
+        # TODO: "imshow" ウィンドウ幅 下限設定
         cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
         cv2.imshow(window_name, image)
         if _type == 0:
@@ -363,7 +372,7 @@ class ImageProcessing:
         if gen_window != 0:
             cv2.namedWindow(name, cv2.WINDOW_AUTOSIZE)
 
-    def run(self, name, search, extension=".png",
+    def run(self, name, search, port, barcode, extension=".png",
             dir_master="MasterImage", dir_judge="LogImage"):
         """ 動画取得 処理（メインルーチン） """  # {{{
         print("-" * print_col)
@@ -530,8 +539,13 @@ class ImageProcessing:
                                                     value_min, loc_min))
                                     try:
                                         src = sc.SerialCom()
-                                        port = 2
-                                        src.send_tsc("JPN_OK!", port)
+                                        src.send_tsc(
+                                            # barcode["LABEL BATT-C597A/J-CA"],
+                                            # barcode["LABEL BATT-C597A/C-CA"],
+                                            barcode["LABEL BATT-C597A/OTCA-S1P"],
+                                            # "test",
+                                            port)
+
                                     except:
                                         print("")
                                         print("BARCODE PRINT OUT ERROR"
@@ -573,8 +587,8 @@ class ImageProcessing:
                     self.judge_flag = True
 
                 # 評価処理 画面表示
-                # self.cim.display(str(method[0] + " frame"), frame_eval)
-                self.cim.display(str(method[0] + " master"), master_eval)
+                # self.cim.display(str(method[0] + " frame"), frame_eval, 1)
+                self.cim.display(str(method[0] + " master"), master_eval, 1)
                 self.cim.display("Detected " + str(method[0]), detect, 1)
                 self.cim.display("Normalize " + str(method[0]),
                                 norm ** self.highlight, 1)  # frameよりmaster分縮む
@@ -592,7 +606,7 @@ class ImageProcessing:
                         (origin[0], origin[1] - text_offset - text_height[1]))
 
                 # メイン画面 表示
-                self.cim.display(name, operation)
+                self.cim.display(name, operation, 1)
                 # import pdb; pdb.set_trace()
 
                 # 結果 出力
@@ -682,7 +696,7 @@ class ImageProcessing:
             trim.write_text(text3,\
                     (origin[0], origin[1] - text_offset - text_height[1]))
 
-            self.cim.display(name, frame_draw)
+            self.cim.display(name, frame_draw, 1)
             print("Master captcha")
             count += 1
 
@@ -731,7 +745,6 @@ class ImageProcessing:
         trim.trim()
         # }}}
 
-
 def main():
     """ メインルーチン """
     # vimテスト用各変数 定義# {{{
@@ -760,8 +773,16 @@ def main():
 # }}}
 
     # テンプレートマッチング テスト# {{{
+    # 機種固有設定は実行ファイル上で "config" を作成しPickle化する
+    port = 2
+    barcode = {
+                "LABEL BATT-C597A/J-CA": "1AG6P4S2000-ABA",
+                "LABEL BATT-C597A/C-CA": "1AG6P4S2000-BBA",
+                "LABEL BATT-C597A/OTCA-S1P": "1AG6P4S2000--BA"
+                }
+
     cip = ImageProcessing()
-    cip.run("Raw capture", "masterImage")
+    cip.run("Raw capture", "masterImage", port, barcode)
     print("Image processing end...")
     # }}}
 
