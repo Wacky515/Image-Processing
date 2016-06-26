@@ -15,15 +15,12 @@
 
 # TODO: 変数は "[大区分/固有]_[小区分/汎用]"
 
-# TODO: シリアル通信機能 実装（プリンタのプロトコルまで）
 # TODO: GUI 実装
-# TODO: OCR 実装（module 発見し、実験まで完了）
-# TODO: バーコード読取り機能 実装（module 発見し、実験まで完了）
 # TODO: デフォルト引数は "None" にする
 #       ↑ discriminantanalyse まで
-# TODO: __inin__.pyの作成
+# TODO: OCR 実装（該当の module を発見し、import 実験まで完了）
+# TODO: バーコード読取り機能 実装（該当の module を発見し、import 実験まで完了）
 # TODO: "pprint" を使用する
-# TODO: 例外処理の記述を "Python3" 形式にする ", " → "as"
 # TODO: メインループのネストが深すぎる
 # TODO: 画像出力ウィンドウの位置を定義（固定）する
 # TODO: 複数索敵・多段式判定を実装する
@@ -31,6 +28,9 @@
 # TODO: 色識別 実装
 
 # TODO: 関数名は動詞にする
+
+# DONE: シリアル通信機能 実装
+# DONE: __inin__.pyの作成
 
 # {{{
 # DONE: "matchTemplate" の "TM_CCOEFF_NORMED" は正規化する必要があるのか調査
@@ -80,7 +80,7 @@ sys.setdefaultencoding("utf-8")
 # }}}
 
 print_col = 50
-save_lim = 2
+save_lim = 100
 
 
 # def terminate(name_cap=0, time_wait=33):
@@ -532,7 +532,7 @@ class ImageProcessing:
                                     sda_ok_text = sd.SaveData("judge_log", os.getcwd())
                                     sda_ok_image.save_image(frame_eval,
                                                                 extension,
-                                                                mode=100)
+                                                                save_lim=save_lim)
                                     sda_ok_text.save_text(
                                             "OK, {}, {}, {}, {}"
                                             .format(value_max, loc_max,
@@ -569,7 +569,7 @@ class ImageProcessing:
                                     sda_ng_text = sd.SaveData("judge_log", os.getcwd())
                                     sda_ng_image.save_image(frame_eval,
                                                                 extension,
-                                                                mode=100)
+                                                                save_lim=save_lim)
                                     sda_ng_text.save_text(
                                             "NG, {}, {}, {}, {}"
                                             .format(value_max, loc_max,
