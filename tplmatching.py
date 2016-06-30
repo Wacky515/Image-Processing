@@ -67,8 +67,7 @@ sys.path.append("D:\OneDrive\Biz\Python\Serial")
 print("And then...")
 pprint(sys.path)
 
-from SaveData import savedata as sd
-# from Sound.judgesound import judgesound as js
+import savedata as sd
 import judgesound as js
 import serialcom as sc
 
@@ -373,7 +372,8 @@ class ImageProcessing:
             cv2.namedWindow(name, cv2.WINDOW_AUTOSIZE)
 
     def run(self, name, search, port, barcode, extension=".png",
-            dir_master="MasterImage", dir_judge="LogImage"):
+            dir_master="MasterImage", dir_judge="LogImage",
+            model="C597A", destination="LABEL BATT-C597A/J-CA"):
         """ 動画取得 処理（メインルーチン） """  # {{{
         print("-" * print_col)
         print("START TEMPLATE MATCHING".center(print_col, " "))
@@ -537,18 +537,18 @@ class ImageProcessing:
                                             "OK, {}, {}, {}, {}"
                                             .format(value_max, loc_max,
                                                     value_min, loc_min))
+                                    print("Set port: {}".format(port))
+                                    print(destination)
+                                    print("{}".format(barcode[model][destination]))
                                     try:
                                         src = sc.SerialCom()
                                         src.send_tsc(
-                                            # barcode["LABEL BATT-C597A/J-CA"],
-                                            # barcode["LABEL BATT-C597A/C-CA"],
-                                            barcode["LABEL BATT-C597A/OTCA-S1P"],
-                                            # "test",
+                                            barcode[model][destination],
                                             port)
 
                                     except:
                                         print("")
-                                        print("BARCODE PRINT OUT ERROR"
+                                        print(" BARCODE PRINT OUT ERROR "
                                                 .center(print_col, "*"))
                                         print("")
 
@@ -775,11 +775,11 @@ def main():
     # テンプレートマッチング テスト# {{{
     # 機種固有設定は実行ファイル上で "config" を作成しPickle化する
     port = 2
-    barcode = {
+    barcode = {"C597A":{
                 "LABEL BATT-C597A/J-CA": "1AG6P4S2000-ABA",
                 "LABEL BATT-C597A/C-CA": "1AG6P4S2000-BBA",
                 "LABEL BATT-C597A/OTCA-S1P": "1AG6P4S2000--BA"
-                }
+                }}
 
     cip = ImageProcessing()
     cip.run("Raw capture", "masterImage", port, barcode)
