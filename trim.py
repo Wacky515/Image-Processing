@@ -25,14 +25,16 @@
 
 # モジュール インポート  # {{{
 import os
+import sys
 import time
 
 import cv2
 
-import sys
-sys.path.append("D:\OneDrive\Biz\Python\SaveData")
-
-import savedata as sd
+try:
+    import savedata as sd
+except:
+    sys.path.append("D:\OneDrive\Biz\Python\SaveData")
+    import savedata as sd
 
 # sysモジュール リロード
 reload(sys)
