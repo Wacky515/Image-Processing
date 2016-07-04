@@ -13,18 +13,10 @@
 """ 画像処理 GUI """
 
 # モジュール インポート
-import os
-from pprint import pprint
-import Tkinter as tk
 import sys
-import shelve
-
-# print("Default search path:")
-# pprint(sys.path)
-sys.path.append("D:\OneDrive\Biz\Python\ImageProcess")
-
-# print("And then...")
-# pprint(sys.path)
+import pickle
+import Tkinter as tk
+from pprint import pprint
 
 import tplmatching as tm
 
@@ -34,20 +26,12 @@ reload(sys)
 # デフォルトの文字コード 出力
 sys.setdefaultencoding("utf-8")
 
-
-try:
-    os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
-except:
-    print("Can't set current directory")
 print_col = 50
-load_dir = ".\\setting.dbm"
 
-# 機種固有設定は実行ファイル上で "config" を作成しPickle化する
+# デフォルトのパラメタ
 port = 1
-
 model = "C597A"
 save_desti = "LABEL BATT-C597A/OTCA-S1P"
-
 barcode = {"C597A": {
             "LABEL BATT-C597A/J-CA": "1AG6P4S2000-ABA",
             "LABEL BATT-C597A/C-CA": "1AG6P4S2000-BBA",
@@ -63,19 +47,18 @@ pprint(destinations)
 print("".center(print_col, "-"))
 
 # パラメタ 読込み
-# 保存用ディレクトリ 開く
 try:
-    load = shelve.open(load_dir)
-    print("Load keys: {}".format(load.keys()))
+    with open("setting.dump", "r") as load_file:
+        load = pickle.load(load_file)
     port = load["port"]
-    print("Load COM: {}".format(port))
     model = load["model"]
-    print("Load model: {}".format(model))
     save_desti = load["save_desti"]
-    print("Load destination: {}".format(save_desti))
     barcode = load["barcode"]
+
+    print("Load COM: {}".format(port))
+    print("Load model: {}".format(model))
+    print("Load destination: {}".format(save_desti))
     print("Load barcode: {}".format(barcode))
-    load.close
 except:
     print("Save is not found")
 
@@ -84,9 +67,9 @@ def run(event):
     print("START")
 
     # "port" 入力値をInt型に変換 取得
-    port = port_txt_fld.get()
-    port = int(port)
+    port = int(port_txt_fld.get())
     print("")
+    print("".center(print_col, "-"))
     print("INFORMATION".center(print_col, " "))
     print("".center(print_col, "-"))
     print("Set COM: {}".format(port))
@@ -100,16 +83,13 @@ def run(event):
     print("Get from button: {}".format(val.get()))
     print("Destination: {}".format(set_desti))
     print("".center(print_col, "-"))
+    print("INFORMATION".center(print_col, " "))
     print("")
 
     # パラメタ 保存
-    # 保存用ディレクトリ 開く
-    save = shelve.open(load_dir)
-    save["port"] = port
-    save["model"] = model
-    save["save_desti"] = set_desti
-    save["barcode"] = barcode
-    save.close
+    save = {"port": port, "model": model, "save_desti": set_desti, "barcode": barcode}
+    with open("setting.dump", "wb") as save_file:
+        pickle.dump(save, save_file)
 
     # 画像処理
     cip = tm.ImageProcessing()
@@ -118,7 +98,7 @@ def run(event):
             # model=model, destination="LABEL BATT-C597A/OTCA-S1P")
     print("")
     print("GUI image processing end...")
-    sys.exit()
+    sys.exit("Image prosedding done")
 
 tki = tk.Tk()
 # ウィンドウとタイトル 生成
@@ -169,7 +149,7 @@ tki.mainloop()
 
 
 def main():
-    pass
+    sys.path.append("D:\OneDrive\Biz\Python\ImageProcess")
 
 if __name__ == '__main__':
     main()
