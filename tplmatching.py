@@ -420,7 +420,7 @@ class ImageProcessing:
     def run(self, window_name, name_master, port, printout,
             extension=None, dir_master=None, dir_log=None,
             model=None, destination=None):
-        """ 動画取得 処理（メインルーチン） """
+        """ 動画取得 処理（メインルーチン） """  # {{{
         # デフォルト引数 指定  # {{{
         self.port = port
         self.printout = printout
@@ -685,34 +685,7 @@ class ImageProcessing:
                         self.judge_ok()
 
                     else:
-                        self.beep_count += 1
-                        # NG 表示
-                        self.judge_flag = False
-                        self.trim.write_text("NG",
-                                        (0, "height"),
-                                        2,
-                                        "white",
-                                        "red",
-                                        5,
-                                        4,
-                                        self.msg_origin)
-
-                        # NG音 出力
-                        if self.beep_count == 2:
-                            self.jsd.beep_ng()
-
-                            # NGログ 出力
-                            sda_ng_image = sd.SaveData("ng_image",
-                                                       self.dir_log)
-                            sda_ng_text = sd.SaveData("judge_log",
-                                                      os.getcwd())
-                            sda_ng_image.save_image(image,
-                                                    self.extension,
-                                                    save_lim=save_lim)
-                            sda_ng_text.save_text("NG, {}, {}, {}, {}" .format(self.val_max,
-                                                                               self.loc_max,
-                                                                               self.val_min,
-                                                                               self.loc_min))
+                        self.judge_ng()
         # 検索中 表示
         if self.val_max < self.obj_detect:
             self.trim.write_text("Searching...", (0, "height"), offset=(0, 5))
@@ -722,46 +695,71 @@ class ImageProcessing:
     def judge_ok(self):
         """ 判定OK 処理 """  # {{{
         self.beep_count += 1
-        # OK 表示
-        self.trim.write_text("OK", (0, "height"), 2,
-                        "white", "green", 5, 4,
-                        self.msg_origin)
-        # 検出位置 矩形表示
-        self.trim.draw_rectangle(self.left_up,
-                            self.right_low,
-                            "white", "green")
+
+        # "OK" 画面表示
+        stwt = self.trim.write_text
+        stwt("OK", (0, "height"), 2, "white", "green", 5, 4, self.msg_origin)
+
+        # 検出位置矩形 画面表示
+        stdr = self.trim.draw_rectangle
+        stdr(self.left_up, self.right_low, "white", "green")
+
         # 類似度 表示
         similarity = round(self.val_max * 100, 1)
-        self.trim.write_text(str(similarity) + "%", (self.right_low[0], "height"),
-                        scale=0.6, color_out="white", color_in="green",
-                        thickness_out=3, thickness_in=2, offset=(0,
-                        self.right_low[1] + 5))
+        sim = str(similarity) + "%"
+        coord = (self.right_low[0], "height")
+        offset = (0, self.right_low[1] + 5)
+        stwt(sim, coord, scale=0.6, color_out="white", color_in="green",
+             thickness_out=3, thickness_in=2, offset=offset)
 
-        # OK音 出力
+        # OK音 音声出力
         if self.beep_count == 2:
             self.jsd.beep_ok()
 
             # OKログ 出力
-            # DONE: 保存画像は数を制限する
             sda_ok_image = sd.SaveData("ok_image", self.dir_log)
             sda_ok_text = sd.SaveData("judge_log", os.getcwd())
-            sda_ok_image.save_image(self.image, self.extension,
-                                    save_lim=save_lim)
-            sda_ok_text.save_text("OK, {}, {}, {}, {}".format(self.val_max,
-                                                              self.loc_max,
-                                                              self.val_min,
-                                                              self.loc_min))
+            sisi = sda_ok_image.save_image
+            sisi(self.image, self.extension, save_lim=save_lim)
+            stst = sda_ok_text.save_text
+            stst("OK, {}, {}, {}, {}".format(self.val_max, self.loc_max,
+                                             self.val_min, self.loc_min))
+
             print("Set port: {}".format(self.port))
             print(self.destination)
             print("{}".format(self.printout[self.model][self.destination]))
             print("")
             try:
                 src = sc.SerialCom()
-                src.send_tsc(self.printout[self.model][self.destination], self.port)
+                sst = src.send_tsc
+                sst(self.printout[self.model][self.destination], self.port)
 
             except:
                 print(" BARCODE PRINT OUT ERROR ".center(print_col, "*"))
                 print("")
+# }}}
+
+    def judge_ng(self):
+        """ 判定NG 処理 """  # {{{
+        self.beep_count += 1
+        self.judge_flag = False
+
+        # NG 画面表示
+        stwt = self.trim.write_text
+        stwt("NG", (0, "height"), 2, "white", "red", 5, 4, self.msg_origin)
+
+        # NG音 音声出力
+        if self.beep_count == 2:
+            self.jsd.beep_ng()
+
+            # NGログ 出力
+            sda_ng_image = sd.SaveData("ng_image", self.dir_log)
+            sda_ng_text = sd.SaveData("judge_log", os.getcwd())
+            sisi = sda_ng_image.save_image
+            sisi(self.image, self.extension, save_lim=save_lim)
+            stst = sda_ng_text.save_text
+            stst("NG, {}, {}, {}, {}" .format(self.val_max, self.loc_max,
+                                              self.val_min, self.loc_min))
 # }}}
 
     def init_judge_param(self):
@@ -778,12 +776,6 @@ class ImageProcessing:
         print("")
         time.sleep(0.1)
         image = "{}\\master_source{}".format(self.path, self.extension)
-
-        # TODO: 消す！！！
-        print(self.path)
-        print(self.extension)
-        print(self.search)
-        # TODO: 消す！！！
 
         # 文字描画消去の為 再読込み
         get_flag, frame = self.cap.read()
@@ -837,12 +829,6 @@ class ImageProcessing:
         self.search = search
         self.extension = extension
         self.path = path
-
-        # TODO: 消す！！！
-        print(search)
-        print(extension)
-        print(path)
-        # TODO: 消す！！！
 
         name = "Get master image"
         text2 = "Quit: Long press \"q\" key"
