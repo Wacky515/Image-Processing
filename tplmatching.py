@@ -15,26 +15,18 @@
 
 # TODO: 変数は "[大区分/固有]_[小区分/汎用]"
 # TODO: 関数名は動詞にする
+# TODO: デフォルト引数は "None" にする
+# TODO: メンバ変数の表記は "クラス名.変数名" にする
 
 # TODO: しきい値 手動入力にする
 # TODO: アイコン 作成
 # TODO: ソフト名 正式にする
-# TODO: デフォルト引数は "None" にする
-#       ↑ discriminantanalyse まで
 # TODO: メインループのネストが深すぎる
 #       各処理をメソッドに切出す
 # TODO: 画像出力ウィンドウの位置を定義（固定）する
 # TODO: 複数索敵・多段式判定を実装する
 #       -> インスタンスをイテレートする？
 # TODO: 色識別 実装
-
-# DONE: シリアル通信機能 実装
-# DONE: __inin__.pyの作成
-# DONE: GUI 実装
-# DONE: OCR 実装（該当の module を発見し、import 実験まで完了）
-# DONE: バーコード読取り機能 実装
-#       （該当の module を発見し、import 実験まで完了）
-# DONE: "pprint" を使用する
 
 # {{{
 # DONE: "matchTemplate" の "TM_CCOEFF_NORMED" は正規化する必要があるのか調査
@@ -43,6 +35,14 @@
 # DONE: Unicode文字リテラルを " u"body" " -> " "body" " に変更
 # DONE: 文字列の埋込を % 形式から format 形式に変更
 # DONE: "print" -> "print()" に変更
+# DONE: シリアル通信機能 実装
+# DONE: __inin__.pyの作成
+# DONE: GUI 実装
+# DONE: OCR 実装（該当の module を発見し、import 実験まで完了）
+# DONE: バーコード読取り機能 実装
+#       （該当の module を発見し、import 実験まで完了）
+# DONE: "pprint" を使用する
+
 # ABORT: ワークを動体検出後に判定開始する
 # ABORT: ワーク検出は背景差分で行う
 # }}}
@@ -52,8 +52,11 @@ import os
 import sys
 import time
 # import glob
+# !!!: ↓の "numpy" は消さない！！！
 import numpy as np
 from pprint import pprint
+
+# import unittest
 
 import cv2
 
@@ -65,6 +68,9 @@ try:
 except:
     print("Default search path:")
     pprint(sys.path)
+    print("")
+
+    print("And then...")
     sys.path.append("D:\OneDrive\Biz\Python")
     sys.path.append("D:\OneDrive\Biz\Python\SaveData")
     sys.path.append("D:\OneDrive\Biz\Python\Sound")
@@ -75,10 +81,7 @@ except:
     import judgesound as js
     import serialcom as sc
 
-    print("And then...")
     pprint(sys.path)
-
-# import unittest
 
 # sysモジュール リロード
 reload(sys)
@@ -93,18 +96,18 @@ save_lim = 100
 
 def terminate(name_cap=None, time_wait=None):
     """ 出力画像 終了処理 """  # {{{
-    if name_cap is None:
-        name_cap = 0
     if time_wait is None:
         time_wait = 33
 
-    # name_cap: 0: 静止画 1: 動画
     cv2.waitKey(time_wait)
-    if name_cap != 0:
+    # name_cap [None: 静止画, それ以外: 動画]
+    if name_cap is not None:
         name_cap.release
     cv2.destroyAllWindows()
+
+    print("")
     print("Terminated...")
-    sys.exit("End terminate")
+    sys.exit("System end")
 # }}}
 
 
@@ -117,33 +120,34 @@ class GetImage:
         """ 画像・動画 読込み """
         if conversion is None:
             conversion = 1
+
+        # 画像取得
         try:
             image = cv2.imread(self.image, conversion)
             return image
-        # 画像取得 エラー処理
         except:
             print("Image data is not found...")
             return False
 
     def display(self, window_name, image=None, _type=None):
         """ 画像・動画 画面出力 """
-        # _type: 0: 静止画 / 1: 動画 切換え
         # 静止画無し判定時 処理 ← "is None" にした 動作確認！！！
         if image is None:
             image = self.image
-        if _type is None:
-            _type = 0
 
-        if image is None and _type == 0:
-            print("Getting image...")
+        # _type [None: 静止画, それ以外: 動画]
+        if image is None and _type is None:
             image = self.get_image()
-        print("Display {}s...".format(window_name))
-        cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
+            print("Go get image...")
+
         # TODO: "imshow" ウィンドウ幅 下限設定
+        cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
         cv2.imshow(window_name, image)
-        if _type == 0:
+        print("Display {} image...".format(window_name))
+
+        if _type is None:
             # 静止画の出力保持処理
-            terminate(0, 0)
+            terminate()
 # }}}
 
 
@@ -166,8 +170,10 @@ class ConvertImage(GetImage):
 
     def grayscale(self, image):
         """ グレースケール 変換処理 """
-        print("Convert grayscale...")
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        print("Convert grayscale...")
+        print("")
+
         return gray
 
     def adaptive_threashold(self, image, algo=None, method=None):
@@ -197,13 +203,13 @@ class ConvertImage(GetImage):
         #   背景領域のノイズ・色ゆらぎの影響を低減する
         # }}}
         subtract = 4
-        # 適応的二値化 変換処理
-        print("Convert adaptive threashold...")
+
         cat = cv2.adaptiveThreshold
         adpth = cat(gray, THRESH_MAX, eval(THRESH_ALGOS[algo]),
                     eval(self.THRESH_METHODS[method]), area_calc, subtract)
-        # adpth = cat(gray, THRESH_MAX, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-        #               cv2.THRESH_BINARY, area_calc, subtract)
+        print("Convert adaptive threashold...")
+        print("")
+
         return adpth
 
     def bilateral_filter(self, image):
@@ -218,36 +224,57 @@ class ConvertImage(GetImage):
         # 座標空間におけるフィルタシグマ
         #   大きくなるとより遠くの画素同士が影響する
         metric_sigma = 3
-        print("Bilateral filtering...")
+
         cvf = cv2.bilateralFilter
         blr = cvf(gray, area_calc, color_sigma, metric_sigma)
+        print("Bilateral filtering...")
+        print("")
+
         return blr
 
     def discriminantanalyse(self, image,
-                            thresh_std=128, method=5):
+                            thresh_std=None, method=None):
         """ 判別分析法 処理 """
-        image = self.bilateral_filter(image)
-        print("Discriminant analysing...")
-        cth = cv2.threshold
+        if thresh_std is None:
+            thresh_std = 128
+        if method is None:
+            method = 5
+        blr = self.bilateral_filter(image)
         # 最大閾値
         THRESH_MAX = 255
-        ret, dcta = cth(image, thresh_std,
+
+        cth = cv2.threshold
+        ret, dcta = cth(blr, thresh_std,
                         THRESH_MAX, eval(self.THRESH_METHODS[method]))
+        print("Discriminant analysing...")
+        print("")
+
         return dcta
 
-    def binarize(self, image, thresh_std=128, method=1):
+    def binarize(self, image, thresh_std=None, method=None):
         """ 二値化 処理 """
-        image = self.bilateral_filter(image)
-        print("Binarizing...")
-        cth = cv2.threshold
+        if thresh_std is None:
+            thresh_std = 128
+        if method is None:
+            method = 1
+        blr = self.bilateral_filter(image)
         # 最大閾値
         THRESH_MAX = 255
-        ret, binz = cth(image, thresh_std,
+
+        cth = cv2.threshold
+        ret, binz = cth(blr, thresh_std,
                         THRESH_MAX, eval(self.THRESH_METHODS[method]))
+        print("Binarizing...")
+        print("")
+
         return binz
 
-    def normalize(self, image, alpha=0, beta=1):
+    def normalize(self, image, alpha=None, beta=None):
         """ ノルム正規化 処理 """
+        if alpha is None:
+            alpha = 0
+        if beta is None:
+            beta = 1
         # alpha、beta 解説# {{{
         # TODO: わからんから図書館で資料を借りる！！！
         # TODO: 特にアルファ、ベータの数値の意味合いと妥当性！！！
@@ -256,20 +283,27 @@ class ConvertImage(GetImage):
         # beta:ノルム正規化の場合、不使用
         #        範囲正規化の場合、の上界
         # }}}
+
         algo = cv2.NORM_MINMAX
-        print("Normalizing...")
         norm = cv2.normalize(image, image, alpha, beta, algo)
+        print("Normalizing...")
+        print("")
+
         return norm
 # }}}
 
 
 class Tplmatching:
     """ テンプレートマッチング クラス """
-    def __init__(self):
-        self.cim = ConvertImage()
+    cim = ConvertImage()
 
-    def tplmatch(self, image, tpl, algo=5):
+    def __init__(self):
+        pass
+
+    def tplmatch(self, source_image, master_image, algo=None):
         """ テンプレートマッチング 処理 """
+        if algo is None:
+            algo = 5
         # 類似度判定アルゴリズム 解説# {{{
         # cv2.TM_SQDIFF    :輝度値の差の２乗の合計     小さいほど類似
         # cv2.TM_CCORR     :輝度値の相関               大きいほど類似
@@ -283,65 +317,78 @@ class Tplmatching:
                  "cv2.TM_CCORR_NORMED",
                  "cv2.TM_CCOEFF",
                  "cv2.TM_CCOEFF_NORMED"]
-        match = cv2.matchTemplate(image, tpl, eval(ALGOS[algo]))
+
+        cmt = cv2.matchTemplate
+        match = cmt(source_image, master_image, eval(ALGOS[algo]))
+
         if ALGOS in ["cv2.TM_SQDIFF", "cv2.TM_CCORR", "cv2.TM_CCOEFF"]:
             # ノルム正規化 処理
             norm = self.cim.normalize(match)
             # 類似度の最小・最大値と各座標 取得
-            value_min, value_max, loc_min, loc_max = cv2.minMaxLoc(norm)
+            val_min, val_max, loc_min, loc_max = cv2.minMaxLoc(norm)
         else:
-            value_min, value_max, loc_min, loc_max = cv2.minMaxLoc(match)
-        return match, value_min, value_max, loc_min, loc_max
+            val_min, val_max, loc_min, loc_max = cv2.minMaxLoc(match)
+
+        return match, val_min, val_max, loc_min, loc_max
 
     def mask(self):
         """ マスク 処理（将来的に実装） """
         # 初回でマッチした近傍領域以外にマスク処理し、処理速度向上する
-        # ただし索敵位置が動的に変化しない前提
+        # ただし索敵位置が変化しない事が前提
         pass
 
-    def calc_detect_location(self, loc_max, master, location="center"):
-        """ 補足座標 演算 """
-        height, width, channel = master.shape
+    def calc_detect_location(self, loc_input, image, loc_output=None):
+        """ 捕捉座標 演算 """
+        if loc_output is None:
+            loc_output = "center"
+
+        height, width, channel = image.shape
+
         # 中央座標 演算
-        if location == "center":
-            coord = (loc_max[0] + width / 2, loc_max[1] + height / 2)
+        if loc_output == "center":
+            div = 2
         # 右下座標 演算
-        elif location == "tail":
-            coord = (loc_max[0] + width, loc_max[1] + height)
+        elif loc_output == "tail":
+            div = 1
+        coord = (loc_input[0] + width / div, loc_input[1] + height / div)
+
         return coord, height, width
 
-    def show_detect_area(self, loc_max, frame, master):
-        """ 補足範囲 演算 """
+    def show_detect_area(self, location, image, frame):
+        """ 捕捉範囲 演算 """
         # 中央座標 演算
-        coord, height, width\
-            = self.calc_detect_location(loc_max, master, "center")
-        left_up = (loc_max[0], loc_max[1])
-        right_bottom = (loc_max[0] + width, loc_max[1] + height)
-        detect = frame[loc_max[1]:loc_max[1] + height,
-                       loc_max[0]:loc_max[0] + width].copy()
-        return detect, left_up, right_bottom
+        coord, height, width = \
+            self.calc_detect_location(location, image)
+
+        left_up = (location[0], location[1])
+        right_low = (location[0] + width, location[1] + height)
+        detect_image = (frame[location[1]:location[1] + height,
+                        location[0]:location[0] + width].copy())
+
+        return detect_image, left_up, right_low
 
 
 class ImageProcessing:
+    cim = ConvertImage()
+    tmc = Tplmatching()
+    jsd = js.JudgeSound()
+
+    ciadp = cim.adaptive_threashold
+    cidca = cim.discriminantanalyse
+    cibiz = cim.binarize
+    cinor = cim.normalize
+
+    # ipr = ImageProcessing
+
     """ 動画取得 クラス """
-    def __init__(self):
-
-        self.cim = ConvertImage()
-        self.tmc = Tplmatching()
-        self.jsd = js.JudgeSound()
-
-        self.ciadp = self.cim.adaptive_threashold
-        self.cidca = self.cim.discriminantanalyse
-        self.cibiz = self.cim.binarize
-        self.cinor = self.cim.normalize
-
+    def __init__(self):  # {{{
         # 動画 取得
         self.cap = cv2.VideoCapture(0)
-        self.text3 = "Mastering: Long press \"m\" key"
 
         # マッチ判定値
-        self.judge_detect = 0.40
-        self.judge_ok = 0.70
+        self.obj_detect = 0.40
+        self.val_ok = 0.70
+
         # OK/NG 表示固定flag
         self.judge_flag = True
 
@@ -349,29 +396,224 @@ class ImageProcessing:
         self.ok_time = 2
         self.ok_count = 0
 
-        # Beep音 再生回数固定用 カウンタ
-        self.beep_count = 0
-
         # 正規化（強調表示）の強調度
         self.highlight = 4
 
+        # Beep音 再生回数固定用 カウンタ
+        self.beep_count = 0
+
         # 操作説明文
         self.text2 = "End: Long press \"e\" key"
+        self.text3 = "Mastering: Long press \"m\" key"
 
         # 判定用 変数
-        self.frame_eval = None
+        # self.frame_eval = None
 
-        self.value_max = None
+        self.val_max = None
         self.loc_max = None
         self.loc_min = None
 
-        self.left_up = None
-        self.right_bottom = None
+        # self.left_up = None
+        # self.right_low = None
+# }}}
 
-    def get_camera_image_init(self, name, gen_window=0):
-        """ カメラから動画取得 """
-        # カメラキャプチャ時のイニシャライズ ディレイ処理
+    def run(self, window_name, name_master, port, printout,
+            extension=None, dir_master=None, dir_log=None,
+            model=None, destination=None):
+        """ 動画取得 処理（メインルーチン） """
+        # デフォルト引数 指定  # {{{
+        self.port = port
+        self.printout = printout
+
+        sgm = self.go_get_master_mode
+
+        if extension is None:
+            self.extension = ".png"
+        else:
+            self.extension = extension
+
+        if dir_master is None:
+            self.dir_master = "MasterImage"
+        else:
+            self.dir_master = dir_master
+
+        if dir_log is None:
+            self.dir_log = "LogImage"
+        else:
+            self.dir_log = dir_log
+
+        if model is None:
+            self.model = "C597A"
+        else:
+            self.model = model
+
+        if destination is None:
+            self.destination = "LABEL BATT-C597A/J-CA"
+        else:
+            self.destination = destination
+# }}}
+
+        # 処理開始 標準出力  # {{{
+        print("-" * print_col)
+        print("START TEMPLATE MATCHING".center(print_col, " "))
+        print("-" * print_col)
+        print("")
+
+        print(" SEARCH MASTER MODE ".center(print_col, "*"))
+        print("")
+
+        cwd = os.getcwd()
+        path_master = cwd + "\\" + self.dir_master
+        print("Master directory:")
+        print(path_master.rjust(print_col, " "))
+        print("")
+# }}}
+
+        # 検索するマスター画像 名前・パス 表示  # {{{
+        search_master_file = str(name_master) + "_****" + str(self.extension)
+        search_master_path = str(path_master) + ".\\" + search_master_file
+        print("Search master file name: " + search_master_file)
+        print("Search master path: " + search_master_path)
+        print("")
+# }}}
+
+        # !!!: 複数探査の時はここの "sda" をイテレート処理
+        # 枝番最大のマスター画像 取得  # {{{
+        self.sda = sd.SaveData(name_master, path_master)
+        set_num_master, get_num_master, get_master_flag = \
+            self.sda.get_name_max(self.extension)
+        print(" RETURN TEMPLATE MATCHING ".center(print_col, "*"))
+        print("Get master flag: {}".format(get_master_flag))
+        print("")
+# }}}
+
+        # マスター画像有無 判定  # {{{
+        if get_master_flag is False:
+            print("Master is none")
+
+            # マスター画像取得モード 遷移
+            while get_master_flag is False:
+                get_num_master = \
+                    sgm(name_master, self.extension, path_master)
+# }}}
+
+        # イニシャルのマッチしたマスター画像 名前・パス 表示  # {{{
+        master_file = str(get_num_master) + str(self.extension)
+        master_path = str(path_master) + ".\\" + master_file
+        print("Get master name: " + str(get_num_master))
+        print("Get master extension: " + str(self.extension))
+        print("Master path: " + master_path)
+        print("")
+# }}}
+        # !!!: イテレート処理予定 ここまで
+
+        # キャプチャ 開始
+        self.get_camera_image_init(window_name)
+
+        # !!!: ここから
+        count = 0
+        while True:
+            if count == 0:
+                time.sleep(0.1)
+                print("Initial delay")
+
+            # キャプチャとキャプチャエラー 判定
+            get_flag, frame = self.cap.read()
+
+            if self.check_get_flag(get_flag):
+                break
+            if self.check_get_frame(frame):
+                continue
+
+            print("Capture is running...")
+            print("")
+
+            count += 1
+
+            # マスター画像 セット
+            master_file = str(get_num_master) + str(self.extension)
+            master_path = str(path_master) + ".\\" + master_file
+            master = cv2.imread(str(master_path), 1)
+            print("Master name: " + str(get_num_master))
+            print("Master extension: " + str(self.extension))
+            print("Master path: " + master_path)
+            print("")
+
+            # テンプレートマッチング イテレート処理
+            # !!!: 複数探査の時はここのタプルにマスターを入れる
+            # 評価用 処理リスト
+            methods = [
+                    ["Row", None],
+                    # ["Adaptive threashold", self.ciadp],
+                    # ["Discriminant analyse", self.cidca],
+                    # ["Bilateral filter", self.cibiz]
+                    ]
+
+            # イテレート処理
+            for method in methods:
+                if method[1] is not None:
+                    frame_eval = method[1](frame)
+                    master_eval = method[1](master)
+                else:
+                    frame_eval = frame
+                    master_eval = master
+
+                # テンプレートマッチング 処理
+                mch, self.val_min, self.val_max, self.loc_min, self.loc_max = \
+                    self.tmc.tplmatch(frame_eval, master_eval)
+                match = mch
+
+                # マッチ領域 トリム処理
+                detect_eval, left_up, right_low = \
+                    self.tmc.show_detect_area(self.loc_max, master, frame)
+
+                # 検出領域 操作領域と同じ画像処理
+                if method[1] is not None:
+                    detect_eval = method[1](detect_eval)
+
+                # OK/NG 判定
+                self.judge_image(frame_eval, left_up, right_low, )
+
+                # 評価処理 画面表示
+                scd = self.cim.display
+                # scd(str(method[0] + " frame"), self.frame_eval, 1)
+                scd(str(method[0] + " master"), master_eval, 1)
+                scd("Detected " + str(method[0]), detect_eval, 1)
+
+                # 捕捉範囲 正規化（捕捉範囲 強調表示用）
+                norm = self.cinor(match)
+                norm_eval = norm ** self.highlight
+                # frameよりmaster分縮む
+                self.cim.display("Normalize " + str(method[0]), norm_eval, 1)
+
+                # 操作方法説明文 画面表示
+                self.display_operation(frame, window_name,
+                                       self.text2, self.text3)
+
+                # 類似度 標準出力
+                self.print_simil(self.val_max, method)
+
+            # "m" 押下 マスター画像取得モード 遷移
+            if cv2.waitKey(33) == ord("m"):
+                print("Input key \"m\"")
+                print("Go get master")
+                print("")
+                # sgm = self.go_get_master_mode
+                get_num_master = sgm(name_master, self.extension, path_master)
+
+            # "e" 押下 終了処理
+            if cv2.waitKey(33) == ord("e"):
+                print("Input key \"e\"")
+                print(" END PROCESS ".center(print_col, "*"))
+                print("")
+                break
+            # }}}
+
+    def get_camera_image_init(self, window_name):
+        """ カメラから動画取得 """  # {{{
+        # キャプチャ イニシャルディレイ
         time.sleep(0.1)
+        print("Camera open check delay")
         if not self.cap.isOpened():
             print("Can not connect camera...")
             terminate()
@@ -386,201 +628,229 @@ class ImageProcessing:
             #           0, 255, self.thresh_max)
             #        window_name = "Adaptive Threashold cap"
             # }}}
-        if gen_window != 0:
-            cv2.namedWindow(name, cv2.WINDOW_AUTOSIZE)
+        cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
+# }}}
 
-    def run(self, name, search, port, barcode, extension=".png",
-            dir_master="MasterImage", dir_judge="LogImage",
-            model="C597A", destination="LABEL BATT-C597A/J-CA"):
-        """ 動画取得 処理（メインルーチン） """  # {{{
-        self.port = port
-        self.barcode = barcode
-        self.extension = extension
-        self.dir_judge = dir_judge
-        self.model = model
-        self.destination = destination
-
-        print("-" * print_col)
-        print("START TEMPLATE MATCHING".center(print_col, " "))
-        print("-" * print_col)
-        print("")
-        print(" SEARCH MASTER MODE ".center(print_col, "*"))
-        print("")
-        cwd = os.getcwd()
-        path_master = cwd + "\\" + dir_master
-        print("Master directory:")
-        print(path_master.rjust(print_col, " "))
-
-        # 最終枝番のマスター画像 取得
-        # TODO: 複数探査の時はここの" sda "をイテレート処理！！！
-        sda = sd.SaveData(search, path_master)
-        set_name, master_name, match_flag = sda.get_name_max(self.extension)
-
-        print(" RETURN TEMPLATE MATCHING ".center(print_col, "*"))
-        print("")
-
-        # マスター画像有無 判定
-        if match_flag is False:
-            print("No match master")
-            print("Go get master mode(None master case)")
-
-            # マスター画像取得モード 遷移
-            while match_flag is False:
-                self.get_master(search, self.extension, path_master, 1)
-                set_name, master_name, match_flag = sda.get_name_max(self.extension)
-
-            print("Get master name: " + str(master_name))
-            print("")
-
-        else:
-            print("Match master name: " + str(master_name))
-            print("Match master extension: " + str(self.extension))
-            print("")
-        # TODO: イテレート処理予定 ここまで！！！
-
-        self.get_camera_image_init(name)
-
-        # !!!: ここから
-        count = 0
-        while True:
-            if count == 0:
-                print("Initial delay")
-                time.sleep(0.1)
-            get_flag, frame = self.cap.read()
-
-            if self.check_get_flag(get_flag) is False:
-                break
-            if self.check_get_frame(frame) is False:
-                continue
-
-            print("Capture is running...")
-            count += 1
-            # import pdb; pdb.set_trace()
-        # !!!: 以上までをclassにしたいが"while"内の"frame"を
-        # "while"外に出せないので断念！！！
+    def check_get_flag(self, flag):
+        """ 動画取得ミス時 スキップ処理 """  # {{{
+        if flag is False:
+            print("Can not get end flag")
+            return True
             # }}}
 
-            # マスター画像の検索とセット 表示
-            master_data = str(master_name) + str(self.extension)
+    def check_get_frame(self, frame):
+        """ ループ 終了処理 """  # {{{
+        if frame is None:
+            print("Can not get video frame")
+            return True
+            # }}}
+
+    def judge_image(self, image, left_up, right_low):
+        """ ワーク 検出・判定処理 """  # {{{
+        self.image = image
+        self.left_up = left_up
+        self.right_low = right_low
+
+        self.trim = tm.Trim(image, None, None, None, 1)
+
+        # ワーク検知 判定
+        if self.val_max > self.obj_detect:
+
+            # ワーク検知 処理
+            # モード 画面出力
+            twt = self.trim.write_text
+            msg = "Matching..."
+            msg_height, msg_base = twt(msg, (0, "height"), offset=(0, 5))
+            self.msg_origin = (0, 15 + msg_base)
+
+            # *秒間OKで画面表示
+            self.ok_count += 1
+            if self.ok_count == 1:
+                self.ok_start = time.time()
+                print("Start OK time: " + str(self.ok_start))  # {{{
+                print("")  # }}}
+            else:
+                ok_pass = time.time() - self.ok_start
+                print("Start OK time: " + str(self.ok_start))  # {{{
+                print("Pass OK time: " + str(round(ok_pass, 2)) + "[sec]")
+                print("OK frame count: " + str(self.ok_count))
+                print("")  # }}}
+
+                # 判定時間経過 判定
+                if ok_pass > self.ok_time:
+
+                    # OK/NG 判定処理
+                    if self.val_max > self.val_ok and \
+                            self.judge_flag is True:
+                        self.judge_ok()
+
+                    else:
+                        self.beep_count += 1
+                        # NG 表示
+                        self.judge_flag = False
+                        self.trim.write_text("NG",
+                                        (0, "height"),
+                                        2,
+                                        "white",
+                                        "red",
+                                        5,
+                                        4,
+                                        self.msg_origin)
+
+                        # NG音 出力
+                        if self.beep_count == 2:
+                            self.jsd.beep_ng()
+
+                            # NGログ 出力
+                            sda_ng_image = sd.SaveData("ng_image",
+                                                       self.dir_log)
+                            sda_ng_text = sd.SaveData("judge_log",
+                                                      os.getcwd())
+                            sda_ng_image.save_image(image,
+                                                    self.extension,
+                                                    save_lim=save_lim)
+                            sda_ng_text.save_text("NG, {}, {}, {}, {}" .format(self.val_max,
+                                                                               self.loc_max,
+                                                                               self.val_min,
+                                                                               self.loc_min))
+        # 検索中 表示
+        if self.val_max < self.obj_detect:
+            self.trim.write_text("Searching...", (0, "height"), offset=(0, 5))
+            self.init_judge_param()
+# }}}
+
+    def judge_ok(self):
+        """ 判定OK 処理 """  # {{{
+        self.beep_count += 1
+        # OK 表示
+        self.trim.write_text("OK", (0, "height"), 2,
+                        "white", "green", 5, 4,
+                        self.msg_origin)
+        # 検出位置 矩形表示
+        self.trim.draw_rectangle(self.left_up,
+                            self.right_low,
+                            "white", "green")
+        # 類似度 表示
+        similarity = round(self.val_max * 100, 1)
+        self.trim.write_text(str(similarity) + "%", (self.right_low[0], "height"),
+                        scale=0.6, color_out="white", color_in="green",
+                        thickness_out=3, thickness_in=2, offset=(0,
+                        self.right_low[1] + 5))
+
+        # OK音 出力
+        if self.beep_count == 2:
+            self.jsd.beep_ok()
+
+            # OKログ 出力
+            # DONE: 保存画像は数を制限する
+            sda_ok_image = sd.SaveData("ok_image", self.dir_log)
+            sda_ok_text = sd.SaveData("judge_log", os.getcwd())
+            sda_ok_image.save_image(self.image, self.extension,
+                                    save_lim=save_lim)
+            sda_ok_text.save_text("OK, {}, {}, {}, {}".format(self.val_max,
+                                                              self.loc_max,
+                                                              self.val_min,
+                                                              self.loc_min))
+            print("Set port: {}".format(self.port))
+            print(self.destination)
+            print("{}".format(self.printout[self.model][self.destination]))
             print("")
-            print("Master name: " + master_data + "\r\n")
+            try:
+                src = sc.SerialCom()
+                src.send_tsc(self.printout[self.model][self.destination], self.port)
 
-            master = str(path_master) + ".\\" + master_data
-            master = cv2.imread(str(master), 1)
-
-            # テンプレートマッチング イテレート処理
-            # TODO: 複数探査の時はここのタプルにマスターを入れる
-            # 評価用 処理リスト
-            methods = [
-                    ["Row", None],
-                    # ["Adaptive threashold", self.ciadp],
-                    # ["Discriminant analyse", self.cidca],
-                    # ["Bilateral filter", self.cibiz]
-                    ]
-
-            for method in methods:
-                if method[1] is not None:
-                    self.frame_eval = method[1](frame)
-                    master_eval = method[1](master)
-                else:
-                    self.frame_eval = frame
-                    master_eval = master
-
-                # テンプレートマッチング 処理
-                result = self.tmc.tplmatch(self.frame_eval, master_eval)
-                match, self.value_min, self.value_max, self.loc_min, self.loc_max = result
-
-                # 補足範囲 正規化（補足強調表示用）
-                norm = self.cinor(match)
-
-                # マッチ領域 トリム処理
-                area = self.tmc.show_detect_area(self.loc_max, frame, master)
-                detect, self.left_up, self.right_bottom = area
-
-                if method[1] is not None:
-                    detect = method[1](detect)
-
-                # OK/NG 判定
-                self.judgement_image()
-
-                # TODO: メソッドに切出す
-                # 評価処理 画面表示
-                # self.cim.display(str(method[0] + " frame"), self.frame_eval, 1)
-                self.cim.display(str(method[0] + " master"), master_eval, 1)
-                self.cim.display("Detected " + str(method[0]), detect, 1)
-                self.cim.display("Normalize " + str(method[0]),
-                                 norm ** self.highlight,
-                                 1)  # frameよりmaster分縮む
-
-                # 操作方法説明文 表示位置 取得
-                text_offset = 10
-                baseline = frame.shape[0] - text_offset
-                origin = 1, baseline
-
-                # 操作方法説明文 表示
-                operation = frame
-                trim = tm.Trim(operation, None, None, None, 1)
-                text_height = trim.write_text(self.text2, origin)
-                trim.write_text(self.text3,
-                                (origin[0],
-                                 origin[1] - text_offset - text_height[1]))
-
-                # メイン画面 表示
-                self.cim.display(name, operation, 1)
-                # import pdb; pdb.set_trace()
-
-                # TODO: メソッドに切出す
-                # 結果 出力
-                simil_max = str(round(self.value_max * 100, 2)) + "%"
-                simil_min = str(round(self.value_min * 100, 2)) + "%"
+            except:
+                print(" BARCODE PRINT OUT ERROR ".center(print_col, "*"))
                 print("")
-                print("{}".format(method[0]))
-                print("Max similarity:")
-                print(str(simil_max.rjust(print_col, " ")))
-                print(str(self.loc_max).rjust(print_col, " "))
-                print("Min similarity:")
-                print(str(simil_min.rjust(print_col, " ")))
-                print(str(self.loc_min).rjust(print_col, " "))
+# }}}
 
-            # TODO: メソッドに切出す
-            # "m"キー押下 マスター画像取得モード 遷移
-            if cv2.waitKey(33) == ord("m"):
-                print("")
-                print("Input key \"m\"")
-                print("Go get master mode")
-                print("")
-                time.sleep(0.5)
-                # TODO: 複数探査の時はここの" sda "をイテレート処理！！！
-                self.get_master(search, self.extension, path_master, 1)
-                set_name, master_name, match_flag = sda.get_name_max(self.extension)
-                # TODO: イテレート処理予定 ここまで！！！
-                cv2.destroyAllWindows()
-                print("Get master name: " + str(master_name))
+    def init_judge_param(self):
+        """ 判定諸元初期化 """  # {{{
+        self.ok_count = 0
+        self.ok_start = 0
+        self.beep_count = 0
+        self.judge_flag = True
+# }}}
 
-            # TODO: メソッドに切出す
-            # "e"キー押下 終了処理
-            if cv2.waitKey(33) == ord("e"):
-                print("")
-                print("Input key \"e\"")
-                print("")
-                print(" END PROCESS ".center(print_col, "*"))
-                print("")
-                break
+    def get_still_image(self):
+        """ マスター画像取得モード 遷移 """  # {{{
+        print("Get still image")
+        print("")
+        time.sleep(0.1)
+        image = "{}\\master_source{}".format(self.path, self.extension)
 
-    def get_master(self, search, extension, path, mode=0):
+        # TODO: 消す！！！
+        print(self.path)
+        print(self.extension)
+        print(self.search)
+        # TODO: 消す！！！
+
+        # 文字描画消去の為 再読込み
+        get_flag, frame = self.cap.read()
+
+        cv2.imwrite(image, frame)
+        trim = tm.Trim(image, self.search, self.extension,
+                       self.path, end_process=1)
+        trim.trim()
+        # }}}
+
+    def display_operation(self, frame, window_name, text1, text2):
+        """ 操作方法説明文 画面表示 """  # {{{
+        # 操作方法説明文 表示位置 取得
+        text_offset = 10
+        baseline = frame.shape[0] - text_offset
+        origin = 1, baseline
+
+        # 操作方法説明文 表示
+        trim = tm.Trim(frame, None, None, None, 1)
+        text_height = trim.write_text(text1, origin)
+        coor_x = origin[0]
+        coor_y = origin[1] - text_offset - text_height[1]
+        trim.write_text(text2, (coor_x, coor_y))
+
+        # メイン画面 表示
+        self.cim.display(window_name, frame, 1)
+        # import pdb; pdb.set_trace()
+# }}}
+
+    def go_get_master_mode(self, image, extension, path):
+        """ マスター画像取得モード 遷移 """  # {{{
+        print("Go get master mode")
+        print("")
+        time.sleep(0.1)
+
+        # TODO: 複数探査の時はここの "sda" をイテレート処理！！！
+        self.get_master(image, extension, path, 1)
+        set_name, get_name, get_flag = \
+            self.sda.get_name_max(extension)
+        # TODO: イテレート処理予定 ここまで！！！
+
+        cv2.destroyAllWindows()
+        print("Get master name: " + str(get_name))
+
+        return get_name
+# }}}
+
+    # TODO: 見直し(main loop で切出したメソッドに代替する)！！！
+    def get_master(self, search, extension, path, mode=None):
         """ マスター画像 読込み """  # {{{
         self.search = search
         self.extension = extension
         self.path = path
 
+        # TODO: 消す！！！
+        print(search)
+        print(extension)
+        print(path)
+        # TODO: 消す！！！
+
         name = "Get master image"
         text2 = "Quit: Long press \"q\" key"
         text3 = "Trimming: Long press \"t\" key"
 
-        print("")
         print(" START GET MASTER MODE ".center(print_col, "*"))
         print("Search master name: " + str(search))
-        print("Master image name: " + str(search))
+        print("")
 
         self.init_judge_param()
         self.get_camera_image_init(name)
@@ -588,8 +858,10 @@ class ImageProcessing:
         count = 0
         while True:
             if count == 0:
-                print("Initial delay")
                 time.sleep(0.1)
+                print("Initial delay")
+
+            # キャプチャとキャプチャエラー 判定
             get_flag, frame = self.cap.read()
 
             if self.check_get_flag(get_flag) is False:
@@ -598,15 +870,17 @@ class ImageProcessing:
                 continue
 
             # マスター画像取得モード 直接遷移
-            if mode != 0:
-                self.go_get_master_mode()
+            if mode is not None:
+                self.get_still_image()
                 break
 
+            # TODO: 見直し(main loop で切出したメソッドに代替する)！！！
             # 操作方法説明文 表示位置 取得
             text_offset = 10
             baseline = frame.shape[0] - text_offset
             origin = 1, baseline
 
+            # TODO: 見直し(main loop で切出したメソッドに代替する)！！！
             # 操作方法説明文 表示
             frame_draw = frame
             trim = tm.Trim(frame_draw, search, extension, path, 1)
@@ -616,12 +890,14 @@ class ImageProcessing:
                              origin[1] - text_offset - text_height[1]))
 
             self.cim.display(name, frame_draw, 1)
-            print("Master captcha")
+            print("Master capture")
             count += 1
 
             # "t"キー押下 マスター画像取得モード 遷移
             if cv2.waitKey(33) == ord("t"):
-                self.go_get_mastner_mode()
+                print("")
+                print("Input key \"t\"")
+                self.get_still_image()
 
             # "q"キー押下 終了処理
             if cv2.waitKey(33) == ord("q"):
@@ -634,160 +910,20 @@ class ImageProcessing:
                 break
 # }}}
 
-    def check_get_flag(self, flag):
-        """ 動画取得ミス時 スキップ処理 """  # {{{
-        if flag is False:
-            print("Can not get end flag")
-            return False
-            # }}}
+    def print_simil(self, val_max, method):
+        """ 類似度 標準出力 """  # {{{
+        simil_max = str(round(val_max * 100, 2)) + "%"
+        simil_min = str(round(self.val_min * 100, 2)) + "%"
 
-    def check_get_frame(self, frame):
-        """ ループ 終了処理 """  # {{{
-        if frame is None:
-            print("Can not get video frame")
-            return False
-            # }}}
-
-    def judgement_image(self):
-        """ ワーク 検出・判定処理 """  # {{{
-        # マッチ 判定
-        trim = tm.Trim(self.frame_eval, None, None, None, 1)
-
-        if self.value_max > self.judge_detect:
-            msg_heigh, msg_base = trim.write_text("Matching...",
-                                                  (0, "height"),
-                                                  offset=(0, 5))
-            judge_origin = (0, 15 + msg_base)
-            # *秒間OKで画面表示！！！
-            self.ok_count += 1
-
-            if self.ok_count == 1:
-                self.ok_start = time.time()
-                print("")
-                print("Start OK time: " + str(self.ok_start))
-                print("")
-            else:
-                wait_ok = time.time() - self.ok_start
-                print("")
-                print("OK frame count: " + str(self.ok_count))
-                print("Start OK time: " + str(self.ok_start))
-                print("OK time: " + str(round(wait_ok, 2)) + "[sec]")
-                print("")
-                if wait_ok > self.ok_time:
-
-                    # OK/NG 判定処理
-                    if self.value_max > self.judge_ok and\
-                            self.judge_flag is True:
-                        self.beep_count += 1
-                        # OK 表示
-                        trim.write_text("OK", (0, "height"), 2,
-                                        "white", "green", 5, 4,
-                                        judge_origin)
-                        # 検出位置 矩形表示
-                        trim.draw_rectangle(self.left_up,
-                                            self.right_bottom,
-                                            "white", "green")
-                        # 類似度 表示
-                        similarity = round(self.value_max * 100, 1)
-                        trim.write_text(str(similarity) + "%",
-                                        (self.right_bottom[0],
-                                        "height"),
-                                        scale=0.6,
-                                        color_out="white",
-                                        color_in="green",
-                                        thickness_out=3,
-                                        thickness_in=2,
-                                        offset=(0,
-                                                self.right_bottom[1] + 5))
-
-                        # OK音 出力
-                        if self.beep_count == 2:
-                            self.jsd.beep_ok()
-
-                            # OKログ 出力
-                            # DONE: 保存画像は数を制限する
-                            sda_ok_image = sd.SaveData("ok_image",
-                                                       self.dir_judge)
-                            sda_ok_text = sd.SaveData("judge_log",
-                                                      os.getcwd())
-                            sda_ok_image.save_image(self.frame_eval,
-                                                    self.extension,
-                                                    save_lim=save_lim)
-                            sda_ok_text.save_text("OK, {}, {}, {}, {}".format(self.value_max,
-                                                                              self.loc_max,
-                                                                              self.value_min,
-                                                                              self.loc_min))
-                            print("Set port: {}".format(self.port))
-                            print(self.destination)
-                            print("{}".format(self.barcode[self.model][self.destination]))
-                            try:
-                                src = sc.SerialCom()
-                                src.send_tsc(self.barcode[self.model][self.destination], self.port)
-
-                            except:
-                                print("")
-                                print(" BARCODE PRINT OUT ERROR ".center(print_col, "*"))
-                                print("")
-
-                    else:
-                        self.beep_count += 1
-                        # NG 表示
-                        self.judge_flag = False
-                        trim.write_text("NG",
-                                        (0, "height"),
-                                        2,
-                                        "white",
-                                        "red",
-                                        5,
-                                        4,
-                                        judge_origin)
-
-                        # NG音 出力
-                        if self.beep_count == 2:
-                            self.jsd.beep_ng()
-
-                            # NGログ 出力
-                            sda_ng_image = sd.SaveData("ng_image",
-                                                       self. dir_judge)
-                            sda_ng_text = sd.SaveData("judge_log",
-                                                      os.getcwd())
-                            sda_ng_image.save_image(self.frame_eval,
-                                                    self.extension,
-                                                    save_lim=save_lim)
-                            sda_ng_text.save_text("NG, {}, {}, {}, {}" .format(self.value_max,
-                                                                               self.loc_max,
-                                                                               self.value_min,
-                                                                               self.loc_min))
-        # 検索中 表示
-        if self.value_max < self.judge_detect:
-            trim.write_text("Searching...", (0, "height"), offset=(0, 5))
-            self.init_judge_param()
-# }}}
-
-    def init_judge_param(self):
-        """ 判定諸元初期化 """  # {{{
-        self.ok_count = 0
-        self.ok_start = 0
-        self.beep_count = 0
-        self.judge_flag = True
-# }}}
-
-    def go_get_master_mode(self):
-        """ マスター画像取得モード 遷移 """  # {{{
         print("")
-        print("Input key \"t\"")
-        print("Go master mode")
-        time.sleep(0.5)
-        img = "{}\\master_source{}".format(self.path, self.extension)
-
-        # 文字描画消去の為 再読込み
-        get_flag, frame = self.cap.read()
-
-        cv2.imwrite(img, frame)
-        trim = tm.Trim(img, self.search, self.extension,
-                       self.path, end_process=1)
-        trim.trim()
-        # }}}
+        print("Method: {}".format(method[0]))
+        print("Max similarity:")
+        print(str(simil_max.rjust(print_col, " ")))
+        print(str(self.loc_max).rjust(print_col, " "))
+        print("Min similarity:")
+        print(str(simil_min.rjust(print_col, " ")))
+        print(str(self.loc_min).rjust(print_col, " "))
+# }}}
 
 
 def main():
@@ -802,6 +938,7 @@ def main():
     print("Default current directory:")
     print(os.getcwd().rjust(print_col, " "))
     print("")
+
     print("And then...")
     os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
     print(os.getcwd().rjust(print_col, " "))
@@ -818,14 +955,14 @@ def main():
     # テンプレートマッチング テスト# {{{
     # 機種固有設定は実行ファイル上で "config" を作成しPickle化する
     port = 2
-    barcode = {"C597A": {
+    printout = {"C597A": {
                 "LABEL BATT-C597A/J-CA": "1AG6P4S2000-ABA",
                 "LABEL BATT-C597A/C-CA": "1AG6P4S2000-BBA",
                 "LABEL BATT-C597A/OTCA-S1P": "1AG6P4S2000--BA"
                 }}
 
     cip = ImageProcessing()
-    cip.run("Raw capture", "masterImage", port, barcode)
+    cip.run("Raw capture", "masterImage", port, printout)
     print("Image processing end...")
     # }}}
 
