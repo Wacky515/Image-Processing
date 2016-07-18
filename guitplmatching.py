@@ -8,7 +8,7 @@
 #
 # Created:     27/06/2016
 # Copyright:   (c) SkyDog 2016
-# Licence:     SDS****
+# Licence:     SDS10010
 # -------------------------------------------------------------------------------
 """ 画像処理 GUI """
 
@@ -151,5 +151,5 @@ tki.mainloop()
 def main():
     sys.path.append("D:\OneDrive\Biz\Python\ImageProcess")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -896,6 +896,7 @@ class ImageProcessing:
                 break
 # }}}
 
+    # 2016/07/12 ここまで！！！
     def print_simil(self, val_max, method):
         """ 類似度 標準出力 """  # {{{
         simil_max = str(round(val_max * 100, 2)) + "%"
