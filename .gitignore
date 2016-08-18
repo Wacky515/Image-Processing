@@ -17,4 +17,6 @@ build/
 *.png
 *.dbm
 *.dump
-judge_log_00000.txt
+*.txt
+*.exe
+tags
