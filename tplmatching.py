@@ -13,22 +13,22 @@
 # }}}
 """ テンプレートマッチングによる画像処理 """
 
-# TODO: 変数は "[大区分/固有]_[小区分/汎用]"
 # TODO: 関数名は動詞にする
-# TODO: デフォルト引数は "None" にする
-# TODO: メンバ変数の表記は "クラス名.変数名" にする
 
 # TODO: しきい値 手動入力にする
 # TODO: アイコン 作成
 # TODO: ソフト名 正式にする
-# TODO: メインループのネストが深すぎる
-#       各処理をメソッドに切出す
-# TODO: 画像出力ウィンドウの位置を定義（固定）する
+
+# TODO: 画像出力ウィンドウの位置を定義（固定）すsa
 # TODO: 複数索敵・多段式判定を実装する
 #       -> インスタンスをイテレートする？
 # TODO: 色識別 実装
 
 # {{{
+# DONE: 変数は "[大区分/固有]_[小区分/汎用]"
+# DONE: メインループのネストが深すぎる
+#       各処理をメソッドに切出す
+# DONE: デフォルト引数は "None" にする
 # DONE: "matchTemplate" の "TM_CCOEFF_NORMED" は正規化する必要があるのか調査
 #       "***_NORMED"以外は正規化している
 # DONE: Python3系 対応！！！
@@ -66,7 +66,8 @@ try:
     import judgesound as js
     import serialcom as sc
 except:
-    print("Default search path:")
+    print("Can not find custum module")
+    print("Add default search path:")
     pprint(sys.path)
     print("")
 
@@ -95,7 +96,7 @@ save_lim = 100
 
 
 def terminate(name_cap=None, time_wait=None):
-    """ 出力画像 終了処理 """  # {{{
+    """ 画面出力 終了処理 """  # {{{
     if time_wait is None:
         time_wait = 33
 
@@ -131,10 +132,10 @@ class GetImage:
 
     def display(self, window_name, image=None, _type=None):
         """ 画像・動画 画面出力 """
-        # 静止画無し判定時 処理 ← "is None" にした 動作確認！！！
         if image is None:
             image = self.image
 
+        # 静止画無し 処理 ← "is None" にした 動作確認！！！
         # _type [None: 静止画, それ以外: 動画]
         if image is None and _type is None:
             image = self.get_image()
@@ -294,7 +295,7 @@ class ConvertImage(GetImage):
 
 
 class Tplmatching:
-    """ テンプレートマッチング クラス """
+    """ テンプレートマッチングクラス """
     cim = ConvertImage()
 
     def __init__(self):
@@ -369,6 +370,7 @@ class Tplmatching:
 
 
 class ImageProcessing:
+    """ メイン画像処理クラス """
     cim = ConvertImage()
     tmc = Tplmatching()
     jsd = js.JudgeSound()
@@ -378,9 +380,6 @@ class ImageProcessing:
     cibiz = cim.binarize
     cinor = cim.normalize
 
-    # ipr = ImageProcessing
-
-    """ 動画取得 クラス """
     def __init__(self):  # {{{
         # 動画 取得
         self.cap = cv2.VideoCapture(0)
@@ -409,12 +408,10 @@ class ImageProcessing:
         # 判定用 変数
         # self.frame_eval = None
 
+        # 最大・最小の値と座標
         self.val_max = None
         self.loc_max = None
         self.loc_min = None
-
-        # self.left_up = None
-        # self.right_low = None
 # }}}
 
     def run(self, window_name, name_master, port, printout,
@@ -500,6 +497,7 @@ class ImageProcessing:
         # イニシャルのマッチしたマスター画像 名前・パス 表示  # {{{
         master_file = str(get_num_master) + str(self.extension)
         master_path = str(path_master) + ".\\" + master_file
+
         print("Get master name: " + str(get_num_master))
         print("Get master extension: " + str(self.extension))
         print("Master path: " + master_path)
@@ -534,6 +532,7 @@ class ImageProcessing:
             master_file = str(get_num_master) + str(self.extension)
             master_path = str(path_master) + ".\\" + master_file
             master = cv2.imread(str(master_path), 1)
+
             print("Master name: " + str(get_num_master))
             print("Master extension: " + str(self.extension))
             print("Master path: " + master_path)
@@ -567,12 +566,12 @@ class ImageProcessing:
                 detect_eval, left_up, right_low = \
                     self.tmc.show_detect_area(self.loc_max, master, frame)
 
-                # 検出領域 操作領域と同じ画像処理
+                # 検出領域に操作領域と同じ画像処理 実行
                 if method[1] is not None:
                     detect_eval = method[1](detect_eval)
 
                 # OK/NG 判定
-                self.judge_image(frame_eval, left_up, right_low, )
+                self.judge_image(frame_eval, left_up, right_low)
 
                 # 評価処理 画面表示
                 scd = self.cim.display
@@ -587,8 +586,8 @@ class ImageProcessing:
                 self.cim.display("Normalize " + str(method[0]), norm_eval, 1)
 
                 # 操作方法説明文 画面表示
-                self.display_operation(frame, window_name,
-                                       self.text2, self.text3)
+                sdo = self.display_operation
+                sdo(frame, window_name, self.text2, self.text3)
 
                 # 類似度 標準出力
                 self.print_simil(self.val_max, method)
@@ -598,7 +597,6 @@ class ImageProcessing:
                 print("Input key \"m\"")
                 print("Go get master")
                 print("")
-                # sgm = self.go_get_master_mode
                 get_num_master = sgm(name_master, self.extension, path_master)
 
             # "e" 押下 終了処理
@@ -650,6 +648,7 @@ class ImageProcessing:
         self.image = image
         self.left_up = left_up
         self.right_low = right_low
+        ok_pass = 0
 
         self.trim = tm.Trim(image, None, None, None, 1)
 
@@ -669,25 +668,24 @@ class ImageProcessing:
                 self.ok_start = time.time()
                 print("Start OK time: " + str(self.ok_start))  # {{{
                 print("")  # }}}
-            else:
+            elif self.ok_count > 1:
                 ok_pass = time.time() - self.ok_start
                 print("Start OK time: " + str(self.ok_start))  # {{{
                 print("Pass OK time: " + str(round(ok_pass, 2)) + "[sec]")
                 print("OK frame count: " + str(self.ok_count))
                 print("")  # }}}
 
-                # 判定時間経過 判定
-                if ok_pass > self.ok_time:
+            # 検知時間 判定
+            if ok_pass > self.ok_time:
+                # OK/NG 判定処理
+                if self.val_max > self.val_ok and self.judge_flag is True:
+                    self.judge_ok()
+                else:
+                    self.judge_ng()
 
-                    # OK/NG 判定処理
-                    if self.val_max > self.val_ok and \
-                            self.judge_flag is True:
-                        self.judge_ok()
-
-                    else:
-                        self.judge_ng()
         # 検索中 表示
-        if self.val_max < self.obj_detect:
+        # if self.val_max < self.obj_detect:
+        else:
             self.trim.write_text("Searching...", (0, "height"), offset=(0, 5))
             self.init_judge_param()
 # }}}
@@ -729,11 +727,11 @@ class ImageProcessing:
             print(self.destination)
             print("{}".format(self.printout[self.model][self.destination]))
             print("")
+
             try:
                 src = sc.SerialCom()
                 sst = src.send_tsc
                 sst(self.printout[self.model][self.destination], self.port)
-
             except:
                 print(" BARCODE PRINT OUT ERROR ".center(print_col, "*"))
                 print("")
@@ -763,7 +761,7 @@ class ImageProcessing:
 # }}}
 
     def init_judge_param(self):
-        """ 判定諸元初期化 """  # {{{
+        """ 判定諸元 初期化 """  # {{{
         self.ok_count = 0
         self.ok_start = 0
         self.beep_count = 0
@@ -772,17 +770,17 @@ class ImageProcessing:
 
     def get_still_image(self):
         """ マスター画像取得モード 遷移 """  # {{{
+        ext = self.extension
         print("Get still image")
         print("")
+
         time.sleep(0.1)
-        image = "{}\\master_source{}".format(self.path, self.extension)
+        image = "{}\\master_source{}".format(self.path, ext)
 
         # 文字描画消去の為 再読込み
         get_flag, frame = self.cap.read()
-
         cv2.imwrite(image, frame)
-        trim = tm.Trim(image, self.search, self.extension,
-                       self.path, end_process=1)
+        trim = tm.Trim(image, self.search, ext, self.path, end_process=1)
         trim.trim()
         # }}}
 
@@ -816,8 +814,8 @@ class ImageProcessing:
         set_name, get_name, get_flag = \
             self.sda.get_name_max(extension)
         # TODO: イテレート処理予定 ここまで！！！
-
         cv2.destroyAllWindows()
+
         print("Get master name: " + str(get_name))
 
         return get_name
@@ -834,11 +832,17 @@ class ImageProcessing:
         text2 = "Quit: Long press \"q\" key"
         text3 = "Trimming: Long press \"t\" key"
 
+        # 処理開始 標準出力  # {{{
+        print("-" * print_col)
         print(" START GET MASTER MODE ".center(print_col, "*"))
+        print("-" * print_col)
         print("Search master name: " + str(search))
         print("")
+# }}}
 
+        # 判定諸元 初期化
         self.init_judge_param()
+        # キャプチャ 開始
         self.get_camera_image_init(name)
 
         count = 0
@@ -860,34 +864,38 @@ class ImageProcessing:
                 self.get_still_image()
                 break
 
-            # TODO: 見直し(main loop で切出したメソッドに代替する)！！！
-            # 操作方法説明文 表示位置 取得
-            text_offset = 10
-            baseline = frame.shape[0] - text_offset
-            origin = 1, baseline
-
-            # TODO: 見直し(main loop で切出したメソッドに代替する)！！！
-            # 操作方法説明文 表示
+            # 操作方法説明文 画面表示
+            sdo = self.display_operation
             frame_draw = frame
-            trim = tm.Trim(frame_draw, search, extension, path, 1)
-            text_height = trim.write_text(text2, origin)
-            trim.write_text(text3,
-                            (origin[0],
-                             origin[1] - text_offset - text_height[1]))
+            sdo(frame_draw, name, text2, text3)
 
-            self.cim.display(name, frame_draw, 1)
+            # # TODO: 見直し(main loop で切出したメソッドに代替する)！！！
+            # # 操作方法説明文 表示位置 取得
+            # text_offset = 10
+            # baseline = frame.shape[0] - text_offset
+            # origin = 1, baseline
+
+            # # TODO: 見直し(main loop で切出したメソッドに代替する)！！！
+            # # 操作方法説明文 表示
+            # frame_draw = frame
+            # trim = tm.Trim(frame_draw, search, extension, path, 1)
+            # text_height = trim.write_text(text2, origin)
+            # trim.write_text(text3,
+            #                 (origin[0],
+            #                  origin[1] - text_offset - text_height[1]))
+            # self.cim.display(name, frame_draw, 1)
+
             print("Master capture")
             count += 1
 
             # "t"キー押下 マスター画像取得モード 遷移
             if cv2.waitKey(33) == ord("t"):
-                print("")
                 print("Input key \"t\"")
+                print("")
                 self.get_still_image()
 
             # "q"キー押下 終了処理
             if cv2.waitKey(33) == ord("q"):
-                print("")
                 print("Input key \"q\"")
                 time.sleep(0.5)
                 print(" END GET MASTER MODE ".center(print_col, "*"))
@@ -896,20 +904,22 @@ class ImageProcessing:
                 break
 # }}}
 
-    # 2016/07/12 ここまで！！！
     def print_simil(self, val_max, method):
         """ 類似度 標準出力 """  # {{{
         simil_max = str(round(val_max * 100, 2)) + "%"
         simil_min = str(round(self.val_min * 100, 2)) + "%"
-
         print("")
+
         print("Method: {}".format(method[0]))
+
         print("Max similarity:")
         print(str(simil_max.rjust(print_col, " ")))
         print(str(self.loc_max).rjust(print_col, " "))
+
         print("Min similarity:")
         print(str(simil_min.rjust(print_col, " ")))
         print(str(self.loc_min).rjust(print_col, " "))
+        print("")
 # }}}
 
 
@@ -918,7 +928,6 @@ def main():
     # vimテスト用各変数 定義# {{{
 
     # イニシャル情報 出力
-    print("")
     print("".center(print_col, "-"))
     print("INFORMATION".center(print_col, " "))
     print("".center(print_col, "-"))
@@ -988,5 +997,5 @@ def main():
     # print(help(__name__))
     # }}}
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

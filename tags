@@ -1,0 +1,196 @@
+!_TAG_FILE_ENCODING	cp932	//
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_JP_AUTHOR	HIGASHI Hirohito	/Twitter: @h_east/
+!_TAG_PROGRAM_JP_URL	http://hp.vector.co.jp/authors/VA025040/	//
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8J2	//
+CapImage	.\old\_Trim.py	/^            CapImage = cv2.imread('CapImage.png')$/;"	v
+Capture	.\old\_Trim.py	/^Capture = cv2.VideoCapture(0)$/;"	v
+Carbon	.\old\getch.py	/^        import Carbon$/;"	i
+ConvertImage	.\old\_tplmatching.py	/^class ConvertImage(GetImage):$/;"	c
+ConvertImage	.\tplmatching.py	/^class ConvertImage(GetImage):$/;"	c
+GetImage	.\old\_tplmatching.py	/^class GetImage:$/;"	c
+GetImage	.\tplmatching.py	/^class GetImage:$/;"	c
+ImageProcessing	.\old\_tplmatching.py	/^class ImageProcessing:$/;"	c
+ImageProcessing	.\tplmatching.py	/^class ImageProcessing:$/;"	c
+Mouse_trim	.\old\_Trim.py	/^def Mouse_trim(event,x,y,flags,param):$/;"	f
+OpeFontLocL	.\old\_Trim.py	/^            OpeFontLocL = (10,CapImage.shape[0] - 10)$/;"	v
+OpeFontLocL	.\old\_Trim.py	/^        OpeFontLocL = (10,Image.shape[0] - 10)$/;"	v
+OpeFontLocU	.\old\_Trim.py	/^            OpeFontLocU = (10,20)$/;"	v
+OpeFontLocU	.\old\_Trim.py	/^        OpeFontLocU = (10,Image.shape[0] - 30)$/;"	v
+OpeFontScale	.\old\_Trim.py	/^            OpeFontScale = 0.7$/;"	v
+OpeFontScale	.\old\_Trim.py	/^        OpeFontScale = 0.7$/;"	v
+THRESH_METHODS	.\tplmatching.py	/^    THRESH_METHODS = ["cv2.THRESH_BINARY",$/;"	v	class:ConvertImage
+TemplateSize	.\old\_Trim.py	/^                                 TrimAreaSx - width:TrimAreaSx + width]$/;"	v
+Tplmatching	.\old\_tplmatching.py	/^class Tplmatching:$/;"	c
+Tplmatching	.\tplmatching.py	/^class Tplmatching:$/;"	c
+Trim	.\trim.py	/^class Trim:$/;"	c
+TrimAreaM2	.\old\_Trim.py	/^TrimAreaM2 = (0,0)$/;"	v
+TrimMode	.\old\_Trim.py	/^            TrimMode = False$/;"	v
+TrimMode	.\old\_Trim.py	/^            TrimMode = True$/;"	v
+TrimMode	.\old\_Trim.py	/^TrimMode = False$/;"	v
+TrimX	.\old\_Trim.py	/^TrimX = 0$/;"	v
+TrimY	.\old\_Trim.py	/^TrimY = 0$/;"	v
+TrimmingFlagE	.\old\_Trim.py	/^            TrimmingFlagE = False$/;"	v
+TrimmingFlagE	.\old\_Trim.py	/^TrimmingFlagE = False$/;"	v
+TrimmingFlagS	.\old\_Trim.py	/^            TrimmingFlagS = False$/;"	v
+TrimmingFlagS	.\old\_Trim.py	/^TrimmingFlagS = False$/;"	v
+_Getch	.\old\getch.py	/^class _Getch:$/;"	c
+_GetchMacCarbon	.\old\getch.py	/^class _GetchMacCarbon:$/;"	c
+_GetchUnix	.\old\getch.py	/^class _GetchUnix:$/;"	c
+_GetchWindows	.\old\getch.py	/^class _GetchWindows:$/;"	c
+__call__	.\old\getch.py	/^    def __call__(self):$/;"	m	class:_Getch	file:
+__call__	.\old\getch.py	/^    def __call__(self):$/;"	m	class:_GetchMacCarbon	file:
+__call__	.\old\getch.py	/^    def __call__(self):$/;"	m	class:_GetchUnix	file:
+__call__	.\old\getch.py	/^    def __call__(self):$/;"	m	class:_GetchWindows	file:
+__init__	.\old\_tplmatching.py	/^    def __init__(self):$/;"	m	class:ConvertImage
+__init__	.\old\_tplmatching.py	/^    def __init__(self):$/;"	m	class:ImageProcessing
+__init__	.\old\_tplmatching.py	/^    def __init__(self):$/;"	m	class:Tplmatching
+__init__	.\old\_tplmatching.py	/^    def __init__(self, image):$/;"	m	class:GetImage
+__init__	.\old\getch.py	/^    def __init__(self):$/;"	m	class:_Getch
+__init__	.\old\getch.py	/^    def __init__(self):$/;"	m	class:_GetchMacCarbon
+__init__	.\old\getch.py	/^    def __init__(self):$/;"	m	class:_GetchUnix
+__init__	.\old\getch.py	/^    def __init__(self):$/;"	m	class:_GetchWindows
+__init__	.\tplmatching.py	/^    def __init__(self):  # {{{$/;"	m	class:ImageProcessing
+__init__	.\tplmatching.py	/^    def __init__(self):$/;"	m	class:ConvertImage
+__init__	.\tplmatching.py	/^    def __init__(self):$/;"	m	class:Tplmatching
+__init__	.\tplmatching.py	/^    def __init__(self, image):$/;"	m	class:GetImage
+__init__	.\trim.py	/^    def __init__(self, img, name, extension, path, _type=0, end_process=0):$/;"	m	class:Trim
+adaptive_threashold	.\old\_tplmatching.py	/^    def adaptive_threashold(self, image):$/;"	m	class:ConvertImage
+adaptive_threashold	.\tplmatching.py	/^    def adaptive_threashold(self, image, algo=None, method=None):$/;"	m	class:ConvertImage
+barcode	.\guitplmatching.py	/^    barcode = load["barcode"]$/;"	v
+barcode	.\guitplmatching.py	/^barcode = {"C597A": {$/;"	v
+bilateral_filter	.\old\_tplmatching.py	/^    def bilateral_filter(self, image):$/;"	m	class:ConvertImage
+bilateral_filter	.\tplmatching.py	/^    def bilateral_filter(self, image):$/;"	m	class:ConvertImage
+binarize	.\old\_tplmatching.py	/^    def binarize(self, image):$/;"	m	class:ConvertImage
+binarize	.\tplmatching.py	/^    def binarize(self, image, thresh_std=None, method=None):$/;"	m	class:ConvertImage
+calc_detect_location	.\tplmatching.py	/^    def calc_detect_location(self, loc_input, image, loc_output=None):$/;"	m	class:Tplmatching
+check_get_flag	.\old\_tplmatching.py	/^    def check_get_flag(self, flag):$/;"	m	class:ImageProcessing
+check_get_flag	.\tplmatching.py	/^    def check_get_flag(self, flag):$/;"	m	class:ImageProcessing
+check_get_frame	.\old\_tplmatching.py	/^    def check_get_frame(self, frame):$/;"	m	class:ImageProcessing
+check_get_frame	.\tplmatching.py	/^    def check_get_frame(self, frame):$/;"	m	class:ImageProcessing
+ciadp	.\tplmatching.py	/^    ciadp = cim.adaptive_threashold$/;"	v	class:ImageProcessing
+cibiz	.\tplmatching.py	/^    cibiz = cim.binarize$/;"	v	class:ImageProcessing
+cidca	.\tplmatching.py	/^    cidca = cim.discriminantanalyse$/;"	v	class:ImageProcessing
+cim	.\tplmatching.py	/^    cim = ConvertImage()$/;"	v	class:ImageProcessing
+cim	.\tplmatching.py	/^    cim = ConvertImage()$/;"	v	class:Tplmatching
+cinor	.\tplmatching.py	/^    cinor = cim.normalize$/;"	v	class:ImageProcessing
+console	.\setup.py	/^        console=["guitplmatching.py"],$/;"	v
+convert_color	.\trim.py	/^    def convert_color(self, color):$/;"	m	class:Trim
+cv	.\old\_Trim.py	/^import cv2.cv as cv$/;"	i
+cv2	.\old\_Trim.py	/^import cv2$/;"	i
+cv2	.\old\_Trim.py	/^import cv2.cv as cv$/;"	i
+cv2	.\old\_tplmatching.py	/^import cv2$/;"	i
+cv2	.\tplmatching.py	/^import cv2$/;"	i
+cv2	.\trim.py	/^import cv2$/;"	i
+desti_radio	.\guitplmatching.py	/^    desti_radio = tk.Radiobutton(text=destination, variable=val, value=destination)$/;"	v
+destinations	.\guitplmatching.py	/^destinations = (barcode[model].keys())$/;"	v
+discriminantanalyse	.\old\_tplmatching.py	/^    def discriminantanalyse(self, image):$/;"	m	class:ConvertImage
+discriminantanalyse	.\tplmatching.py	/^    def discriminantanalyse(self, image,$/;"	m	class:ConvertImage
+display	.\old\_tplmatching.py	/^    def display(self, name_window, image, _type=1):$/;"	m	class:GetImage
+display	.\tplmatching.py	/^    def display(self, window_name, image=None, _type=None):$/;"	m	class:GetImage
+display_operation	.\tplmatching.py	/^    def display_operation(self, frame, window_name, text1, text2):$/;"	m	class:ImageProcessing
+draw_rectangle	.\trim.py	/^    def draw_rectangle(self,$/;"	m	class:Trim
+get_camera_image_init	.\tplmatching.py	/^    def get_camera_image_init(self, window_name):$/;"	m	class:ImageProcessing
+get_image	.\old\_tplmatching.py	/^    def get_image(self, conversion=1):$/;"	m	class:GetImage
+get_image	.\tplmatching.py	/^    def get_image(self, conversion=None):$/;"	m	class:GetImage
+get_master	.\old\_tplmatching.py	/^    def get_master(self, search, extension, path):$/;"	m	class:ImageProcessing
+get_master	.\tplmatching.py	/^    def get_master(self, search, extension, path, mode=None):$/;"	m	class:ImageProcessing
+get_still_image	.\tplmatching.py	/^    def get_still_image(self):$/;"	m	class:ImageProcessing
+getch	.\old\getch.py	/^getch = _Getch()$/;"	v
+go_get_master_mode	.\tplmatching.py	/^    def go_get_master_mode(self, image, extension, path):$/;"	m	class:ImageProcessing
+grayscale	.\old\_tplmatching.py	/^    def grayscale(self, image):$/;"	m	class:ConvertImage
+grayscale	.\tplmatching.py	/^    def grayscale(self, image):$/;"	m	class:ConvertImage
+height	.\old\_Trim.py	/^height = 0$/;"	v
+i	.\old\_Trim.py	/^i = 1$/;"	v
+init_get_camera_image	.\old\_tplmatching.py	/^    def init_get_camera_image(self, name):$/;"	m	class:ImageProcessing
+init_judge_param	.\tplmatching.py	/^    def init_judge_param(self):$/;"	m	class:ImageProcessing
+js	.\tplmatching.py	/^    import judgesound as js$/;"	i
+jsd	.\tplmatching.py	/^    jsd = js.JudgeSound()$/;"	v	class:ImageProcessing
+judge_image	.\tplmatching.py	/^    def judge_image(self, image, left_up, right_low):$/;"	m	class:ImageProcessing
+judge_ng	.\tplmatching.py	/^    def judge_ng(self):$/;"	m	class:ImageProcessing
+judge_ok	.\tplmatching.py	/^    def judge_ok(self):$/;"	m	class:ImageProcessing
+load	.\guitplmatching.py	/^        load = pickle.load(load_file)$/;"	v
+main	.\guitplmatching.py	/^def main():$/;"	f
+main	.\old\_tplmatching.py	/^def main():$/;"	f
+main	.\tplmatching.py	/^def main():$/;"	f
+main	.\trim.py	/^def main():$/;"	f
+mask	.\tplmatching.py	/^    def mask(self):$/;"	m	class:Tplmatching
+model	.\guitplmatching.py	/^    model = load["model"]$/;"	v
+model	.\guitplmatching.py	/^model = "C597A"$/;"	v
+mouse_event	.\trim.py	/^    def mouse_event(self, event, coor_x, coor_y, flags, param):$/;"	m	class:Trim
+msvcrt	.\old\getch.py	/^        import msvcrt$/;"	i
+normalize	.\old\_tplmatching.py	/^    def normalize(self, image):$/;"	m	class:ConvertImage
+normalize	.\tplmatching.py	/^    def normalize(self, image, alpha=None, beta=None):$/;"	m	class:ConvertImage
+np	.\old\_Trim.py	/^import numpy as np$/;"	i
+np	.\old\_tplmatching.py	/^import numpy as np$/;"	i
+np	.\tplmatching.py	/^import numpy as np$/;"	i
+option	.\setup.py	/^option = {$/;"	v
+options	.\setup.py	/^        options={"py2exe": {"dll_excludes": ["MSVCP90.dll"]}},$/;"	v
+os	.\old\_tplmatching.py	/^import os$/;"	i
+os	.\tplmatching.py	/^import os$/;"	i
+os	.\trim.py	/^import os$/;"	i
+pdb	.\old\_tplmatching.py	/^    import pdb; pdb.set_trace()$/;"	i
+pickle	.\guitplmatching.py	/^import pickle$/;"	i
+port	.\guitplmatching.py	/^    port = load["port"]$/;"	v
+port	.\guitplmatching.py	/^port = 1$/;"	v
+port_label	.\guitplmatching.py	/^port_label = tk.Label(text="")$/;"	v
+port_label	.\guitplmatching.py	/^port_label = tk.Label(text="Input barcode printer's COM port")$/;"	v
+port_label	.\guitplmatching.py	/^port_label = tk.Label(text="Select destination")$/;"	v
+port_txt_fld	.\guitplmatching.py	/^port_txt_fld = tk.Entry()$/;"	v
+pprint	.\guitplmatching.py	/^from pprint import pprint$/;"	i
+pprint	.\tplmatching.py	/^from pprint import pprint$/;"	i
+print_col	.\guitplmatching.py	/^print_col = 50$/;"	v
+print_col	.\tplmatching.py	/^print_col = 50$/;"	v
+print_col	.\trim.py	/^print_col = 50$/;"	v
+print_simil	.\tplmatching.py	/^    def print_simil(self, val_max, method):$/;"	m	class:ImageProcessing
+py2exe	.\setup.py	/^import py2exe$/;"	i
+quit_tirm	.\trim.py	/^    def quit_tirm(self, mode=0):$/;"	m	class:Trim
+run	.\guitplmatching.py	/^def run(event):$/;"	f
+run	.\old\_tplmatching.py	/^    def run(self, name, search, extension=".png", dir_master="MasterImage"):$/;"	m	class:ImageProcessing
+run	.\tplmatching.py	/^    def run(self, window_name, name_master, port, printout,$/;"	m	class:ImageProcessing
+save_desti	.\guitplmatching.py	/^    save_desti = load["save_desti"]$/;"	v
+save_desti	.\guitplmatching.py	/^save_desti = "LABEL BATT-C597A\/OTCA-S1P"$/;"	v
+save_lim	.\tplmatching.py	/^save_lim = 100$/;"	v
+save_trim	.\trim.py	/^    def save_trim(self):$/;"	m	class:Trim
+sc	.\tplmatching.py	/^    import serialcom as sc$/;"	i
+sd	.\old\_tplmatching.py	/^import savedata as sd$/;"	i
+sd	.\tplmatching.py	/^    import savedata as sd$/;"	i
+sd	.\trim.py	/^    import savedata as sd$/;"	i
+set_trace	.\old\_tplmatching.py	/^    import pdb; pdb.set_trace()$/;"	i
+setup	.\setup.py	/^from distutils.core import setup$/;"	i
+show_detect_area	.\tplmatching.py	/^    def show_detect_area(self, location, image, frame):$/;"	m	class:Tplmatching
+start_btton	.\guitplmatching.py	/^start_btton = tk.Button(text="START")$/;"	v
+sys	.\guitplmatching.py	/^import sys$/;"	i
+sys	.\old\_Trim.py	/^import sys$/;"	i
+sys	.\old\_tplmatching.py	/^import sys$/;"	i
+sys	.\old\getch.py	/^        import sys, tty, termios$/;"	i
+sys	.\old\getch.py	/^        import tty, sys$/;"	i
+sys	.\setup.py	/^import sys$/;"	i
+sys	.\tplmatching.py	/^import sys$/;"	i
+sys	.\trim.py	/^import sys$/;"	i
+terminate	.\old\_tplmatching.py	/^def terminate(name_cap=0, time_wait=33):$/;"	f
+terminate	.\tplmatching.py	/^def terminate(name_cap=None, time_wait=None):$/;"	f
+termios	.\old\getch.py	/^        import sys, tty, termios$/;"	i
+time	.\old\_Trim.py	/^import time$/;"	i
+time	.\old\_tplmatching.py	/^import time$/;"	i
+time	.\tplmatching.py	/^import time$/;"	i
+time	.\trim.py	/^import time$/;"	i
+tk	.\guitplmatching.py	/^import Tkinter as tk$/;"	i
+tki	.\guitplmatching.py	/^tki = tk.Tk()$/;"	v
+tm	.\guitplmatching.py	/^import tplmatching as tm$/;"	i
+tm	.\old\_tplmatching.py	/^import trim as tm$/;"	i
+tm	.\tplmatching.py	/^    import trim as tm$/;"	i
+tmc	.\tplmatching.py	/^    tmc = Tplmatching()$/;"	v	class:ImageProcessing
+tplmatch	.\old\_tplmatching.py	/^    def tplmatch(self, image, tpl):$/;"	m	class:Tplmatching
+tplmatch	.\tplmatching.py	/^    def tplmatch(self, source_image, master_image, algo=None):$/;"	m	class:Tplmatching
+trim	.\trim.py	/^    def trim(self):$/;"	m	class:Trim
+tty	.\old\getch.py	/^        import sys, tty, termios$/;"	i
+tty	.\old\getch.py	/^        import tty, sys$/;"	i
+val	.\guitplmatching.py	/^val = tk.StringVar()$/;"	v
+width	.\old\_Trim.py	/^width = 0$/;"	v
+write_text	.\trim.py	/^    def write_text(self, text, origin,$/;"	m	class:Trim
+zipfile	.\setup.py	/^        zipfile=None$/;"	v
