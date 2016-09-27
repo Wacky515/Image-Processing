@@ -59,6 +59,7 @@ try:
     print("Load model: {}".format(model))
     print("Load destination: {}".format(save_desti))
     print("Load barcode: {}".format(barcode))
+
 except:
     print("Save is not found")
 
