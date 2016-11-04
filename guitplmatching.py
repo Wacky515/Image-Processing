@@ -1,15 +1,15 @@
 ﻿# !/usr/bin/python
 # -*- coding: utf-8 -*-
-# -------------------------------------------------------------------------------
-# Name:        guitplmatching
-# Purpose:
+# -----------------------------------------------------------------------------
+# Name:        guitplmatching.py
+# Purpose:     In README.md
 #
 # Author:      Kilo11
 #
 # Created:     27/06/2016
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10010
-# -------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 """ 画像処理 GUI """
 
 # モジュール インポート
@@ -88,7 +88,8 @@ def run(event):
     print("")
 
     # パラメタ 保存
-    save = {"port": port, "model": model, "save_desti": set_desti, "barcode": barcode}
+    save = {"port": port, "model": model,
+            "save_desti": set_desti, "barcode": barcode}
     with open("setting.dump", "wb") as save_file:
         pickle.dump(save, save_file)
 
@@ -108,7 +109,8 @@ tki.geometry("400x300")
 
 # ラベル 生成
 port_label = tk.Label(text="Input barcode printer's COM port")
-# port_label = tk.Label(text="port_label", foreground='#ff0000', background='#ffaacc')
+# port_label = tk.Label(text="port_label", foreground="#ff0000",
+# background="#ffaacc")
 port_label.pack()
 # port_label.place(x=x座標, y=y座標)  # 描画位置の指定
 
@@ -143,7 +145,8 @@ val.set(save_desti)
 # 仕向け地数のラジオボタン 生成
 for destination in destinations:
     print("{}, {}".format(save_desti, destination))
-    desti_radio = tk.Radiobutton(text=destination, variable=val, value=destination)
+    desti_radio = tk.Radiobutton(text=destination, variable=val,
+                                 value=destination)
     desti_radio.pack()
 
 tki.mainloop()
