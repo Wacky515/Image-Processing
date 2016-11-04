@@ -1,8 +1,8 @@
 # !/usr/bin/python
 # -*- coding: utf-8 -*-
 # --------------------------------------------------# {{{
-# file_name:   tplmatching
-# Purpose:     TemplateMatching
+# file_name:   tplmatching.py
+# Purpose:     In README.md
 #
 # Author:      Kilo11
 #
@@ -925,7 +925,7 @@ class ImageProcessing:
 
 def main():
     """ メインルーチン """
-    # vimテスト用各変数 定義# {{{
+    # Vimテスト用各変数 定義# {{{
 
     # イニシャル情報 出力
     print("".center(print_col, "-"))
@@ -945,7 +945,6 @@ def main():
     print("〓" * int(print_col / 2))
     print("")
     # import pdb; pdb.set_trace()
-
 # }}}
 
     # テンプレートマッチング テスト# {{{
@@ -960,37 +959,37 @@ def main():
     cip = ImageProcessing()
     cip.run("Raw capture", "masterImage", port, printout)
     print("Image processing end...")
-    # }}}
+# }}}
 
-#     # 静止画取得 テスト# {{{
-#     gim = GetImage(pic_smpl_1)
-#     gim2 = GetImage("tpl_3.png")
-#     # gim.diplay("Tes1", 0, 0)
-#     gim2.display("Tes2", 0, 0)
-#     print("Main loop end...")
-# # }}}
+    # 静止画取得 テスト# {{{
+    # gim = GetImage(pic_smpl_1)
+    # gim2 = GetImage("tpl_3.png")
+    # # gim.diplay("Tes1", 0, 0)
+    # gim2.display("Tes2", 0, 0)
+    # print("Main loop end...")
+# }}}
 
-# # 動画取得 テスト# {{{
-#     cav = CapVideo()
-#     cav.get_video("Capture_test")
-#     frame_test = cav.frame
-#     if frame_test is None:
-#         gm = GetImage(pic_smpl_1)
-#         gm.get_image()
-#     name = "Test"
-#     Image = cv2.imread(pic_smpl_2)
-#     cv2.namedWindow(name, cv2.WINDOW_AUTOSIZE)
-#     cv2.imshow(name, Image)
-#     cv2.imshow(name, frame_test)
-#     # 仮の出力保持処理！！！
-#     cv2.waitKey(0)
-#     cv2.destroyAllWindows()
-#
-#     image = cv2.imread("tpl_2.png")
-#     cim = ConvertImage()
-#     cim.adaptive_threashold(image, "Adaptive Threashold", 0)
-#     print("Sudah cap")
-# # }}}
+    # 動画取得 テスト# {{{
+    # cav = GetImage()
+    # cav.get_image("Capture_test")
+    # frame_test = cav.frame
+    # if frame_test is None:
+    #     gm = GetImage(pic_smpl_1)
+    #     gm.get_image()
+    # name = "Test"
+    # Image = cv2.imread(pic_smpl_2)
+    # cv2.namedWindow(name, cv2.WINDOW_AUTOSIZE)
+    # cv2.imshow(name, Image)
+    # cv2.imshow(name, frame_test)
+    # # 仮の出力保持処理！！！
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    #
+    # image = cv2.imread("tpl_2.png")
+    # cim = ConvertImage()
+    # cim.adaptive_threashold(image, "Adaptive Threashold", 0)
+    # print("Sudah cap")
+# }}}
 
     # # ドキュメントストリング# {{{
     # print(GetImage.__doc__)

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # --------------------------------------------------  # {{{
 # Name:        trim.py
-# Purpose:     Trimming master image
+# Purpose:     In README.md
 #
 # Author:      Kilo11
 #
@@ -104,9 +104,9 @@ class Trim:
         cv2.imshow(self.window_name, self.image)
 
         print("Trim pos: (" + str(self.start_x) + ", "
-                + str(self.start_y) + "), ("
-                + str(self.end_x) + ", "
-                + str(self.end_y) + ")")
+              + str(self.start_y) + "), ("
+              + str(self.end_x) + ", "
+              + str(self.end_y) + ")")
 
         self.quit_tirm()
 
@@ -157,9 +157,9 @@ class Trim:
             print("Left button up")
             print("End: " + str(self.end_x) + ", " + str(self.end_y))
             print("Trim area: (" + str(self.start_x) + ", "
-                    + str(self.start_y) + "), ("
-                    + str(self.end_x) + ", "
-                    + str(self.end_y) + ")")
+                  + str(self.start_y) + "), ("
+                  + str(self.end_x) + ", "
+                  + str(self.end_y) + ")")
             print("Save flag is " + str(self.save_flag))
 
         # マウス移動 処理
@@ -175,7 +175,7 @@ class Trim:
             cv2.imshow(self.window_name, self.image)
 
             print("Mouse location: " + str(self.coor_x) + ", "
-                + str(self.coor_y))
+                  + str(self.coor_y))
 
         # 保存 処理
         self.save_trim()
@@ -183,10 +183,10 @@ class Trim:
         self.quit_tirm()
 
     def write_text(self, text, origin,
-            scale=0.7,
-            color_out=(0, 0, 31), color_in=(0, 127, 225),
-            thickness_out=3, thickness_in=1,
-            offset=(0, 0)):
+                   scale=0.7,
+                   color_out=(0, 0, 31), color_in=(0, 127, 225),
+                   thickness_out=3, thickness_in=1,
+                   offset=(0, 0)):
         """ テキスト 描画 """
         # 色指定のニーモニック 呼出し
         if type(color_out) is str:
@@ -212,9 +212,9 @@ class Trim:
         return size
 
     def draw_rectangle(self,
-            start_point=None, end_point=None,
-            color_out=(0, 0, 31), color_in=(0, 127, 225),
-            thickness_out=2, thickness_in=1):
+                       start_point=None, end_point=None,
+                       color_out=(0, 0, 31), color_in=(0, 127, 225),
+                       thickness_out=2, thickness_in=1):
         """ 矩形 描画 """
         # 色指定のニーモニック 呼出し
         if type(color_out) is str:
@@ -250,9 +250,9 @@ class Trim:
             print("Input key \"{}\"".format(self.key_save))
             print("Save image...")
             print("Trim area: (" + str(self.start_x) + ", "
-                    + str(self.start_y) + "), ("
-                    + str(self.length_x) + ", "
-                    + str(self.length_y) + ")")
+                  + str(self.start_y) + "), ("
+                  + str(self.length_x) + ", "
+                  + str(self.length_y) + ")")
 
             # 各種描画を消去する為 対象画像を再読込み
             self.image = cv2.imread(self.img, 1)
@@ -322,12 +322,13 @@ def main():
     # import pdb; pdb.set_trace()
 # }}}
 
-    tm = Trim("trim_test.png", "trimed", ".png", ".\\MasterImage", end_process=1)
+    tm = Trim("trim_test.png", "trimed",
+              ".png", ".\\MasterImage", end_process=1)
     # tm = Trim("trim_test.png", "trimed", ".png", ".\\MasterImage")
     # tm = Trim("trim_test2.png")
     tm.trim()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
 
 """
