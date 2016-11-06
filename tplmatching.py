@@ -1,6 +1,6 @@
 # !/usr/bin/python
 # -*- coding: utf-8 -*-
-# --------------------------------------------------# {{{
+# --------------------------------------------------  # {{{
 # Name:        tplmatching.py
 # Purpose:     In README.md
 #
@@ -8,43 +8,44 @@
 #
 # Created:     23/03/2016
 # Copyright:   (c) SkyDog 2016
-# Licence:     SDS10001.200
+# Licence:     SDS10001
 # --------------------------------------------------
 # }}}
 """ テンプレートマッチングによる画像処理 """
 
-# TODO: 関数名は動詞にする
+# TODO:
+# しきい値 手動入力にする
+# アイコン 作成
+# ソフト名 正式にする
 
-# TODO: しきい値 手動入力にする
-# TODO: アイコン 作成
-# TODO: ソフト名 正式にする
+# 画像出力ウィンドウの位置を定義（固定）する
+# 複数索敵・多段式判定を実装する
+# -> インスタンスをイテレートする？
+# 色識別 実装
+# 関数名は動詞にする
 
-# TODO: 画像出力ウィンドウの位置を定義（固定）する
-# TODO: 複数索敵・多段式判定を実装する
-#       -> インスタンスをイテレートする？
-# TODO: 色識別 実装
+# DONE:  # {{{
+# 変数は "[大区分/固有]_[小区分/汎用]"
+# メインループのネストが深すぎる
+# 各処理をメソッドに切出す
+# デフォルト引数は "None" にする
+# "matchTemplate" の "TM_CCOEFF_NORMED" は正規化する必要があるのか調査
+# "***_NORMED"以外は正規化している
+# Python3系 対応！！！
+# Unicode文字リテラルを " u"body" " -> " "body" " に変更
+# 文字列の埋込を % 形式から format 形式に変更
+# "print" -> "print()" に変更
+# シリアル通信機能 実装
+# __inin__.pyの作成
+# GUI 実装
+# OCR 実装（該当の module を発見し、import 実験まで完了）
+# バーコード読取り機能 実装
+# （該当の module を発見し、import 実験まで完了）
+# "pprint" を使用する
 
-# DONE:{{{
-# DONE: 変数は "[大区分/固有]_[小区分/汎用]"
-# DONE: メインループのネストが深すぎる
-#       各処理をメソッドに切出す
-# DONE: デフォルト引数は "None" にする
-# DONE: "matchTemplate" の "TM_CCOEFF_NORMED" は正規化する必要があるのか調査
-#       "***_NORMED"以外は正規化している
-# DONE: Python3系 対応！！！
-# DONE: Unicode文字リテラルを " u"body" " -> " "body" " に変更
-# DONE: 文字列の埋込を % 形式から format 形式に変更
-# DONE: "print" -> "print()" に変更
-# DONE: シリアル通信機能 実装
-# DONE: __inin__.pyの作成
-# DONE: GUI 実装
-# DONE: OCR 実装（該当の module を発見し、import 実験まで完了）
-# DONE: バーコード読取り機能 実装
-#       （該当の module を発見し、import 実験まで完了）
-# DONE: "pprint" を使用する
-
-# ABORT: ワークを動体検出後に判定開始する
-# ABORT: ワーク検出は背景差分で行う
+# ABORT:
+# ワークを動体検出後に判定開始する
+# ワーク検出は背景差分で行う
 # }}}
 
 # モジュール インポート# {{{
@@ -59,6 +60,7 @@ from pprint import pprint
 # import unittest
 
 import cv2
+import cv2.cv as cv
 
 try:
     import trim as tm
