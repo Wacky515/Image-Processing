@@ -8,7 +8,7 @@
 #
 # Created:     03/12/2015
 # Copyright:   (c) SkyDog 2015
-# Licence:     SDS10002.200
+# Licence:     SDS10002
 # --------------------------------------------------
 # }}}
 """ 画像のトリミング"""
@@ -29,6 +29,7 @@ import sys
 import time
 
 import cv2
+import cv2.cv as cv
 
 try:
     import savedata as sd
