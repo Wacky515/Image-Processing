@@ -11,49 +11,53 @@
 # Licence:     SDS10001
 # --------------------------------------------------
 # }}}
-""" ƒeƒ“ƒvƒŒ[ƒgƒ}ƒbƒ`ƒ“ƒO‚É‚æ‚é‰æ‘œˆ— """
+""" ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒãƒƒãƒãƒ³ã‚°ã«ã‚ˆã‚‹ç”»åƒå‡¦ç† """
+# FIXME:
+    # templateç”»åƒãŒå­˜åœ¨ã—ãªã„ã¨templateèª­ã¿è¾¼ã¿ã‚¨ãƒ©ãƒ¼
+    # â†‘ file exist  ã§ templateç”»åƒãªã‘ã‚Œã°ãƒ€ãƒŸãƒ¼templateç”»åƒä½œã‚‹
 
 # TODO:
-# ‚µ‚«‚¢’l è“®“ü—Í‚É‚·‚é
-# ƒAƒCƒRƒ“ ì¬
-# ƒ\ƒtƒg–¼ ³®‚É‚·‚é
+    # ã—ãã„å€¤ æ‰‹å‹•å…¥åŠ›ã«ã™ã‚‹
+    # ã‚¢ã‚¤ã‚³ãƒ³ ä½œæˆ
+    # ã‚½ãƒ•ãƒˆå æ­£å¼ã«ã™ã‚‹
 
-# ‰æ‘œo—ÍƒEƒBƒ“ƒhƒE‚ÌˆÊ’u‚ğ’è‹`iŒÅ’èj‚·‚é
-# •¡”õ“GE‘½’i®”»’è‚ğÀ‘•‚·‚é
-# -> ƒCƒ“ƒXƒ^ƒ“ƒX‚ğƒCƒeƒŒ[ƒg‚·‚éH
-# F¯•Ê À‘•
-# ŠÖ”–¼‚Í“®Œ‚É‚·‚é
+    # ç”»åƒå‡ºåŠ›ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½ç½®ã‚’å®šç¾©ï¼ˆå›ºå®šï¼‰ã™ã‚‹
+    # è¤‡æ•°ç´¢æ•µãƒ»å¤šæ®µå¼åˆ¤å®šã‚’å®Ÿè£…ã™ã‚‹
+    # -> ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚¤ãƒ†ãƒ¬ãƒ¼ãƒˆã™ã‚‹ï¼Ÿ
+    # è‰²è­˜åˆ¥ å®Ÿè£…
+    # é–¢æ•°åã¯å‹•è©ã«ã™ã‚‹
 
 # DONE:  # {{{
-# •Ï”‚Í "[‘å‹æ•ª/ŒÅ—L]_[¬‹æ•ª/”Ä—p]"
-# ƒƒCƒ“ƒ‹[ƒv‚ÌƒlƒXƒg‚ª[‚·‚¬‚é
-# Šeˆ—‚ğƒƒ\ƒbƒh‚ÉØo‚·
-# ƒfƒtƒHƒ‹ƒgˆø”‚Í "None" ‚É‚·‚é
-# "matchTemplate" ‚Ì "TM_CCOEFF_NORMED" ‚Í³‹K‰»‚·‚é•K—v‚ª‚ ‚é‚Ì‚©’²¸
-# "***_NORMED"ˆÈŠO‚Í³‹K‰»‚µ‚Ä‚¢‚é
-# Python3Œn ‘Î‰III
-# Unicode•¶šƒŠƒeƒ‰ƒ‹‚ğ " u"body" " -> " "body" " ‚É•ÏX
-# •¶š—ñ‚Ì–„‚ğ % Œ`®‚©‚ç format Œ`®‚É•ÏX
-# "print" -> "print()" ‚É•ÏX
-# ƒVƒŠƒAƒ‹’ÊM‹@”\ À‘•
-# __inin__.py‚Ìì¬
-# GUI À‘•
-# OCR À‘•iŠY“–‚Ì module ‚ğ”­Œ©‚µAimport ÀŒ±‚Ü‚ÅŠ®—¹j
-# ƒo[ƒR[ƒh“Çæ‚è‹@”\ À‘•
-# iŠY“–‚Ì module ‚ğ”­Œ©‚µAimport ÀŒ±‚Ü‚ÅŠ®—¹j
-# "pprint" ‚ğg—p‚·‚é
+    # ã‚½ãƒ¼ã‚¹ç”»åƒã‚’ä¿å­˜ã§ããªã„ï¼ï¼ï¼
+    # å¤‰æ•°ã¯ "[å¤§åŒºåˆ†/å›ºæœ‰]_[å°åŒºåˆ†/æ±ç”¨]"
+    # ãƒ¡ã‚¤ãƒ³ãƒ«ãƒ¼ãƒ—ã®ãƒã‚¹ãƒˆãŒæ·±ã™ãã‚‹
+    # å„å‡¦ç†ã‚’ãƒ¡ã‚½ãƒƒãƒ‰ã«åˆ‡å‡ºã™
+    # ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°ã¯ "None" ã«ã™ã‚‹
+    # "matchTemplate" ã® "TM_CCOEFF_NORMED" ã¯æ­£è¦åŒ–ã™ã‚‹å¿…è¦ãŒã‚ã‚‹ã®ã‹èª¿æŸ»
+    # "***_NORMED"ä»¥å¤–ã¯æ­£è¦åŒ–ã—ã¦ã„ã‚‹
+    # Python3ç³» å¯¾å¿œï¼ï¼ï¼
+    # Unicodeæ–‡å­—ãƒªãƒ†ãƒ©ãƒ«ã‚’ " u"body" " -> " "body" " ã«å¤‰æ›´
+    # æ–‡å­—åˆ—ã®åŸ‹è¾¼ã‚’ % å½¢å¼ã‹ã‚‰ format å½¢å¼ã«å¤‰æ›´
+    # "print" -> "print()" ã«å¤‰æ›´
+    # ã‚·ãƒªã‚¢ãƒ«é€šä¿¡æ©Ÿèƒ½ å®Ÿè£…
+    # __inin__.pyã®ä½œæˆ
+    # GUI å®Ÿè£…
+    # OCR å®Ÿè£…ï¼ˆè©²å½“ã® module ã‚’ç™ºè¦‹ã—ã€import å®Ÿé¨“ã¾ã§å®Œäº†ï¼‰
+    # ãƒãƒ¼ã‚³ãƒ¼ãƒ‰èª­å–ã‚Šæ©Ÿèƒ½ å®Ÿè£…
+    # ï¼ˆè©²å½“ã® module ã‚’ç™ºè¦‹ã—ã€import å®Ÿé¨“ã¾ã§å®Œäº†ï¼‰
+    # "pprint" ã‚’ä½¿ç”¨ã™ã‚‹
 
 # ABORT:
-# ƒ[ƒN‚ğ“®‘ÌŒŸoŒã‚É”»’èŠJn‚·‚é
-# ƒ[ƒNŒŸo‚Í”wŒi·•ª‚Ås‚¤
+    # ãƒ¯ãƒ¼ã‚¯ã‚’å‹•ä½“æ¤œå‡ºå¾Œã«åˆ¤å®šé–‹å§‹ã™ã‚‹
+    # ãƒ¯ãƒ¼ã‚¯æ¤œå‡ºã¯èƒŒæ™¯å·®åˆ†ã§è¡Œã†
 # }}}
 
-# ƒ‚ƒWƒ…[ƒ‹ ƒCƒ“ƒ|[ƒg# {{{
+# ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ« ã‚¤ãƒ³ãƒãƒ¼ãƒˆ# {{{
 import os
 import sys
 import time
 # import glob
-# !!!: «‚Ì "numpy" ‚ÍÁ‚³‚È‚¢III
+# !!!: â†“ã® "numpy" ã¯æ¶ˆã•ãªã„ï¼ï¼ï¼
 import numpy as np
 from pprint import pprint
 
@@ -70,26 +74,38 @@ try:
 except:
     print("Can not find custum module")
     print("Add default search path:")
-    pprint(sys.path)
+    # pprint(sys.path)
     print("")
 
     print("And then...")
-    sys.path.append("D:\OneDrive\Biz\Python")
-    sys.path.append("D:\OneDrive\Biz\Python\SaveData")
-    sys.path.append("D:\OneDrive\Biz\Python\Sound")
-    sys.path.append("D:\OneDrive\Biz\Python\Serial")
+    try:
+        sys.path.append("D:\OneDrive\Biz\Python")
+        sys.path.append("D:\OneDrive\Biz\Python\SaveData")
+        sys.path.append("D:\OneDrive\Biz\Python\Sound")
+        sys.path.append("D:\OneDrive\Biz\Python\Serial")
 
-    import trim as tm
-    import savedata as sd
-    import judgesound as js
-    import serialcom as sc
+        import trim as tm
+        import savedata as sd
+        import judgesound as js
+        import serialcommun as sc
 
-    pprint(sys.path)
+    except:
+        sys.path.append("/Users/wacky515/OneDrive/Biz/Python")
+        sys.path.append("/Users/wacky515/OneDrive/Biz/Python/SaveData")
+        sys.path.append("/Users/wacky515/OneDrive/Biz/Python/Sound")
+        sys.path.append("/Users/wacky515/OneDrive/Biz/Python/Serial")
 
-# sysƒ‚ƒWƒ…[ƒ‹ ƒŠƒ[ƒh
+        import trim as tm
+        import savedata as sd
+        import judgesound as js
+        import serialcommun as sc
+
+    # pprint(sys.path)
+
+# sysãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ« ãƒªãƒ­ãƒ¼ãƒ‰
 reload(sys)
 
-# ƒfƒtƒHƒ‹ƒg‚Ì•¶šƒR[ƒh o—Í
+# ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®æ–‡å­—ã‚³ãƒ¼ãƒ‰ å‡ºåŠ›
 sys.setdefaultencoding("utf-8")
 # }}}
 
@@ -98,12 +114,12 @@ save_lim = 100
 
 
 def terminate(name_cap=None, time_wait=None):
-    """ ‰æ–Êo—Í I—¹ˆ— """  # {{{
+    """ ç”»é¢å‡ºåŠ› çµ‚äº†å‡¦ç† """  # {{{
     if time_wait is None:
         time_wait = 33
 
     cv2.waitKey(time_wait)
-    # name_cap [None: Ã~‰æ, ‚»‚êˆÈŠO: “®‰æ]
+    # name_cap [None: é™æ­¢ç”», ãã‚Œä»¥å¤–: å‹•ç”»]
     if name_cap is not None:
         name_cap.release
     cv2.destroyAllWindows()
@@ -115,16 +131,16 @@ def terminate(name_cap=None, time_wait=None):
 
 
 class GetImage:
-    """ ‰æ‘œE“®‰æ æ“¾ƒNƒ‰ƒX """  # {{{
+    """ ç”»åƒãƒ»å‹•ç”» å–å¾—ã‚¯ãƒ©ã‚¹ """  # {{{
     def __init__(self, image):
         self.image = image
 
     def get_image(self, conversion=None):
-        """ ‰æ‘œE“®‰æ “Ç‚İ """
+        """ ç”»åƒãƒ»å‹•ç”» èª­è¾¼ã¿ """
         if conversion is None:
             conversion = 1
 
-        # ‰æ‘œæ“¾
+        # ç”»åƒå–å¾—
         try:
             image = cv2.imread(self.image, conversion)
             return image
@@ -133,30 +149,30 @@ class GetImage:
             return False
 
     def display(self, window_name, image=None, _type=None):
-        """ ‰æ‘œE“®‰æ ‰æ–Êo—Í """
+        """ ç”»åƒãƒ»å‹•ç”» ç”»é¢å‡ºåŠ› """
         if image is None:
             image = self.image
 
-        # Ã~‰æ–³‚µ ˆ— © "is None" ‚É‚µ‚½ “®ìŠm”FIII
-        # _type [None: Ã~‰æ, ‚»‚êˆÈŠO: “®‰æ]
+        # é™æ­¢ç”»ç„¡ã— å‡¦ç† â† "is None" ã«ã—ãŸ å‹•ä½œç¢ºèªï¼ï¼ï¼
+        # _type [None: é™æ­¢ç”», ãã‚Œä»¥å¤–: å‹•ç”»]
         if image is None and _type is None:
             image = self.get_image()
             print("Go get image...")
 
-        # TODO: "imshow" ƒEƒBƒ“ƒhƒE• ‰ºŒÀİ’è
+        # TODO: "imshow" ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å¹… ä¸‹é™è¨­å®š
         cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
         cv2.imshow(window_name, image)
         print("Display {} image...".format(window_name))
 
         if _type is None:
-            # Ã~‰æ‚Ìo—Í•Ûˆ—
+            # é™æ­¢ç”»ã®å‡ºåŠ›ä¿æŒå‡¦ç†
             terminate()
 # }}}
 
 
 class ConvertImage(GetImage):
-    """ ‰æ‘œE“®‰æ •ÏŠ·ƒNƒ‰ƒX """  # {{{
-    # è‡’lˆ— è–@ƒŠƒXƒg
+    """ ç”»åƒãƒ»å‹•ç”» å¤‰æ›ã‚¯ãƒ©ã‚¹ """  # {{{
+    # é–¾å€¤å‡¦ç† æ‰‹æ³•ãƒªã‚¹ãƒˆ
     THRESH_METHODS = ["cv2.THRESH_BINARY",
                       "cv2.THRESH_BINARY_INV",
                       "cv2.THRESH_TRUNC",
@@ -172,7 +188,7 @@ class ConvertImage(GetImage):
         pass
 
     def grayscale(self, image):
-        """ ƒOƒŒ[ƒXƒP[ƒ‹ •ÏŠ·ˆ— """
+        """ ã‚°ãƒ¬ãƒ¼ã‚¹ã‚±ãƒ¼ãƒ« å¤‰æ›å‡¦ç† """
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         print("Convert grayscale...")
         print("")
@@ -180,30 +196,30 @@ class ConvertImage(GetImage):
         return gray
 
     def adaptive_threashold(self, image, algo=None, method=None):
-        """ “K‰“I“ñ’l‰» •ÏŠ·ˆ— """
+        """ é©å¿œçš„äºŒå€¤åŒ– å¤‰æ›å‡¦ç† """
         if algo is None:
             algo = 1
         if method is None:
             method = 0
         gray = self.grayscale(image)
-        # “K‰“I“ñ’l‰»(Adaptive Gaussian Thresholding) ƒpƒ‰ƒƒ^’è‹`# {{{
-        # *** “K‰“I“ñ’l‰» ‰ğà ***
-        # 1‰æ‘f–‡‚ÉA”CˆÓ‚Ì‹ß–T‰æ‘f‚©‚çŒÂ•Ê‚Ìè‡’l‚ğZo
+        # é©å¿œçš„äºŒå€¤åŒ–(Adaptive Gaussian Thresholding) ãƒ‘ãƒ©ãƒ¡ã‚¿å®šç¾©# {{{
+        # *** é©å¿œçš„äºŒå€¤åŒ– è§£èª¬ ***
+        # 1ç”»ç´ æšã«ã€ä»»æ„ã®è¿‘å‚ç”»ç´ ã‹ã‚‰å€‹åˆ¥ã®é–¾å€¤ã‚’ç®—å‡º
         # }}}
-        # Å‘åè‡’l
+        # æœ€å¤§é–¾å€¤
         THRESH_MAX = 255
-        # è‡’lZoƒAƒ‹ƒSƒŠƒYƒ€# {{{
-        # MeanC:        ”CˆÓ‚Ì‹ß–T‰æ‘f‚ğZp•½‹Ï‚µè‡’l‚ğZo
-        # GaussianC:    ”CˆÓ‚Ì‹ß–T‰æ‘f‚ğGaussian‚É‚æ‚éd‚İ•t‚¯
-        #               i‹ß–T‚ğd‹j‚Å‘˜a‚µè‡’l‚ğZo
+        # é–¾å€¤ç®—å‡ºã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ # {{{
+        # MeanC:        ä»»æ„ã®è¿‘å‚ç”»ç´ ã‚’ç®—è¡“å¹³å‡ã—é–¾å€¤ã‚’ç®—å‡º
+        # GaussianC:    ä»»æ„ã®è¿‘å‚ç”»ç´ ã‚’Gaussianã«ã‚ˆã‚‹é‡ã¿ä»˜ã‘
+        #               ï¼ˆè¿‘å‚ã‚’é‡è¦–ï¼‰ã§ç·å’Œã—é–¾å€¤ã‚’ç®—å‡º
         # }}} """
         THRESH_ALGOS = ["cv2.ADAPTIVE_THRESH_MEAN_C",
                         "cv2.ADAPTIVE_THRESH_GAUSSIAN_C"]
-        # Øæ‚é³•ûŒ`‚Ìˆê‚Ì‰æ‘f”i3A5A7... Šï”‚Ì‚İIj
+        # åˆ‡å–ã‚‹æ­£æ–¹å½¢ã®ä¸€ã®ç”»ç´ æ•°ï¼ˆ3ã€5ã€7... å¥‡æ•°ã®ã¿ï¼ï¼‰
         area_calc = 7
-        # Œ¸Z’è”# {{{
-        #   üˆÍ‚ª—‚½F‚ÌAŒ¸Z‚µ‚Äè‡’l‚ğˆÓ}“I‚É“Ëo‚³‚¹
-        #   ”wŒi—Ìˆæ‚ÌƒmƒCƒYEF‚ä‚ç‚¬‚Ì‰e‹¿‚ğ’áŒ¸‚·‚é
+        # æ¸›ç®—å®šæ•°# {{{
+        #   å‘¨å›²ãŒä¼¼ãŸè‰²ã®æ™‚ã€æ¸›ç®—ã—ã¦é–¾å€¤ã‚’æ„å›³çš„ã«çªå‡ºã•ã›
+        #   èƒŒæ™¯é ˜åŸŸã®ãƒã‚¤ã‚ºãƒ»è‰²ã‚†ã‚‰ãã®å½±éŸ¿ã‚’ä½æ¸›ã™ã‚‹
         # }}}
         subtract = 4
 
@@ -216,16 +232,16 @@ class ConvertImage(GetImage):
         return adpth
 
     def bilateral_filter(self, image):
-        """ ƒoƒCƒ‰ƒeƒ‰ƒ‹ƒtƒBƒ‹ƒ^ ˆ— """
+        """ ãƒã‚¤ãƒ©ãƒ†ãƒ©ãƒ«ãƒ•ã‚£ãƒ«ã‚¿ å‡¦ç† """
         gray = self.grayscale(image)
-        # Øæ‚é³•ûŒ`‚Ìˆê‚Ì‰æ‘f”i3A5A7... Šï”‚Ì‚İIj
-        #   ”’l‚ª‘å‚«‚¢‚Ù‚Ç‚Ú‚â‚¯‚é
+        # åˆ‡å–ã‚‹æ­£æ–¹å½¢ã®ä¸€ã®ç”»ç´ æ•°ï¼ˆ3ã€5ã€7... å¥‡æ•°ã®ã¿ï¼ï¼‰
+        #   æ•°å€¤ãŒå¤§ãã„ã»ã©ã¼ã‚„ã‘ã‚‹
         area_calc = 7
-        # F‹óŠÔ‚É‚¨‚¯‚éƒtƒBƒ‹ƒ^ƒVƒOƒ}
-        #   ‘å‚«‚­‚È‚é‚ÆF‚Ì—Ìˆæ‚ª‚æ‚è‘å‚«‚­‚È‚é
+        # è‰²ç©ºé–“ã«ãŠã‘ã‚‹ãƒ•ã‚£ãƒ«ã‚¿ã‚·ã‚°ãƒ
+        #   å¤§ãããªã‚‹ã¨è‰²ã®é ˜åŸŸãŒã‚ˆã‚Šå¤§ãããªã‚‹
         color_sigma = 12
-        # À•W‹óŠÔ‚É‚¨‚¯‚éƒtƒBƒ‹ƒ^ƒVƒOƒ}
-        #   ‘å‚«‚­‚È‚é‚Æ‚æ‚è‰“‚­‚Ì‰æ‘f“¯m‚ª‰e‹¿‚·‚é
+        # åº§æ¨™ç©ºé–“ã«ãŠã‘ã‚‹ãƒ•ã‚£ãƒ«ã‚¿ã‚·ã‚°ãƒ
+        #   å¤§ãããªã‚‹ã¨ã‚ˆã‚Šé ãã®ç”»ç´ åŒå£«ãŒå½±éŸ¿ã™ã‚‹
         metric_sigma = 3
 
         cvf = cv2.bilateralFilter
@@ -237,13 +253,13 @@ class ConvertImage(GetImage):
 
     def discriminantanalyse(self, image,
                             thresh_std=None, method=None):
-        """ ”»•Ê•ªÍ–@ ˆ— """
+        """ åˆ¤åˆ¥åˆ†ææ³• å‡¦ç† """
         if thresh_std is None:
             thresh_std = 128
         if method is None:
             method = 5
         blr = self.bilateral_filter(image)
-        # Å‘åè‡’l
+        # æœ€å¤§é–¾å€¤
         THRESH_MAX = 255
 
         cth = cv2.threshold
@@ -255,13 +271,13 @@ class ConvertImage(GetImage):
         return dcta
 
     def binarize(self, image, thresh_std=None, method=None):
-        """ “ñ’l‰» ˆ— """
+        """ äºŒå€¤åŒ– å‡¦ç† """
         if thresh_std is None:
             thresh_std = 128
         if method is None:
             method = 1
         blr = self.bilateral_filter(image)
-        # Å‘åè‡’l
+        # æœ€å¤§é–¾å€¤
         THRESH_MAX = 255
 
         cth = cv2.threshold
@@ -273,18 +289,18 @@ class ConvertImage(GetImage):
         return binz
 
     def normalize(self, image, alpha=None, beta=None):
-        """ ƒmƒ‹ƒ€³‹K‰» ˆ— """
+        """ ãƒãƒ«ãƒ æ­£è¦åŒ– å‡¦ç† """
         if alpha is None:
             alpha = 0
         if beta is None:
             beta = 1
-        # alphaAbeta ‰ğà# {{{
-        # TODO: ‚í‚©‚ç‚ñ‚©‚ç}‘ŠÙ‚Å‘—¿‚ğØ‚è‚éIII
-        # TODO: “Á‚ÉƒAƒ‹ƒtƒ@Aƒx[ƒ^‚Ì”’l‚ÌˆÓ–¡‡‚¢‚Æ‘Ã“–«III
-        # alpha:ƒmƒ‹ƒ€³‹K‰»‚Ìê‡A³‹K‰»‚³‚ê‚éƒmƒ‹ƒ€’l
-        #        ”ÍˆÍ³‹K‰»‚Ìê‡A‰ºŠE
-        # beta:ƒmƒ‹ƒ€³‹K‰»‚Ìê‡A•sg—p
-        #        ”ÍˆÍ³‹K‰»‚Ìê‡A‚ÌãŠE
+        # alphaã€beta è§£èª¬# {{{
+        # TODO: ã‚ã‹ã‚‰ã‚“ã‹ã‚‰å›³æ›¸é¤¨ã§è³‡æ–™ã‚’å€Ÿã‚Šã‚‹ï¼ï¼ï¼
+        # TODO: ç‰¹ã«ã‚¢ãƒ«ãƒ•ã‚¡ã€ãƒ™ãƒ¼ã‚¿ã®æ•°å€¤ã®æ„å‘³åˆã„ã¨å¦¥å½“æ€§ï¼ï¼ï¼
+        # alpha:ãƒãƒ«ãƒ æ­£è¦åŒ–ã®å ´åˆã€æ­£è¦åŒ–ã•ã‚Œã‚‹ãƒãƒ«ãƒ å€¤
+        #        ç¯„å›²æ­£è¦åŒ–ã®å ´åˆã€ä¸‹ç•Œ
+        # beta:ãƒãƒ«ãƒ æ­£è¦åŒ–ã®å ´åˆã€ä¸ä½¿ç”¨
+        #        ç¯„å›²æ­£è¦åŒ–ã®å ´åˆã€ã®ä¸Šç•Œ
         # }}}
 
         algo = cv2.NORM_MINMAX
@@ -297,22 +313,22 @@ class ConvertImage(GetImage):
 
 
 class Tplmatching:
-    """ ƒeƒ“ƒvƒŒ[ƒgƒ}ƒbƒ`ƒ“ƒOƒNƒ‰ƒX """
+    """ ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒãƒƒãƒãƒ³ã‚°ã‚¯ãƒ©ã‚¹ """
     cim = ConvertImage()
 
     def __init__(self):
         pass
 
     def tplmatch(self, source_image, master_image, algo=None):
-        """ ƒeƒ“ƒvƒŒ[ƒgƒ}ƒbƒ`ƒ“ƒO ˆ— """
+        """ ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒãƒƒãƒãƒ³ã‚° å‡¦ç† """
         if algo is None:
             algo = 5
-        # —Ş—“x”»’èƒAƒ‹ƒSƒŠƒYƒ€ ‰ğà# {{{
-        # cv2.TM_SQDIFF    :‹P“x’l‚Ì·‚Ì‚Qæ‚Ì‡Œv     ¬‚³‚¢‚Ù‚Ç—Ş—
-        # cv2.TM_CCORR     :‹P“x’l‚Ì‘ŠŠÖ               ‘å‚«‚¢‚Ù‚Ç—Ş—
-        # cv2.TM_CCOEFF    :‹P“x’l‚Ì•½‹Ï‚ğˆø‚¢‚½‘ŠŠÖ   ‘å‚«‚¢‚Ù‚Ç—Ş—
-        #                 iƒeƒ“ƒvƒŒ[ƒg‰æ‘œ‚Æ’Tõ‰æ‘œ‚Ì–¾‚é‚³‚É¶‰E‚³‚ê‚É‚­‚¢j
-        # cv2.TM_***_NORMED :ã‹L‚»‚ê‚¼‚ê‚Ì³‹K‰»”Å
+        # é¡ä¼¼åº¦åˆ¤å®šã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ  è§£èª¬# {{{
+        # cv2.TM_SQDIFF    :è¼åº¦å€¤ã®å·®ã®ï¼’ä¹—ã®åˆè¨ˆ     å°ã•ã„ã»ã©é¡ä¼¼
+        # cv2.TM_CCORR     :è¼åº¦å€¤ã®ç›¸é–¢               å¤§ãã„ã»ã©é¡ä¼¼
+        # cv2.TM_CCOEFF    :è¼åº¦å€¤ã®å¹³å‡ã‚’å¼•ã„ãŸç›¸é–¢   å¤§ãã„ã»ã©é¡ä¼¼
+        #                 ï¼ˆãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆç”»åƒã¨æ¢ç´¢ç”»åƒã®æ˜ã‚‹ã•ã«å·¦å³ã•ã‚Œã«ãã„ï¼‰
+        # cv2.TM_***_NORMED :ä¸Šè¨˜ãã‚Œãã‚Œã®æ­£è¦åŒ–ç‰ˆ
         # }}} """
         ALGOS = ["cv2.TM_SQDIFF",
                  "cv2.TM_SQDIFF_NORMED",
@@ -325,9 +341,9 @@ class Tplmatching:
         match = cmt(source_image, master_image, eval(ALGOS[algo]))
 
         if ALGOS in ["cv2.TM_SQDIFF", "cv2.TM_CCORR", "cv2.TM_CCOEFF"]:
-            # ƒmƒ‹ƒ€³‹K‰» ˆ—
+            # ãƒãƒ«ãƒ æ­£è¦åŒ– å‡¦ç†
             norm = self.cim.normalize(match)
-            # —Ş—“x‚ÌÅ¬EÅ‘å’l‚ÆŠeÀ•W æ“¾
+            # é¡ä¼¼åº¦ã®æœ€å°ãƒ»æœ€å¤§å€¤ã¨å„åº§æ¨™ å–å¾—
             val_min, val_max, loc_min, loc_max = cv2.minMaxLoc(norm)
         else:
             val_min, val_max, loc_min, loc_max = cv2.minMaxLoc(match)
@@ -335,22 +351,22 @@ class Tplmatching:
         return match, val_min, val_max, loc_min, loc_max
 
     def mask(self):
-        """ ƒ}ƒXƒN ˆ—i«—ˆ“I‚ÉÀ‘•j """
-        # ‰‰ñ‚Åƒ}ƒbƒ`‚µ‚½‹ß–T—ÌˆæˆÈŠO‚Éƒ}ƒXƒNˆ—‚µAˆ—‘¬“xŒüã‚·‚é
-        # ‚½‚¾‚µõ“GˆÊ’u‚ª•Ï‰»‚µ‚È‚¢–‚ª‘O’ñ
+        """ ãƒã‚¹ã‚¯ å‡¦ç†ï¼ˆå°†æ¥çš„ã«å®Ÿè£…ï¼‰ """
+        # åˆå›ã§ãƒãƒƒãƒã—ãŸè¿‘å‚é ˜åŸŸä»¥å¤–ã«ãƒã‚¹ã‚¯å‡¦ç†ã—ã€å‡¦ç†é€Ÿåº¦å‘ä¸Šã™ã‚‹
+        # ãŸã ã—ç´¢æ•µä½ç½®ãŒå¤‰åŒ–ã—ãªã„äº‹ãŒå‰æ
         pass
 
     def calc_detect_location(self, loc_input, image, loc_output=None):
-        """ •ß‘¨À•W ‰‰Z """
+        """ æ•æ‰åº§æ¨™ æ¼”ç®— """
         if loc_output is None:
             loc_output = "center"
 
         height, width, channel = image.shape
 
-        # ’†‰›À•W ‰‰Z
+        # ä¸­å¤®åº§æ¨™ æ¼”ç®—
         if loc_output == "center":
             div = 2
-        # ‰E‰ºÀ•W ‰‰Z
+        # å³ä¸‹åº§æ¨™ æ¼”ç®—
         elif loc_output == "tail":
             div = 1
         coord = (loc_input[0] + width / div, loc_input[1] + height / div)
@@ -358,8 +374,8 @@ class Tplmatching:
         return coord, height, width
 
     def show_detect_area(self, location, image, frame):
-        """ •ß‘¨”ÍˆÍ ‰‰Z """
-        # ’†‰›À•W ‰‰Z
+        """ æ•æ‰ç¯„å›² æ¼”ç®— """
+        # ä¸­å¤®åº§æ¨™ æ¼”ç®—
         coord, height, width = \
             self.calc_detect_location(location, image)
 
@@ -372,7 +388,7 @@ class Tplmatching:
 
 
 class ImageProcessing:
-    """ ƒƒCƒ“‰æ‘œˆ—ƒNƒ‰ƒX """
+    """ ãƒ¡ã‚¤ãƒ³ç”»åƒå‡¦ç†ã‚¯ãƒ©ã‚¹ """
     cim = ConvertImage()
     tmc = Tplmatching()
     jsd = js.JudgeSound()
@@ -383,44 +399,51 @@ class ImageProcessing:
     cinor = cim.normalize
 
     def __init__(self):  # {{{
-        # “®‰æ æ“¾
+        # å‹•ç”» å–å¾—
         self.cap = cv2.VideoCapture(0)
 
-        # ƒ}ƒbƒ`”»’è’l
+        # ãƒãƒƒãƒåˆ¤å®šå€¤
         self.obj_detect = 0.40
         self.val_ok = 0.70
 
-        # OK/NG •\¦ŒÅ’èflag
+        # OK/NG è¡¨ç¤ºå›ºå®šflag
         self.judge_flag = True
 
-        # OK‚Æ”»’è‚·‚éŠÔ
+        # OKã¨åˆ¤å®šã™ã‚‹æ™‚é–“
         self.ok_time = 2
         self.ok_count = 0
 
-        # ³‹K‰»i‹­’²•\¦j‚Ì‹­’²“x
+        # æ­£è¦åŒ–ï¼ˆå¼·èª¿è¡¨ç¤ºï¼‰ã®å¼·èª¿åº¦
         self.highlight = 4
 
-        # Beep‰¹ Ä¶‰ñ”ŒÅ’è—p ƒJƒEƒ“ƒ^
+        # BeepéŸ³ å†ç”Ÿå›æ•°å›ºå®šç”¨ ã‚«ã‚¦ãƒ³ã‚¿
         self.beep_count = 0
 
-        # ‘€ìà–¾•¶
+        # æ“ä½œèª¬æ˜æ–‡
         self.text2 = "End: Long press \"e\" key"
         self.text3 = "Mastering: Long press \"m\" key"
 
-        # ”»’è—p •Ï”
+        # åˆ¤å®šç”¨ å¤‰æ•°
         # self.frame_eval = None
 
-        # Å‘åEÅ¬‚Ì’l‚ÆÀ•W
+        # æœ€å¤§ãƒ»æœ€å°ã®å€¤ã¨åº§æ¨™
         self.val_max = None
         self.loc_max = None
         self.loc_min = None
+
+        # Unixã¨Windowsã®ãƒ‡ãƒªãƒŸã‚¿å·®ç•° è£œå®Œ
+        if os.name != "nt":
+            self.delimiter = "/"
+        elif os.name == "nt":
+            self.delimiter = "\\"
+
 # }}}
 
     def run(self, window_name, name_master, port, printout,
             extension=None, dir_master=None, dir_log=None,
             model=None, destination=None):
-        """ “®‰ææ“¾ ˆ—iƒƒCƒ“ƒ‹[ƒ`ƒ“j """  # {{{
-        # ƒfƒtƒHƒ‹ƒgˆø” w’è  # {{{
+        """ å‹•ç”»å–å¾— å‡¦ç†ï¼ˆãƒ¡ã‚¤ãƒ³ãƒ«ãƒ¼ãƒãƒ³ï¼‰ """  # {{{
+        # ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•° æŒ‡å®š  # {{{
         self.port = port
         self.printout = printout
 
@@ -452,7 +475,7 @@ class ImageProcessing:
             self.destination = destination
 # }}}
 
-        # ˆ—ŠJn •W€o—Í  # {{{
+        # å‡¦ç†é–‹å§‹ æ¨™æº–å‡ºåŠ›  # {{{
         print("-" * print_col)
         print("START TEMPLATE MATCHING".center(print_col, " "))
         print("-" * print_col)
@@ -462,22 +485,23 @@ class ImageProcessing:
         print("")
 
         cwd = os.getcwd()
-        path_master = cwd + "\\" + self.dir_master
+        path_master = cwd + self.delimiter + self.dir_master
+
         print("Master directory:")
         print(path_master.rjust(print_col, " "))
         print("")
 # }}}
 
-        # ŒŸõ‚·‚éƒ}ƒXƒ^[‰æ‘œ –¼‘OEƒpƒX •\¦  # {{{
+        # æ¤œç´¢ã™ã‚‹ãƒã‚¹ã‚¿ãƒ¼ç”»åƒ åå‰ãƒ»ãƒ‘ã‚¹ è¡¨ç¤º  # {{{
         search_master_file = str(name_master) + "_****" + str(self.extension)
-        search_master_path = str(path_master) + ".\\" + search_master_file
+        search_master_path = str(path_master) + self.delimiter + search_master_file
         print("Search master file name: " + search_master_file)
         print("Search master path: " + search_master_path)
         print("")
 # }}}
 
-        # !!!: •¡”’T¸‚Ì‚Í‚±‚±‚Ì "sda" ‚ğƒCƒeƒŒ[ƒgˆ—
-        # }”ÔÅ‘å‚Ìƒ}ƒXƒ^[‰æ‘œ æ“¾  # {{{
+        # !!!: è¤‡æ•°æ¢æŸ»ã®æ™‚ã¯ã“ã“ã® "sda" ã‚’ã‚¤ãƒ†ãƒ¬ãƒ¼ãƒˆå‡¦ç†
+        # æç•ªæœ€å¤§ã®ãƒã‚¹ã‚¿ãƒ¼ç”»åƒ å–å¾—  # {{{
         self.sda = sd.SaveData(name_master, path_master)
         set_num_master, get_num_master, get_master_flag = \
             self.sda.get_name_max(self.extension)
@@ -486,38 +510,38 @@ class ImageProcessing:
         print("")
 # }}}
 
-        # ƒ}ƒXƒ^[‰æ‘œ—L–³ ”»’è  # {{{
+        # ãƒã‚¹ã‚¿ãƒ¼ç”»åƒæœ‰ç„¡ åˆ¤å®š  # {{{
         if get_master_flag is False:
             print("Master is none")
 
-            # ƒ}ƒXƒ^[‰æ‘œæ“¾ƒ‚[ƒh ‘JˆÚ
+            # ãƒã‚¹ã‚¿ãƒ¼ç”»åƒå–å¾—ãƒ¢ãƒ¼ãƒ‰ é·ç§»
             while get_master_flag is False:
                 get_num_master = \
                     sgm(name_master, self.extension, path_master)
 # }}}
 
-        # ƒCƒjƒVƒƒƒ‹‚Ìƒ}ƒbƒ`‚µ‚½ƒ}ƒXƒ^[‰æ‘œ –¼‘OEƒpƒX •\¦  # {{{
+        # ã‚¤ãƒ‹ã‚·ãƒ£ãƒ«ã®ãƒãƒƒãƒã—ãŸãƒã‚¹ã‚¿ãƒ¼ç”»åƒ åå‰ãƒ»ãƒ‘ã‚¹ è¡¨ç¤º  # {{{
         master_file = str(get_num_master) + str(self.extension)
-        master_path = str(path_master) + ".\\" + master_file
+        master_path = str(path_master) + self.delimiter + master_file
 
         print("Get master name: " + str(get_num_master))
         print("Get master extension: " + str(self.extension))
         print("Master path: " + master_path)
         print("")
 # }}}
-        # !!!: ƒCƒeƒŒ[ƒgˆ——\’è ‚±‚±‚Ü‚Å
+        # !!!: ã‚¤ãƒ†ãƒ¬ãƒ¼ãƒˆå‡¦ç†äºˆå®š ã“ã“ã¾ã§
 
-        # ƒLƒƒƒvƒ`ƒƒ ŠJn
+        # ã‚­ãƒ£ãƒ—ãƒãƒ£ é–‹å§‹
         self.get_camera_image_init(window_name)
 
-        # !!!: ‚±‚±‚©‚ç
+        # !!!: ã“ã“ã‹ã‚‰
         count = 0
         while True:
             if count == 0:
                 time.sleep(0.1)
                 print("Initial delay")
 
-            # ƒLƒƒƒvƒ`ƒƒ‚ÆƒLƒƒƒvƒ`ƒƒƒGƒ‰[ ”»’è
+            # ã‚­ãƒ£ãƒ—ãƒãƒ£ã¨ã‚­ãƒ£ãƒ—ãƒãƒ£ã‚¨ãƒ©ãƒ¼ åˆ¤å®š
             get_flag, frame = self.cap.read()
 
             if self.check_get_flag(get_flag):
@@ -530,9 +554,9 @@ class ImageProcessing:
 
             count += 1
 
-            # ƒ}ƒXƒ^[‰æ‘œ ƒZƒbƒg
+            # ãƒã‚¹ã‚¿ãƒ¼ç”»åƒ ã‚»ãƒƒãƒˆ
             master_file = str(get_num_master) + str(self.extension)
-            master_path = str(path_master) + ".\\" + master_file
+            master_path = str(path_master) + self.delimiter + master_file
             master = cv2.imread(str(master_path), 1)
 
             print("Master name: " + str(get_num_master))
@@ -540,9 +564,9 @@ class ImageProcessing:
             print("Master path: " + master_path)
             print("")
 
-            # ƒeƒ“ƒvƒŒ[ƒgƒ}ƒbƒ`ƒ“ƒO ƒCƒeƒŒ[ƒgˆ—
-            # !!!: •¡”’T¸‚Ì‚Í‚±‚±‚Ìƒ^ƒvƒ‹‚Éƒ}ƒXƒ^[‚ğ“ü‚ê‚é
-            # •]‰¿—p ˆ—ƒŠƒXƒg
+            # ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒãƒƒãƒãƒ³ã‚° ã‚¤ãƒ†ãƒ¬ãƒ¼ãƒˆå‡¦ç†
+            # !!!: è¤‡æ•°æ¢æŸ»ã®æ™‚ã¯ã“ã“ã®ã‚¿ãƒ—ãƒ«ã«ãƒã‚¹ã‚¿ãƒ¼ã‚’å…¥ã‚Œã‚‹
+            # è©•ä¾¡ç”¨ å‡¦ç†ãƒªã‚¹ãƒˆ
             methods = [
                     ["Row", None],
                     # ["Adaptive threashold", self.ciadp],
@@ -550,7 +574,7 @@ class ImageProcessing:
                     # ["Bilateral filter", self.cibiz]
                     ]
 
-            # ƒCƒeƒŒ[ƒgˆ—
+            # ã‚¤ãƒ†ãƒ¬ãƒ¼ãƒˆå‡¦ç†
             for method in methods:
                 if method[1] is not None:
                     frame_eval = method[1](frame)
@@ -559,49 +583,49 @@ class ImageProcessing:
                     frame_eval = frame
                     master_eval = master
 
-                # ƒeƒ“ƒvƒŒ[ƒgƒ}ƒbƒ`ƒ“ƒO ˆ—
+                # ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒãƒƒãƒãƒ³ã‚° å‡¦ç†
                 mch, self.val_min, self.val_max, self.loc_min, self.loc_max = \
                     self.tmc.tplmatch(frame_eval, master_eval)
                 match = mch
 
-                # ƒ}ƒbƒ`—Ìˆæ ƒgƒŠƒ€ˆ—
+                # ãƒãƒƒãƒé ˜åŸŸ ãƒˆãƒªãƒ å‡¦ç†
                 detect_eval, left_up, right_low = \
                     self.tmc.show_detect_area(self.loc_max, master, frame)
 
-                # ŒŸo—Ìˆæ‚É‘€ì—Ìˆæ‚Æ“¯‚¶‰æ‘œˆ— Às
+                # æ¤œå‡ºé ˜åŸŸã«æ“ä½œé ˜åŸŸã¨åŒã˜ç”»åƒå‡¦ç† å®Ÿè¡Œ
                 if method[1] is not None:
                     detect_eval = method[1](detect_eval)
 
-                # OK/NG ”»’è
+                # OK/NG åˆ¤å®š
                 self.judge_image(frame_eval, left_up, right_low)
 
-                # •]‰¿ˆ— ‰æ–Ê•\¦
+                # è©•ä¾¡å‡¦ç† ç”»é¢è¡¨ç¤º
                 scd = self.cim.display
                 # scd(str(method[0] + " frame"), self.frame_eval, 1)
                 scd(str(method[0] + " master"), master_eval, 1)
                 scd("Detected " + str(method[0]), detect_eval, 1)
 
-                # •ß‘¨”ÍˆÍ ³‹K‰»i•ß‘¨”ÍˆÍ ‹­’²•\¦—pj
+                # æ•æ‰ç¯„å›² æ­£è¦åŒ–ï¼ˆæ•æ‰ç¯„å›² å¼·èª¿è¡¨ç¤ºç”¨ï¼‰
                 norm = self.cinor(match)
                 norm_eval = norm ** self.highlight
-                # frame‚æ‚èmaster•ªk‚Ş
+                # frameã‚ˆã‚Šmasteråˆ†ç¸®ã‚€
                 self.cim.display("Normalize " + str(method[0]), norm_eval, 1)
 
-                # ‘€ì•û–@à–¾•¶ ‰æ–Ê•\¦
+                # æ“ä½œæ–¹æ³•èª¬æ˜æ–‡ ç”»é¢è¡¨ç¤º
                 sdo = self.display_operation
                 sdo(frame, window_name, self.text2, self.text3)
 
-                # —Ş—“x •W€o—Í
+                # é¡ä¼¼åº¦ æ¨™æº–å‡ºåŠ›
                 self.print_simil(self.val_max, method)
 
-            # "m" ‰Ÿ‰º ƒ}ƒXƒ^[‰æ‘œæ“¾ƒ‚[ƒh ‘JˆÚ
+            # "m" æŠ¼ä¸‹ ãƒã‚¹ã‚¿ãƒ¼ç”»åƒå–å¾—ãƒ¢ãƒ¼ãƒ‰ é·ç§»
             if cv2.waitKey(33) == ord("m"):
                 print("Input key \"m\"")
                 print("Go get master")
                 print("")
                 get_num_master = sgm(name_master, self.extension, path_master)
 
-            # "e" ‰Ÿ‰º I—¹ˆ—
+            # "e" æŠ¼ä¸‹ çµ‚äº†å‡¦ç†
             if cv2.waitKey(33) == ord("e"):
                 print("Input key \"e\"")
                 print(" END PROCESS ".center(print_col, "*"))
@@ -610,17 +634,17 @@ class ImageProcessing:
             # }}}
 
     def get_camera_image_init(self, window_name):
-        """ ƒJƒƒ‰‚©‚ç“®‰ææ“¾ """  # {{{
-        # ƒLƒƒƒvƒ`ƒƒ ƒCƒjƒVƒƒƒ‹ƒfƒBƒŒƒC
+        """ ã‚«ãƒ¡ãƒ©ã‹ã‚‰å‹•ç”»å–å¾— """  # {{{
+        # ã‚­ãƒ£ãƒ—ãƒãƒ£ ã‚¤ãƒ‹ã‚·ãƒ£ãƒ«ãƒ‡ã‚£ãƒ¬ã‚¤
         time.sleep(0.1)
         print("Camera open check delay")
         if not self.cap.isOpened():
             print("Can not connect camera...")
             terminate()
-            # ƒgƒ‰ƒbƒNƒo[ ’è‹`(‚Å‚«‚È‚¢)III# {{{
+            # ãƒˆãƒ©ãƒƒã‚¯ãƒãƒ¼ å®šç¾©(ã§ããªã„)ï¼ï¼ï¼# {{{
             #        bar_name = "Max threshold"
             #        print(thresh_max)
-            # # ƒgƒ‰ƒbƒNƒo[ ¶¬
+            # # ãƒˆãƒ©ãƒƒã‚¯ãƒãƒ¼ ç”Ÿæˆ
             #        def set_parameter(value):
             #            thresh_max = cv2.getTrackbarPos(bar_name, window_name)
             #            thresh_max = cv2.setTrackbarPos(bar_name, window_name)
@@ -632,21 +656,21 @@ class ImageProcessing:
 # }}}
 
     def check_get_flag(self, flag):
-        """ “®‰ææ“¾ƒ~ƒX ƒXƒLƒbƒvˆ— """  # {{{
+        """ å‹•ç”»å–å¾—ãƒŸã‚¹æ™‚ ã‚¹ã‚­ãƒƒãƒ—å‡¦ç† """  # {{{
         if flag is False:
             print("Can not get end flag")
             return True
             # }}}
 
     def check_get_frame(self, frame):
-        """ ƒ‹[ƒv I—¹ˆ— """  # {{{
+        """ ãƒ«ãƒ¼ãƒ— çµ‚äº†å‡¦ç† """  # {{{
         if frame is None:
             print("Can not get video frame")
             return True
             # }}}
 
     def judge_image(self, image, left_up, right_low):
-        """ ƒ[ƒN ŒŸoE”»’èˆ— """  # {{{
+        """ ãƒ¯ãƒ¼ã‚¯ æ¤œå‡ºãƒ»åˆ¤å®šå‡¦ç† """  # {{{
         self.image = image
         self.left_up = left_up
         self.right_low = right_low
@@ -654,17 +678,17 @@ class ImageProcessing:
 
         self.trim = tm.Trim(image, None, None, None, 1)
 
-        # ƒ[ƒNŒŸ’m ”»’è
+        # ãƒ¯ãƒ¼ã‚¯æ¤œçŸ¥ åˆ¤å®š
         if self.val_max > self.obj_detect:
 
-            # ƒ[ƒNŒŸ’m ˆ—
-            # ƒ‚[ƒh ‰æ–Êo—Í
+            # ãƒ¯ãƒ¼ã‚¯æ¤œçŸ¥ å‡¦ç†
+            # ãƒ¢ãƒ¼ãƒ‰ ç”»é¢å‡ºåŠ›
             twt = self.trim.write_text
             msg = "Matching..."
             msg_height, msg_base = twt(msg, (0, "height"), offset=(0, 5))
             self.msg_origin = (0, 15 + msg_base)
 
-            # *•bŠÔOK‚Å‰æ–Ê•\¦
+            # *ç§’é–“OKã§ç”»é¢è¡¨ç¤º
             self.ok_count += 1
             if self.ok_count == 1:
                 self.ok_start = time.time()
@@ -677,15 +701,15 @@ class ImageProcessing:
                 print("OK frame count: " + str(self.ok_count))
                 print("")  # }}}
 
-            # ŒŸ’mŠÔ ”»’è
+            # æ¤œçŸ¥æ™‚é–“ åˆ¤å®š
             if ok_pass > self.ok_time:
-                # OK/NG ”»’èˆ—
+                # OK/NG åˆ¤å®šå‡¦ç†
                 if self.val_max > self.val_ok and self.judge_flag is True:
                     self.judge_ok()
                 else:
                     self.judge_ng()
 
-        # ŒŸõ’† •\¦
+        # æ¤œç´¢ä¸­ è¡¨ç¤º
         # if self.val_max < self.obj_detect:
         else:
             self.trim.write_text("Searching...", (0, "height"), offset=(0, 5))
@@ -693,18 +717,18 @@ class ImageProcessing:
 # }}}
 
     def judge_ok(self):
-        """ ”»’èOK ˆ— """  # {{{
+        """ åˆ¤å®šOK å‡¦ç† """  # {{{
         self.beep_count += 1
 
-        # "OK" ‰æ–Ê•\¦
+        # "OK" ç”»é¢è¡¨ç¤º
         stwt = self.trim.write_text
         stwt("OK", (0, "height"), 2, "white", "green", 5, 4, self.msg_origin)
 
-        # ŒŸoˆÊ’u‹éŒ` ‰æ–Ê•\¦
+        # æ¤œå‡ºä½ç½®çŸ©å½¢ ç”»é¢è¡¨ç¤º
         stdr = self.trim.draw_rectangle
         stdr(self.left_up, self.right_low, "white", "green")
 
-        # —Ş—“x •\¦
+        # é¡ä¼¼åº¦ è¡¨ç¤º
         similarity = round(self.val_max * 100, 1)
         sim = str(similarity) + "%"
         coord = (self.right_low[0], "height")
@@ -712,11 +736,11 @@ class ImageProcessing:
         stwt(sim, coord, scale=0.6, color_out="white", color_in="green",
              thickness_out=3, thickness_in=2, offset=offset)
 
-        # OK‰¹ ‰¹ºo—Í
+        # OKéŸ³ éŸ³å£°å‡ºåŠ›
         if self.beep_count == 2:
             self.jsd.beep_ok()
 
-            # OKƒƒO o—Í
+            # OKãƒ­ã‚° å‡ºåŠ›
             sda_ok_image = sd.SaveData("ok_image", self.dir_log)
             sda_ok_text = sd.SaveData("judge_log", os.getcwd())
             sisi = sda_ok_image.save_image
@@ -740,19 +764,19 @@ class ImageProcessing:
 # }}}
 
     def judge_ng(self):
-        """ ”»’èNG ˆ— """  # {{{
+        """ åˆ¤å®šNG å‡¦ç† """  # {{{
         self.beep_count += 1
         self.judge_flag = False
 
-        # NG ‰æ–Ê•\¦
+        # NG ç”»é¢è¡¨ç¤º
         stwt = self.trim.write_text
         stwt("NG", (0, "height"), 2, "white", "red", 5, 4, self.msg_origin)
 
-        # NG‰¹ ‰¹ºo—Í
+        # NGéŸ³ éŸ³å£°å‡ºåŠ›
         if self.beep_count == 2:
             self.jsd.beep_ng()
 
-            # NGƒƒO o—Í
+            # NGãƒ­ã‚° å‡ºåŠ›
             sda_ng_image = sd.SaveData("ng_image", self.dir_log)
             sda_ng_text = sd.SaveData("judge_log", os.getcwd())
             sisi = sda_ng_image.save_image
@@ -763,7 +787,7 @@ class ImageProcessing:
 # }}}
 
     def init_judge_param(self):
-        """ ”»’è”Œ³ ‰Šú‰» """  # {{{
+        """ åˆ¤å®šè«¸å…ƒ åˆæœŸåŒ– """  # {{{
         self.ok_count = 0
         self.ok_start = 0
         self.beep_count = 0
@@ -771,7 +795,7 @@ class ImageProcessing:
 # }}}
 
     def get_still_image(self):
-        """ ƒ}ƒXƒ^[‰æ‘œæ“¾ƒ‚[ƒh ‘JˆÚ """  # {{{
+        """ ãƒã‚¹ã‚¿ãƒ¼ç”»åƒå–å¾—ãƒ¢ãƒ¼ãƒ‰ é·ç§» """  # {{{
         ext = self.extension
         print("Get still image")
         print("")
@@ -779,7 +803,7 @@ class ImageProcessing:
         time.sleep(0.1)
         image = "{}\\master_source{}".format(self.path, ext)
 
-        # •¶š•`‰æÁ‹‚Ìˆ× Ä“Ç‚İ
+        # æ–‡å­—æç”»æ¶ˆå»ã®ç‚º å†èª­è¾¼ã¿
         get_flag, frame = self.cap.read()
         cv2.imwrite(image, frame)
         trim = tm.Trim(image, self.search, ext, self.path, end_process=1)
@@ -787,35 +811,35 @@ class ImageProcessing:
         # }}}
 
     def display_operation(self, frame, window_name, text1, text2):
-        """ ‘€ì•û–@à–¾•¶ ‰æ–Ê•\¦ """  # {{{
-        # ‘€ì•û–@à–¾•¶ •\¦ˆÊ’u æ“¾
+        """ æ“ä½œæ–¹æ³•èª¬æ˜æ–‡ ç”»é¢è¡¨ç¤º """  # {{{
+        # æ“ä½œæ–¹æ³•èª¬æ˜æ–‡ è¡¨ç¤ºä½ç½® å–å¾—
         text_offset = 10
         baseline = frame.shape[0] - text_offset
         origin = 1, baseline
 
-        # ‘€ì•û–@à–¾•¶ •\¦
+        # æ“ä½œæ–¹æ³•èª¬æ˜æ–‡ è¡¨ç¤º
         trim = tm.Trim(frame, None, None, None, 1)
         text_height = trim.write_text(text1, origin)
         coor_x = origin[0]
         coor_y = origin[1] - text_offset - text_height[1]
         trim.write_text(text2, (coor_x, coor_y))
 
-        # ƒƒCƒ“‰æ–Ê •\¦
+        # ãƒ¡ã‚¤ãƒ³ç”»é¢ è¡¨ç¤º
         self.cim.display(window_name, frame, 1)
         # import pdb; pdb.set_trace()
 # }}}
 
     def go_get_master_mode(self, image, extension, path):
-        """ ƒ}ƒXƒ^[‰æ‘œæ“¾ƒ‚[ƒh ‘JˆÚ """  # {{{
+        """ ãƒã‚¹ã‚¿ãƒ¼ç”»åƒå–å¾—ãƒ¢ãƒ¼ãƒ‰ é·ç§» """  # {{{
         print("Go get master mode")
         print("")
         time.sleep(0.1)
 
-        # TODO: •¡”’T¸‚Ì‚Í‚±‚±‚Ì "sda" ‚ğƒCƒeƒŒ[ƒgˆ—III
+        # TODO: è¤‡æ•°æ¢æŸ»ã®æ™‚ã¯ã“ã“ã® "sda" ã‚’ã‚¤ãƒ†ãƒ¬ãƒ¼ãƒˆå‡¦ç†ï¼ï¼ï¼
         self.get_master(image, extension, path, 1)
         set_name, get_name, get_flag = \
             self.sda.get_name_max(extension)
-        # TODO: ƒCƒeƒŒ[ƒgˆ——\’è ‚±‚±‚Ü‚ÅIII
+        # TODO: ã‚¤ãƒ†ãƒ¬ãƒ¼ãƒˆå‡¦ç†äºˆå®š ã“ã“ã¾ã§ï¼ï¼ï¼
         cv2.destroyAllWindows()
 
         print("Get master name: " + str(get_name))
@@ -823,9 +847,9 @@ class ImageProcessing:
         return get_name
 # }}}
 
-    # TODO: Œ©’¼‚µ(main loop ‚ÅØo‚µ‚½ƒƒ\ƒbƒh‚É‘ã‘Ö‚·‚é)III
+    # TODO: è¦‹ç›´ã—(main loop ã§åˆ‡å‡ºã—ãŸãƒ¡ã‚½ãƒƒãƒ‰ã«ä»£æ›¿ã™ã‚‹)ï¼ï¼ï¼
     def get_master(self, search, extension, path, mode=None):
-        """ ƒ}ƒXƒ^[‰æ‘œ “Ç‚İ """  # {{{
+        """ ãƒã‚¹ã‚¿ãƒ¼ç”»åƒ èª­è¾¼ã¿ """  # {{{
         self.search = search
         self.extension = extension
         self.path = path
@@ -834,7 +858,7 @@ class ImageProcessing:
         text2 = "Quit: Long press \"q\" key"
         text3 = "Trimming: Long press \"t\" key"
 
-        # ˆ—ŠJn •W€o—Í  # {{{
+        # å‡¦ç†é–‹å§‹ æ¨™æº–å‡ºåŠ›  # {{{
         print("-" * print_col)
         print(" START GET MASTER MODE ".center(print_col, "*"))
         print("-" * print_col)
@@ -842,9 +866,9 @@ class ImageProcessing:
         print("")
 # }}}
 
-        # ”»’è”Œ³ ‰Šú‰»
+        # åˆ¤å®šè«¸å…ƒ åˆæœŸåŒ–
         self.init_judge_param()
-        # ƒLƒƒƒvƒ`ƒƒ ŠJn
+        # ã‚­ãƒ£ãƒ—ãƒãƒ£ é–‹å§‹
         self.get_camera_image_init(name)
 
         count = 0
@@ -853,7 +877,7 @@ class ImageProcessing:
                 time.sleep(0.1)
                 print("Initial delay")
 
-            # ƒLƒƒƒvƒ`ƒƒ‚ÆƒLƒƒƒvƒ`ƒƒƒGƒ‰[ ”»’è
+            # ã‚­ãƒ£ãƒ—ãƒãƒ£ã¨ã‚­ãƒ£ãƒ—ãƒãƒ£ã‚¨ãƒ©ãƒ¼ åˆ¤å®š
             get_flag, frame = self.cap.read()
 
             if self.check_get_flag(get_flag) is False:
@@ -861,24 +885,24 @@ class ImageProcessing:
             if self.check_get_frame(frame) is False:
                 continue
 
-            # ƒ}ƒXƒ^[‰æ‘œæ“¾ƒ‚[ƒh ’¼Ú‘JˆÚ
+            # ãƒã‚¹ã‚¿ãƒ¼ç”»åƒå–å¾—ãƒ¢ãƒ¼ãƒ‰ ç›´æ¥é·ç§»
             if mode is not None:
                 self.get_still_image()
                 break
 
-            # ‘€ì•û–@à–¾•¶ ‰æ–Ê•\¦
+            # æ“ä½œæ–¹æ³•èª¬æ˜æ–‡ ç”»é¢è¡¨ç¤º
             sdo = self.display_operation
             frame_draw = frame
             sdo(frame_draw, name, text2, text3)
 
-            # # TODO: Œ©’¼‚µ(main loop ‚ÅØo‚µ‚½ƒƒ\ƒbƒh‚É‘ã‘Ö‚·‚é)III
-            # # ‘€ì•û–@à–¾•¶ •\¦ˆÊ’u æ“¾
+            # # TODO: è¦‹ç›´ã—(main loop ã§åˆ‡å‡ºã—ãŸãƒ¡ã‚½ãƒƒãƒ‰ã«ä»£æ›¿ã™ã‚‹)ï¼ï¼ï¼
+            # # æ“ä½œæ–¹æ³•èª¬æ˜æ–‡ è¡¨ç¤ºä½ç½® å–å¾—
             # text_offset = 10
             # baseline = frame.shape[0] - text_offset
             # origin = 1, baseline
 
-            # # TODO: Œ©’¼‚µ(main loop ‚ÅØo‚µ‚½ƒƒ\ƒbƒh‚É‘ã‘Ö‚·‚é)III
-            # # ‘€ì•û–@à–¾•¶ •\¦
+            # # TODO: è¦‹ç›´ã—(main loop ã§åˆ‡å‡ºã—ãŸãƒ¡ã‚½ãƒƒãƒ‰ã«ä»£æ›¿ã™ã‚‹)ï¼ï¼ï¼
+            # # æ“ä½œæ–¹æ³•èª¬æ˜æ–‡ è¡¨ç¤º
             # frame_draw = frame
             # trim = tm.Trim(frame_draw, search, extension, path, 1)
             # text_height = trim.write_text(text2, origin)
@@ -890,13 +914,13 @@ class ImageProcessing:
             print("Master capture")
             count += 1
 
-            # "t"ƒL[‰Ÿ‰º ƒ}ƒXƒ^[‰æ‘œæ“¾ƒ‚[ƒh ‘JˆÚ
+            # "t" æŠ¼ä¸‹ ãƒã‚¹ã‚¿ãƒ¼ç”»åƒå–å¾—ãƒ¢ãƒ¼ãƒ‰ é·ç§»
             if cv2.waitKey(33) == ord("t"):
                 print("Input key \"t\"")
                 print("")
                 self.get_still_image()
 
-            # "q"ƒL[‰Ÿ‰º I—¹ˆ—
+            # "q" æŠ¼ä¸‹ çµ‚äº†å‡¦ç†
             if cv2.waitKey(33) == ord("q"):
                 print("Input key \"q\"")
                 time.sleep(0.5)
@@ -907,7 +931,7 @@ class ImageProcessing:
 # }}}
 
     def print_simil(self, val_max, method):
-        """ —Ş—“x •W€o—Í """  # {{{
+        """ é¡ä¼¼åº¦ æ¨™æº–å‡ºåŠ› """  # {{{
         simil_max = str(round(val_max * 100, 2)) + "%"
         simil_min = str(round(self.val_min * 100, 2)) + "%"
         print("")
@@ -926,10 +950,10 @@ class ImageProcessing:
 
 
 def main():
-    """ ƒƒCƒ“ƒ‹[ƒ`ƒ“ """
-    # VimƒeƒXƒg—pŠe•Ï” ’è‹`# {{{
+    """ ãƒ¡ã‚¤ãƒ³ãƒ«ãƒ¼ãƒãƒ³ """
+    # Vimãƒ†ã‚¹ãƒˆç”¨å„å¤‰æ•° å®šç¾©# {{{
 
-    # ƒCƒjƒVƒƒƒ‹î•ñ o—Í
+    # ã‚¤ãƒ‹ã‚·ãƒ£ãƒ«æƒ…å ± å‡ºåŠ›
     print("".center(print_col, "-"))
     print("INFORMATION".center(print_col, " "))
     print("".center(print_col, "-"))
@@ -938,19 +962,22 @@ def main():
     print("")
 
     print("And then...")
-    os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
+    try:
+        os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
+    except:
+        os.chdir("/Users/wacky515/OneDrive/Biz/Python/ImageProcessing")
     print(os.getcwd().rjust(print_col, " "))
 
     print("")
-    print("¬" * int(print_col / 2))
+    print("ã€“" * int(print_col / 2))
     print("START MAIN".center(print_col, " "))
-    print("¬" * int(print_col / 2))
+    print("ã€“" * int(print_col / 2))
     print("")
     # import pdb; pdb.set_trace()
 # }}}
 
-    # ƒeƒ“ƒvƒŒ[ƒgƒ}ƒbƒ`ƒ“ƒO ƒeƒXƒg# {{{
-    # ‹@íŒÅ—Lİ’è‚ÍÀsƒtƒ@ƒCƒ‹ã‚Å "config" ‚ğì¬‚µPickle‰»‚·‚é
+    # ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒãƒƒãƒãƒ³ã‚° ãƒ†ã‚¹ãƒˆ# {{{
+    # æ©Ÿç¨®å›ºæœ‰è¨­å®šã¯å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ä¸Šã§ "config" ã‚’ä½œæˆã—PickleåŒ–ã™ã‚‹
     port = 2
     printout = {"C597A": {
                 "LABEL BATT-C597A/J-CA": "1AG6P4S2000-ABA",
@@ -963,7 +990,7 @@ def main():
     print("Image processing end...")
 # }}}
 
-    # Ã~‰ææ“¾ ƒeƒXƒg# {{{
+    # é™æ­¢ç”»å–å¾— ãƒ†ã‚¹ãƒˆ# {{{
     # gim = GetImage(pic_smpl_1)
     # gim2 = GetImage("tpl_3.png")
     # # gim.diplay("Tes1", 0, 0)
@@ -971,7 +998,7 @@ def main():
     # print("Main loop end...")
 # }}}
 
-    # “®‰ææ“¾ ƒeƒXƒg# {{{
+    # å‹•ç”»å–å¾— ãƒ†ã‚¹ãƒˆ# {{{
     # cav = GetImage()
     # cav.get_image("Capture_test")
     # frame_test = cav.frame
@@ -983,7 +1010,7 @@ def main():
     # cv2.namedWindow(name, cv2.WINDOW_AUTOSIZE)
     # cv2.imshow(name, Image)
     # cv2.imshow(name, frame_test)
-    # # ‰¼‚Ìo—Í•Ûˆ—III
+    # # ä»®ã®å‡ºåŠ›ä¿æŒå‡¦ç†ï¼ï¼ï¼
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
     #
@@ -993,7 +1020,7 @@ def main():
     # print("Sudah cap")
 # }}}
 
-    # # ƒhƒLƒ…ƒƒ“ƒgƒXƒgƒŠƒ“ƒO# {{{
+    # # ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆã‚¹ãƒˆãƒªãƒ³ã‚°# {{{
     # print(GetImage.__doc__)
     # print(help(__name__))
     # }}}

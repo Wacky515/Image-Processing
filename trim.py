@@ -11,7 +11,7 @@
 # Licence:     SDS10002
 # --------------------------------------------------
 # }}}
-""" 画像のトリミング"""
+""" 画像のトリミング """
 
 # TODO: 変数は "[大区分/固有]_[小区分/汎用]"
 # FIXME: print("Quit trim mode") がループする
@@ -27,6 +27,7 @@
 import os
 import sys
 import time
+from pprint import pprint
 
 import cv2
 import cv2.cv as cv
@@ -34,8 +35,14 @@ import cv2.cv as cv
 try:
     import savedata as sd
 except:
-    sys.path.append("D:\OneDrive\Biz\Python\SaveData")
-    import savedata as sd
+    try:
+        sys.path.append("D:\OneDrive\Biz\Python\SaveData")
+        pprint(sys.path)
+        import savedata as sd
+    except:
+        sys.path.append("/Users/wacky515/OneDrive/Biz/Python/SaveData")
+        pprint(sys.path)
+        import savedata as sd
 
 # sysモジュール リロード
 reload(sys)
@@ -116,7 +123,7 @@ class Trim:
 
     def mouse_event(self, event, coor_x, coor_y, flags, param):
         """ マウスイベント 取得 """
-        # マウス座標を代入（"__init__"ではない！！！）
+        # マウス座標を代入（"__init__" ではない！！！）
         self.coor_x = coor_x
         self.coor_y = coor_y
 
@@ -199,7 +206,7 @@ class Trim:
         font = cv2.FONT_HERSHEY_SIMPLEX
         size, baseline = cv2.getTextSize(text, font, scale, thickness_out)
 
-        # 描画y座標が"height"なら文字自体の高さを代入
+        # 描画y座標が "height" なら文字自体の高さを代入
         if origin[1] == "height":
             # 要素書換えのためタプルをリストに変換後、復元
             origin = list(origin)
@@ -261,11 +268,10 @@ class Trim:
             # トリミング範囲 演算
             height = self.length_y
             width = self.length_x
-            image_trim = self.image[height: self.end_y,
-                                    width: self.end_x]
+            image_trim = self.image[height: self.end_y, width: self.end_x]
 
             # 保存処理と保存フラグ "真" -> "偽" 処理
-            # FIXME: 以下の "imrite" はミス？ 不要か確認
+            # FIXME: 以下の "imrite" はミス？ 不要か確認 -> テストコードっぽい
             # cv2.imwrite("imwrite.png", image_trim)
             sda = sd.SaveData(self.name, self.path)
             sda.save_image(image_trim, self.extension)
@@ -312,7 +318,10 @@ def main():
     print(os.getcwd().rjust(print_col, " "))
     print("")
     print("And then...")
-    os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
+    try:
+        os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
+    except:
+        os.chdir("/Users/wacky515/OneDrive/Biz/Python/SaveData")
     print(os.getcwd().rjust(print_col, " "))
 
     print("")
@@ -323,8 +332,10 @@ def main():
     # import pdb; pdb.set_trace()
 # }}}
 
+    # tm = Trim("trim_test.png", "trimed",
+              # ".png", ".\\MasterImage", end_process=1)
     tm = Trim("trim_test.png", "trimed",
-              ".png", ".\\MasterImage", end_process=1)
+              ".png", "./MasterImage", _type=1, end_process=1)
     # tm = Trim("trim_test.png", "trimed", ".png", ".\\MasterImage")
     # tm = Trim("trim_test2.png")
     tm.trim()
