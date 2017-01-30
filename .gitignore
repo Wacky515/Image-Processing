@@ -5,15 +5,16 @@
 *.swo
 *.sw*
 
-./
-old/
 !*.py
 !*.txt
 !*.md
 
+./
+old/
 LogImage/
 dist/
 build/
+
 *.png
 *.dbm
 *.dump
