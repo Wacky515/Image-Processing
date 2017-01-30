@@ -804,10 +804,12 @@ class ImageProcessing:
         print("")
 
         time.sleep(0.1)
-        image = "{}\\master_source{}".format(self.path, ext)
+        image = "{}{}master_source{}".format(self.path, self.delimiter, ext)
+        print("Get master name: {}".format(image))
 
         # 文字描画消去の為 再読込み
         get_flag, frame = self.cap.read()
+
         cv2.imwrite(image, frame)
         trim = tm.Trim(image, self.search, ext, self.path, end_process=1)
         trim.trim()
@@ -969,7 +971,7 @@ def main():
         os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
     except:
         os.chdir("/Users/wacky515/OneDrive/Biz/Python/ImageProcessing")
-    print(os.getcwd().rjust(print_col, " "))
+    # print(os.getcwd().rjust(print_col, " "))
 
     print("")
     print(u"〓" * int(print_col / 2))
