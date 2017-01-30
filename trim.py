@@ -296,7 +296,7 @@ class Trim:
                 time.sleep(0.1)
 
         print("")
-        print("Input key \"{}\"".format(self.key_quit))
+        print("!!Input key \"{}\"".format(self.key_quit))
         print("Quit trim mode")
         print("!!!")
         print("")
@@ -321,7 +321,7 @@ def main():
     try:
         os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
     except:
-        os.chdir("/Users/wacky515/OneDrive/Biz/Python/SaveData")
+        os.chdir("/Users/wacky515/OneDrive/Biz/Python/ImageProcessing")
     print(os.getcwd().rjust(print_col, " "))
 
     print("")
