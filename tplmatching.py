@@ -519,7 +519,7 @@ class ImageProcessing:
 
             # マスター画像取得モード 遷移
             while get_master_flag is False:
-                get_num_master = \
+                get_num_master, get_master_flag = \
                     sgm(name_master, self.extension, path_master)
 # }}}
 
@@ -626,7 +626,8 @@ class ImageProcessing:
                 print("Input key \"m\"")
                 print("Go get master")
                 print("")
-                get_num_master = sgm(name_master, self.extension, path_master)
+                get_num_master, get_master_flag = \
+                        sgm(name_master, self.extension, path_master)
 
             # "e" 押下 終了処理
             if cv2.waitKey(33) == ord("e"):
@@ -849,7 +850,7 @@ class ImageProcessing:
 
         print("Get master name: " + str(get_name))
 
-        return get_name
+        return get_name, get_flag
 # }}}
 
     # TODO: 見直し(main loop で切出したメソッドに代替する)！！！

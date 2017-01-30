@@ -13,9 +13,16 @@
 # }}}
 """ 画像のトリミング """
 
-# TODO: 変数は "[大区分/固有]_[小区分/汎用]"
-# FIXME: print("Quit trim mode") がループする
-#       ただし、実用上は支障なし
+# TODO:
+#    変数は "[大区分/固有]_[小区分/汎用]"
+# FIXME:
+#    print("Quit trim mode") がループする
+#    ただし、実用上は支障なし
+
+#    RuntimeError: maximum recursion depth exceeded.
+#    再帰の回数の限界を超えている
+#    → トリミングモードの開始回数を制限する！！！
+#    → 一枚の画像から複数枚保存できる機能は残す（安易にSave -> 終了にしない）
 
 # DONE: Unicode文字リテラルを " u"body" " -> " "body" " に変更
 # DONE: 関数名は動詞にする
@@ -37,11 +44,11 @@ try:
 except:
     try:
         sys.path.append("D:\OneDrive\Biz\Python\SaveData")
-        pprint(sys.path)
+        # pprint(sys.path)
         import savedata as sd
     except:
         sys.path.append("/Users/wacky515/OneDrive/Biz/Python/SaveData")
-        pprint(sys.path)
+        # pprint(sys.path)
         import savedata as sd
 
 # sysモジュール リロード
@@ -342,10 +349,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-"""
-FIXME:
-RuntimeError: maximum recursion depth exceeded. 再帰の回数の限界を超えている
-→ トリミングモードの開始回数を制限する！！！
-→ 一枚の画像から複数枚保存できる機能は残す（安易にSave -> 終了にしない）
-"""
