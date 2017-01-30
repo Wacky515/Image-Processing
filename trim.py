@@ -332,10 +332,10 @@ def main():
     # import pdb; pdb.set_trace()
 # }}}
 
-    # tm = Trim("trim_test.png", "trimed",
-              # ".png", ".\\MasterImage", end_process=1)
     tm = Trim("trim_test.png", "trimed",
-              ".png", "./MasterImage", _type=1, end_process=1)
+              ".png", ".\\MasterImage", end_process=1)
+    # tm = Trim("trim_test.png", "trimed",
+    #           ".png", "./MasterImage", _type=1, end_process=1)
     # tm = Trim("trim_test.png", "trimed", ".png", ".\\MasterImage")
     # tm = Trim("trim_test2.png")
     tm.trim()

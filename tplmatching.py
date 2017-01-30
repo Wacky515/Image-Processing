@@ -14,7 +14,10 @@
 """ テンプレートマッチングによる画像処理 """
 # FIXME:
     # template画像が存在しないとtemplate読み込みエラー
-    # ↑ file exist  で template画像なければダミーtemplate画像作る
+    # ↑ template画像保存後に "*0002" を探しに行くため
+    # ↑ （スマートではない代案）file exist で template画像なければダミー作る
+
+    # Macではtemplate保存後にMatchingに戻らない
 
 # TODO:
     # しきい値 手動入力にする
@@ -969,9 +972,9 @@ def main():
     print(os.getcwd().rjust(print_col, " "))
 
     print("")
-    print("〓" * int(print_col / 2))
+    print(u"〓" * int(print_col / 2))
     print("START MAIN".center(print_col, " "))
-    print("〓" * int(print_col / 2))
+    print(u"〓" * int(print_col / 2))
     print("")
     # import pdb; pdb.set_trace()
 # }}}
