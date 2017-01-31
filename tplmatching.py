@@ -16,6 +16,8 @@
     # Macではtemplate保存後にMatchingに戻らない
 
 # TODO:
+    # "path" の結合は "os.path.join()" を使用する
+    # 自作moduleのインポート方法 改善する
     # しきい値 手動入力にする
     # アイコン 作成
     # ソフト名 正式にする
@@ -71,6 +73,8 @@ try:
     import savedata as sd
     import judgesound as js
     import serialcom as sc
+
+# ここ以降は改善必須
 except:
     print("Can not find custum module")
     print("Add default search path:")
@@ -89,15 +93,40 @@ except:
         import serialcommun as sc
 
     except:
-        sys.path.append("/Users/wacky515/OneDrive/Biz/Python")
-        sys.path.append("/Users/wacky515/OneDrive/Biz/Python/SaveData")
-        sys.path.append("/Users/wacky515/OneDrive/Biz/Python/Sound")
-        sys.path.append("/Users/wacky515/OneDrive/Biz/Python/Serial")
+        try:
+            sys.path.append("/Users/wacky515/OneDrive/Biz/Python")
+            sys.path.append("/Users/wacky515/OneDrive/Biz/Python/SaveData")
+            sys.path.append("/Users/wacky515/OneDrive/Biz/Python/Sound")
+            sys.path.append("/Users/wacky515/OneDrive/Biz/Python/Serial")
 
-        import trim as tm
-        import savedata as sd
-        import judgesound as js
-        import serialcommun as sc
+            import trim as tm
+            import savedata as sd
+            import judgesound as js
+            import serialcommun as sc
+
+        except:
+            sys.path.append("~/Python")
+            sys.path.append("~/Python/SaveData")
+            sys.path.append("~/Python/Sound")
+            sys.path.append("~/Python/Serial")
+
+            import trim as tm
+            import savedata as sd
+            import judgesound as js
+            import serialcommun as sc
+
+        finally:
+            cdir = os.path.abspath(os.path.dirname(__file__))
+
+            sys.path.append(os.path.join(cdir, "SaveData")
+            sys.path.append(os.path.join(cdir, "Sound")
+            sys.path.append(os.path.join(cdir, "Serial")
+
+            import trim as tm
+            import savedata as sd
+            import judgesound as js
+            import serialcommun as sc
+
 
     print("And then...")
     pprint(sys.path)
@@ -968,7 +997,11 @@ def main():
     try:
         os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
     except:
-        os.chdir("/Users/wacky515/OneDrive/Biz/Python/ImageProcessing")
+        try:
+            os.chdir("/Users/wacky515/OneDrive/Biz/Python/ImageProcessing")
+        except:
+            os.chdir("~/Python/ImageProcessing")
+
     # print(os.getcwd().rjust(print_col, " "))
 
     print("")
