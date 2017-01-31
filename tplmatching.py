@@ -13,10 +13,6 @@
 # }}}
 """ テンプレートマッチングによる画像処理 """
 # FIXME:
-    # template画像が存在しないとtemplate読み込みエラー
-    # ↑ template画像保存後に "*0002" を探しに行くため
-    # ↑ （スマートではない代案）file exist で template画像なければダミー作る
-
     # Macではtemplate保存後にMatchingに戻らない
 
 # TODO:
@@ -31,6 +27,7 @@
     # 関数名は動詞にする
 
 # DONE:  # {{{
+    # template画像が存在しないとtemplate読み込みエラー
     # ソース画像を保存できない！！！
     # 変数は "[大区分/固有]_[小区分/汎用]"
     # メインループのネストが深すぎる
@@ -77,10 +74,9 @@ try:
 except:
     print("Can not find custum module")
     print("Add default search path:")
-    # pprint(sys.path)
+    pprint(sys.path)
     print("")
 
-    print("And then...")
     try:
         sys.path.append("D:\OneDrive\Biz\Python")
         sys.path.append("D:\OneDrive\Biz\Python\SaveData")
@@ -103,7 +99,8 @@ except:
         import judgesound as js
         import serialcommun as sc
 
-    # pprint(sys.path)
+    print("And then...")
+    pprint(sys.path)
 
 # sysモジュール リロード
 reload(sys)
