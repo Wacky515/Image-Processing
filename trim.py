@@ -50,6 +50,11 @@ except:
         sys.path.append("/Users/wacky515/OneDrive/Biz/Python/SaveData")
         # pprint(sys.path)
         import savedata as sd
+    finally:
+        cdir = os.path.abspath(os.path.dirname(__file__))
+
+        sys.path.append(os.path.join(cdir, "SaveData"))
+        import savedata as sd
 
 # sysモジュール リロード
 reload(sys)
