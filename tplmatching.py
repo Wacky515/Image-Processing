@@ -13,45 +13,45 @@
 # }}}
 """ テンプレートマッチングによる画像処理 """
 # FIXME:
-    # Macではtemplate保存後にMatchingに戻らない
+#     Macではtemplate保存後にMatchingに戻らない
 
 # TODO:
-    # "path" の結合は "os.path.join()" を使用する
-    # 自作moduleのインポート方法 改善する
-    # しきい値 手動入力にする
-    # アイコン 作成
-    # ソフト名 正式にする
+#     "path" の結合は "os.path.join()" を使用する
+#     自作moduleのインポート方法 改善する
+#     しきい値 手動入力にする
+#     アイコン 作成
+#     ソフト名 正式にする
 
-    # 画像出力ウィンドウの位置を定義（固定）する
-    # 複数索敵・多段式判定を実装する
-    # -> インスタンスをイテレートする？
-    # 色識別 実装
-    # 関数名は動詞にする
+#     画像出力ウィンドウの位置を定義（固定）する
+#     複数索敵・多段式判定を実装する
+#     -> インスタンスをイテレートする？
+#     色識別 実装
+#     関数名は動詞にする
 
 # DONE:  # {{{
-    # template画像が存在しないとtemplate読み込みエラー
-    # ソース画像を保存できない！！！
-    # 変数は "[大区分/固有]_[小区分/汎用]"
-    # メインループのネストが深すぎる
-    # 各処理をメソッドに切出す
-    # デフォルト引数は "None" にする
-    # "matchTemplate" の "TM_CCOEFF_NORMED" は正規化する必要があるのか調査
-    # "***_NORMED"以外は正規化している
-    # Python3系 対応！！！
-    # Unicode文字リテラルを " u"body" " -> " "body" " に変更
-    # 文字列の埋込を % 形式から format 形式に変更
-    # "print" -> "print()" に変更
-    # シリアル通信機能 実装
-    # __inin__.pyの作成
-    # GUI 実装
-    # OCR 実装（該当の module を発見し、import 実験まで完了）
-    # バーコード読取り機能 実装
-    # （該当の module を発見し、import 実験まで完了）
-    # "pprint" を使用する
+#     template画像が存在しないとtemplate読み込みエラー
+#     ソース画像を保存できない！！！
+#     変数は "[大区分/固有]_[小区分/汎用]"
+#     メインループのネストが深すぎる
+#     各処理をメソッドに切出す
+#     デフォルト引数は "None" にする
+#     "matchTemplate" の "TM_CCOEFF_NORMED" は正規化する必要があるのか調査
+#     "***_NORMED"以外は正規化している
+#     Python3系 対応！！！
+#     Unicode文字リテラルを " u"body" " -> " "body" " に変更
+#     文字列の埋込を % 形式から format 形式に変更
+#     "print" -> "print()" に変更
+#     シリアル通信機能 実装
+#     __inin__.pyの作成
+#     GUI 実装
+#     OCR 実装（該当の module を発見し、import 実験まで完了）
+#     バーコード読取り機能 実装
+#     （該当の module を発見し、import 実験まで完了）
+#     "pprint" を使用する
 
 # ABORT:
-    # ワークを動体検出後に判定開始する
-    # ワーク検出は背景差分で行う
+#     ワークを動体検出後に判定開始する
+#     ワーク検出は背景差分で行う
 # }}}
 
 # モジュール インポート# {{{
@@ -118,15 +118,14 @@ except:
         finally:
             cdir = os.path.abspath(os.path.dirname(__file__))
 
-            sys.path.append(os.path.join(cdir, "SaveData")
-            sys.path.append(os.path.join(cdir, "Sound")
-            sys.path.append(os.path.join(cdir, "Serial")
+            sys.path.append(os.path.join(cdir, "SaveData"))
+            sys.path.append(os.path.join(cdir, "Sound"))
+            sys.path.append(os.path.join(cdir, "Serial"))
 
             import trim as tm
             import savedata as sd
             import judgesound as js
             import serialcommun as sc
-
 
     print("And then...")
     pprint(sys.path)
@@ -523,7 +522,8 @@ class ImageProcessing:
 
         # 検索するマスター画像 名前・パス 表示  # {{{
         search_master_file = str(name_master) + "_****" + str(self.extension)
-        search_master_path = str(path_master) + self.delimiter + search_master_file
+        search_master_path = \
+            str(path_master) + self.delimiter + search_master_file
         print("Search master file name: " + search_master_file)
         print("Search master path: " + search_master_path)
         print("")
@@ -653,7 +653,7 @@ class ImageProcessing:
                 print("Go get master")
                 print("")
                 get_num_master, get_master_flag = \
-                        sgm(name_master, self.extension, path_master)
+                    sgm(name_master, self.extension, path_master)
 
             # "e" 押下 終了処理
             if cv2.waitKey(33) == ord("e"):
