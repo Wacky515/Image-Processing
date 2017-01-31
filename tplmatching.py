@@ -115,6 +115,7 @@ except:
             import judgesound as js
             import serialcommun as sc
 
+        # FIXME:
         finally:
             cdir = os.path.abspath(os.path.dirname(__file__))
 
