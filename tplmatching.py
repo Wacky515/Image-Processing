@@ -69,6 +69,10 @@ import cv2
 import cv2.cv as cv
 
 try:
+    sys.path.append(os.path.join("..", "SaveData"))
+    sys.path.append(os.path.join("..", "Sound"))
+    sys.path.append(os.path.join("..", "Serial"))
+
     import trim as tm
     import savedata as sd
     import judgesound as js
@@ -1005,7 +1009,8 @@ def main():
         try:
             os.chdir("/Users/wacky515/OneDrive/Biz/Python/ImageProcessing")
         except:
-            os.chdir("~/Python/ImageProcessing")
+            cdir = os.path.abspath(os.path.dirname(__file__))
+            # os.chdir("~/Python/ImageProcessing")
 
     # print(os.getcwd().rjust(print_col, " "))
 
