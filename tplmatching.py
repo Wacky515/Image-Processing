@@ -119,13 +119,17 @@ except:
         finally:
             cdir = os.path.abspath(os.path.dirname(__file__))
 
-            sys.path.append(os.path.join(cdir, "SaveData"))
-            sys.path.append(os.path.join(cdir, "Sound"))
-            sys.path.append(os.path.join(cdir, "Serial"))
+            # sys.path.append(os.path.join("", cdir, "SaveData"))
+            # sys.path.append(os.path.join("", cdir, "Sound"))
+            # sys.path.append(os.path.join("", cdir, "Serial"))
+            sys.path.append(os.path.join("..", "SaveData"))
+            sys.path.append(os.path.join("..", "Sound"))
+            sys.path.append(os.path.join("..", "Serial"))
 
             import trim as tm
             import savedata as sd
             import judgesound as js
+            # import serialcommun as sc
             import serialcommun as sc
 
     print("And then...")

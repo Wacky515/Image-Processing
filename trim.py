@@ -54,7 +54,8 @@ except:
     finally:
         cdir = os.path.abspath(os.path.dirname(__file__))
 
-        sys.path.append(os.path.join(cdir, "SaveData"))
+        # sys.path.append(os.path.join("..", cdir, "SaveData"))
+        sys.path.append(os.path.join("..", "SaveData"))
         import savedata as sd
 
 # sysモジュール リロード
