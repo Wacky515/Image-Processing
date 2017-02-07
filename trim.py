@@ -130,6 +130,7 @@ class Trim:
               + str(self.end_x) + ", "
               + str(self.end_y) + ")")
 
+        print("Test print before Trim end...")
         self.quit_tirm()
 
         print("Trim end...")
@@ -202,6 +203,7 @@ class Trim:
         # 保存 処理
         self.save_trim()
         # 終了 処理
+        print("Test print before mouse_event")
         self.quit_tirm()
 
     def write_text(self, text, origin,
@@ -297,10 +299,12 @@ class Trim:
                 cv2.destroyAllWindows()
                 cv2.imshow("Save image", image_trim)
                 time.sleep(1)
+                print("Test print before erase window")
                 self.quit_tirm(1)
 
             cv2.imshow("Save image", image_trim)
             time.sleep(0.1)
+            print("Test print before save_trim")
             self.quit_tirm()
 
     def quit_tirm(self, mode=0):
@@ -332,6 +336,7 @@ def main():
     print(os.getcwd().rjust(print_col, " "))
     print("")
     print("And then...")
+
     try:
         os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
     except:
