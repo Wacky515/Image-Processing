@@ -82,7 +82,7 @@ try:
     import judgesound as js
     import serialcom as sc
 
-# ここ以降は改善必須
+# TODO: ここ以降は改善必須
 except:
     print("Can not find custum module")
     print("Add default search path:")
