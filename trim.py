@@ -17,7 +17,6 @@
 #    変数は "[大区分/固有]_[小区分/汎用]"
 
 # FIXME:
-#    "Win" 以外でトリム保存後フリーズ
 #    print("Quit trim mode") がループする
 #    ただし、実用上は支障なし
 
@@ -27,6 +26,7 @@
 #    → 一枚の画像から複数枚保存できる機能は残す（安易にSave -> 終了にしない）
 
 # DONE:# {{{
+#    "Win" 以外でトリム保存後フリーズ
 #    Unicode文字リテラルを " u"body" " -> " "body" " に変更
 #    関数名は動詞にする
 #    "print" -> "print()" に変更
@@ -124,8 +124,11 @@ class Trim:
               + str(self.end_x) + ", "
               + str(self.end_y) + ")")
 
-        print("Test print before Trim end...")
-        self.quit_tirm()
+        # 保存 処理
+        self.save_trim()
+
+        # print("Test print before Trim end...")
+        # self.quit_tirm()
 
         print("Trim end...")
         print("")
@@ -194,14 +197,17 @@ class Trim:
                   + str(self.coor_y))
 
         # 保存 処理
-        self.save_trim()
+        # self.save_trim()
         # 終了 処理
-        print("Test print before mouse_event")
-        # FIXME: "Linux" ここでフリーズ
+        # DONE: "Linux" ここでフリーズ
+        # print("Test print finish mouse_event")
         # self.quit_tirm(1)
-        # self.quit_tirm(0)
+        # self.quit_tirm()
         # これで解決？ Macのみテスト済み
-        sys.exit()
+        # sys.exit()
+        # exit()
+        # os._exit(0)
+        # cv2.destroyAllWindows()
 
     def write_text(self, text, origin,
                    scale=0.7,
@@ -296,11 +302,13 @@ class Trim:
                 cv2.destroyAllWindows()
                 cv2.imshow("Save image", image_trim)
                 time.sleep(1)
+                # TODO: 消す
                 print("Test print before erase window")
                 self.quit_tirm(1)
 
             cv2.imshow("Save image", image_trim)
             time.sleep(0.1)
+            # TODO: 消す
             print("Test print comp save_trim")
             self.quit_tirm()
 
@@ -311,7 +319,7 @@ class Trim:
                 time.sleep(0.1)
                 print("Input key \"{}\"".format(self.key_quit))
                 print("Quit trim mode by key")
-                sys.exit()
+                # sys.exit()
 
         cv2.destroyAllWindows()
         print("Erase window")
@@ -348,7 +356,8 @@ def main():
         save_dir = ".\\MasterImage"
     else:
         save_dir = ".//MasterImage"
-    tm = Trim(image, "trimed", ".png", save_dir, end_process=1)
+    # tm = Trim(image, "trimed", ".png", save_dir, end_process=1)
+    tm = Trim(image, "trimed", ".png", save_dir, end_process=0)
     # tm = Trim("trim_test.png", "trimed",
     #           ".png", save_dir, _type=1, end_process=1)
     # tm = Trim("trim_test.png", "trimed", ".png", save_dir)
