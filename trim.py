@@ -26,12 +26,13 @@
 #    → トリミングモードの開始回数を制限する！！！
 #    → 一枚の画像から複数枚保存できる機能は残す（安易にSave -> 終了にしない）
 
-# DONE:
+# DONE:# {{{
 #    Unicode文字リテラルを " u"body" " -> " "body" " に変更
 #    関数名は動詞にする
 #    "print" -> "print()" に変更
 #    文字列の埋込を % 形式から format 形式に変更
 #    マスター画像保存時に画面表示
+# }}}
 
 # モジュール インポート  # {{{
 import os
@@ -42,25 +43,12 @@ from pprint import pprint
 import cv2
 import cv2.cv as cv
 
-# try:
-#     import savedata as sd
-# except:
-#     try:
-#         sys.path.append("D:\OneDrive\Biz\Python\SaveData")
-#         # pprint(sys.path)
-#         import savedata as sd
-#     except:
-#         sys.path.append("/Users/wacky515/OneDrive/Biz/Python/SaveData")
-#         # pprint(sys.path)
-#         import savedata as sd
-#     # FIXME:
-#     finally:
-
 exe_path = os.path.abspath(os.path.dirname(__file__))
 os.chdir(exe_path)
 
 sys.path.append(os.path.join("..", "SaveData"))
-pprint(sys.path)
+# print("System path")
+# pprint(sys.path)
 
 import savedata as sd
 
@@ -136,6 +124,7 @@ class Trim:
               + str(self.end_x) + ", "
               + str(self.end_y) + ")")
 
+        print("Test print before Trim end...")
         self.quit_tirm()
 
         print("Trim end...")
@@ -170,7 +159,7 @@ class Trim:
             # 操作方法説明文 表示
             text_height = self.write_text(self.text1, (1, self.baseline))
             self.write_text(self.text2, (1, self.baseline_upper))
-            baseline_mid =\
+            baseline_mid = \
                 self.baseline - (text_height[1] + self.text_offset)
             self.write_text(self.text3, (1, baseline_mid))
 
@@ -207,7 +196,12 @@ class Trim:
         # 保存 処理
         self.save_trim()
         # 終了 処理
-        self.quit_tirm()
+        print("Test print before mouse_event")
+        # FIXME: "Linux" ここでフリーズ
+        # self.quit_tirm(1)
+        # self.quit_tirm(0)
+        # これで解決？ Macのみテスト済み
+        sys.exit()
 
     def write_text(self, text, origin,
                    scale=0.7,
@@ -302,10 +296,12 @@ class Trim:
                 cv2.destroyAllWindows()
                 cv2.imshow("Save image", image_trim)
                 time.sleep(1)
+                print("Test print before erase window")
                 self.quit_tirm(1)
 
             cv2.imshow("Save image", image_trim)
             time.sleep(0.1)
+            print("Test print comp save_trim")
             self.quit_tirm()
 
     def quit_tirm(self, mode=0):
@@ -313,12 +309,13 @@ class Trim:
         if mode == 0:
             if cv2.waitKey(0) == ord(self.key_quit):
                 time.sleep(0.1)
+                print("Input key \"{}\"".format(self.key_quit))
+                print("Quit trim mode by key")
+                sys.exit()
 
-        print("!!Input key \"{}\"".format(self.key_quit))
-        print("Quit trim mode")
-        print("!!!")
-        print("")
         cv2.destroyAllWindows()
+        print("Erase window")
+        print("")
         # import pdb; pdb.set_trace()
 
         return False
@@ -326,7 +323,7 @@ class Trim:
 
 def main():
     """ メインルーチン """
-    # vimテスト用各変数 定義# {{{
+    # "Vim" テスト用各変数 定義# {{{
     # イニシャル情報 出力
     print("".center(print_col, "-"))
     print("INFORMATION".center(print_col, " "))
@@ -335,10 +332,7 @@ def main():
     print(os.getcwd().rjust(print_col, " "))
     print("")
     print("And then...")
-#     try:
-#         os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
-#     except:
-#         os.chdir("/Users/wacky515/OneDrive/Biz/Python/ImageProcessing")
+
     os.chdir(exe_path)
     print(os.getcwd().rjust(print_col, " "))
 
@@ -349,11 +343,15 @@ def main():
     # import pdb; pdb.set_trace()
 # }}}
 
-    tm = Trim("trim_test.png", "trimed",
-              ".png", ".\\MasterImage", end_process=1)
+    image = "trim_test.png"
+    if os.name == "nt":
+        save_dir = ".\\MasterImage"
+    else:
+        save_dir = ".//MasterImage"
+    tm = Trim(image, "trimed", ".png", save_dir, end_process=1)
     # tm = Trim("trim_test.png", "trimed",
-    #           ".png", "./MasterImage", _type=1, end_process=1)
-    # tm = Trim("trim_test.png", "trimed", ".png", ".\\MasterImage")
+    #           ".png", save_dir, _type=1, end_process=1)
+    # tm = Trim("trim_test.png", "trimed", ".png", save_dir)
     # tm = Trim("trim_test2.png")
     tm.trim()
 
