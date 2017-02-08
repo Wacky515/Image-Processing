@@ -16,6 +16,7 @@
 #     Macではtemplate保存後にMatchingに戻らない
 
 # TODO:
+#     "module" の指定は72行移行に統一する（"trim.py" も同様）
 #     "path" の結合は "os.path.join()" を使用する
 #     自作moduleのインポート方法 改善する
 #     しきい値 手動入力にする
@@ -69,6 +70,9 @@ import cv2
 import cv2.cv as cv
 
 try:
+    cdir = os.path.abspath(os.path.dirname(__file__))
+    os.chdir(cdir)
+
     sys.path.append(os.path.join("..", "SaveData"))
     sys.path.append(os.path.join("..", "Sound"))
     sys.path.append(os.path.join("..", "Serial"))
@@ -121,7 +125,7 @@ except:
 
         # FIXME:
         finally:
-            cdir = os.path.abspath(os.path.dirname(__file__))
+            # cdir = os.path.abspath(os.path.dirname(__file__))
 
             # sys.path.append(os.path.join("", cdir, "SaveData"))
             # sys.path.append(os.path.join("", cdir, "Sound"))

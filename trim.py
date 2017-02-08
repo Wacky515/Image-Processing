@@ -15,7 +15,9 @@
 
 # TODO:
 #    変数は "[大区分/固有]_[小区分/汎用]"
+
 # FIXME:
+#    "Win" 以外でトリム保存後フリーズ
 #    print("Quit trim mode") がループする
 #    ただし、実用上は支障なし
 
@@ -24,11 +26,12 @@
 #    → トリミングモードの開始回数を制限する！！！
 #    → 一枚の画像から複数枚保存できる機能は残す（安易にSave -> 終了にしない）
 
-# DONE: Unicode文字リテラルを " u"body" " -> " "body" " に変更
-# DONE: 関数名は動詞にする
-# DONE: "print" -> "print()" に変更
-# DONE: 文字列の埋込を % 形式から format 形式に変更
-# DONE: マスター画像保存時に画面表示
+# DONE:
+#    Unicode文字リテラルを " u"body" " -> " "body" " に変更
+#    関数名は動詞にする
+#    "print" -> "print()" に変更
+#    文字列の埋込を % 形式から format 形式に変更
+#    マスター画像保存時に画面表示
 
 # モジュール インポート  # {{{
 import os
@@ -39,24 +42,27 @@ from pprint import pprint
 import cv2
 import cv2.cv as cv
 
-try:
-    import savedata as sd
-except:
-    try:
-        sys.path.append("D:\OneDrive\Biz\Python\SaveData")
-        # pprint(sys.path)
-        import savedata as sd
-    except:
-        sys.path.append("/Users/wacky515/OneDrive/Biz/Python/SaveData")
-        # pprint(sys.path)
-        import savedata as sd
-    # FIXME:
-    finally:
-        cdir = os.path.abspath(os.path.dirname(__file__))
+# try:
+#     import savedata as sd
+# except:
+#     try:
+#         sys.path.append("D:\OneDrive\Biz\Python\SaveData")
+#         # pprint(sys.path)
+#         import savedata as sd
+#     except:
+#         sys.path.append("/Users/wacky515/OneDrive/Biz/Python/SaveData")
+#         # pprint(sys.path)
+#         import savedata as sd
+#     # FIXME:
+#     finally:
 
-        # sys.path.append(os.path.join("..", cdir, "SaveData"))
-        sys.path.append(os.path.join("..", "SaveData"))
-        import savedata as sd
+exe_path = os.path.abspath(os.path.dirname(__file__))
+os.chdir(exe_path)
+
+sys.path.append(os.path.join("..", "SaveData"))
+pprint(sys.path)
+
+import savedata as sd
 
 # sysモジュール リロード
 reload(sys)
@@ -149,7 +155,6 @@ class Trim:
             self.image = cv2.imread(self.img, 1)
 
             self.start_x, self.start_y = self.coor_x, self.coor_y
-            print("")
             print("Left button down")
             print("")
 
@@ -175,7 +180,6 @@ class Trim:
 
             self.save_flag = True
 
-            print("")
             print("Left button up")
             print("End: " + str(self.end_x) + ", " + str(self.end_y))
             print("Trim area: (" + str(self.start_x) + ", "
@@ -183,6 +187,7 @@ class Trim:
                   + str(self.end_x) + ", "
                   + str(self.end_y) + ")")
             print("Save flag is " + str(self.save_flag))
+            print("")
 
         # マウス移動 処理
         # FIXME: "RuntimeError"になる（再起が深すぎる）！！！
@@ -268,13 +273,13 @@ class Trim:
     def save_trim(self):
         """ 保存 処理 """
         if cv2.waitKey(0) == ord(self.key_save) and self.save_flag is True:
-            print("")
             print("Input key \"{}\"".format(self.key_save))
             print("Save image...")
             print("Trim area: (" + str(self.start_x) + ", "
                   + str(self.start_y) + "), ("
                   + str(self.length_x) + ", "
                   + str(self.length_y) + ")")
+            print("")
 
             # 各種描画を消去する為 対象画像を再読込み
             self.image = cv2.imread(self.img, 1)
@@ -309,7 +314,6 @@ class Trim:
             if cv2.waitKey(0) == ord(self.key_quit):
                 time.sleep(0.1)
 
-        print("")
         print("!!Input key \"{}\"".format(self.key_quit))
         print("Quit trim mode")
         print("!!!")
@@ -324,7 +328,6 @@ def main():
     """ メインルーチン """
     # vimテスト用各変数 定義# {{{
     # イニシャル情報 出力
-    print("")
     print("".center(print_col, "-"))
     print("INFORMATION".center(print_col, " "))
     print("".center(print_col, "-"))
@@ -332,13 +335,13 @@ def main():
     print(os.getcwd().rjust(print_col, " "))
     print("")
     print("And then...")
-    try:
-        os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
-    except:
-        os.chdir("/Users/wacky515/OneDrive/Biz/Python/ImageProcessing")
+#     try:
+#         os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
+#     except:
+#         os.chdir("/Users/wacky515/OneDrive/Biz/Python/ImageProcessing")
+    os.chdir(exe_path)
     print(os.getcwd().rjust(print_col, " "))
 
-    print("")
     print(u"〓" * int(print_col / 2))
     print("START MAIN".center(print_col, " "))
     print(u"〓" * int(print_col / 2))
