@@ -176,6 +176,17 @@ class GetImage:
     """ 画像・動画 取得クラス """  # {{{
     def __init__(self, image):
         self.image = image
+        if os.name == "posix":
+            self.key_master = 1048685
+            self.key_end = 1048677
+            self.key_take = 1048692
+            self.key_quit = 1048689
+
+        else:
+            self.key_master = ord("m"):
+            self.key_end = ord("e"):
+            self.key_take = ord("t"):
+            self.key_quit = ord("q"):
 
     def get_image(self, conversion=None):
         """ 画像・動画 読込み """
@@ -662,7 +673,7 @@ class ImageProcessing:
                 self.print_simil(self.val_max, method)
 
             # "m" 押下 マスター画像取得モード 遷移
-            if cv2.waitKey(33) == ord("m"):
+            if cv2.waitKey(33) == self.key_master:
                 print("Input key \"m\"")
                 print("Go get master")
                 print("")
@@ -670,7 +681,7 @@ class ImageProcessing:
                     sgm(name_master, self.extension, path_master)
 
             # "e" 押下 終了処理
-            if cv2.waitKey(33) == ord("e"):
+            if cv2.waitKey(33) == self.key_end:
                 print("Input key \"e\"")
                 print(" END PROCESS ".center(print_col, "*"))
                 print("")
@@ -961,13 +972,13 @@ class ImageProcessing:
             count += 1
 
             # "t" 押下 マスター画像取得モード 遷移
-            if cv2.waitKey(33) == ord("t"):
+            if cv2.waitKey(33) == self.key_take:
                 print("Input key \"t\"")
                 print("")
                 self.get_still_image()
 
             # "q" 押下 終了処理
-            if cv2.waitKey(33) == ord("q"):
+            if cv2.waitKey(33) == self.key=quit:
                 print("Input key \"q\"")
                 time.sleep(0.5)
                 print(" END GET MASTER MODE ".center(print_col, "*"))
