@@ -17,6 +17,7 @@
 #    変数は "[大区分/固有]_[小区分/汎用]"
 
 # FIXME:
+#    "Linux" でトリム画像が保存できない
 #    print("Quit trim mode") がループする
 #    ただし、実用上は支障なし
 
@@ -100,8 +101,12 @@ class Trim:
         # その他 インスタンス変数# {{{
         self.window_name = "Original image"
         self.save_flag = False
-        self.key_save = "s"
-        self.key_quit = "q"
+        if os.name == "posix":
+            self.key_save = 1048691
+            self.key_quit = 1048689
+        else:
+            self.key_save = ord("s")
+            self.key_quit = ord("q")
 # }}}
 
     def trim(self):
@@ -126,9 +131,6 @@ class Trim:
 
         # 保存 処理
         self.save_trim()
-
-        # print("Test print before Trim end...")
-        # self.quit_tirm()
 
         print("Trim end...")
         print("")
@@ -272,7 +274,7 @@ class Trim:
 
     def save_trim(self):
         """ 保存 処理 """
-        if cv2.waitKey(0) == ord(self.key_save) and self.save_flag is True:
+        if cv2.waitKey(0) == self.key_save and self.save_flag is True:
             print("Input key \"{}\"".format(self.key_save))
             print("Save image...")
             print("Trim area: (" + str(self.start_x) + ", "
@@ -290,7 +292,7 @@ class Trim:
             image_trim = self.image[height: self.end_y, width: self.end_x]
 
             # 保存処理と保存フラグ "真" -> "偽" 処理
-            # FIXME: 以下の "imrite" はミス？ 不要か確認 -> テストコードっぽい
+            # FIXME: 以下の "imwrite" はミス？ 不要か確認 -> テストコードっぽい
             # cv2.imwrite("imwrite.png", image_trim)
             sda = sd.SaveData(self.name, self.path)
             sda.save_image(image_trim, self.extension)
@@ -303,23 +305,22 @@ class Trim:
                 cv2.imshow("Save image", image_trim)
                 time.sleep(1)
                 # TODO: 消す
-                print("Test print before erase window")
+                # print("Test print before erase window")
                 self.quit_tirm(1)
 
             cv2.imshow("Save image", image_trim)
             time.sleep(0.1)
             # TODO: 消す
-            print("Test print comp save_trim")
+            # print("Test print comp save_trim")
             self.quit_tirm()
 
     def quit_tirm(self, mode=0):
         """ 静止画の出力保持 & 終了処理 """
         if mode == 0:
-            if cv2.waitKey(0) == ord(self.key_quit):
+            if cv2.waitKey(0) == self.key_quit:
                 time.sleep(0.1)
                 print("Input key \"{}\"".format(self.key_quit))
                 print("Quit trim mode by key")
-                # sys.exit()
 
         cv2.destroyAllWindows()
         print("Erase window")
@@ -331,6 +332,7 @@ class Trim:
 
 def main():
     """ メインルーチン """
+    print(os.path.abspath(__file__))
     # "Vim" テスト用各変数 定義# {{{
     # イニシャル情報 出力
     print("".center(print_col, "-"))
@@ -352,10 +354,17 @@ def main():
 # }}}
 
     image = "trim_test.png"
+    home_dir = os.path.expanduser("~")
+
     if os.name == "nt":
         save_dir = ".\\MasterImage"
+
+    elif os.name == "posix":
+        print("Run in Unix, set save path as Unix")
+        save_dir = os.path.join(home_dir, "Python/ImageProcessing/MasterImage")
+        print("Save dir: " + save_dir)
     else:
-        save_dir = ".//MasterImage"
+        save_dir = "./MasterImage"
     # tm = Trim(image, "trimed", ".png", save_dir, end_process=1)
     tm = Trim(image, "trimed", ".png", save_dir, end_process=0)
     # tm = Trim("trim_test.png", "trimed",
