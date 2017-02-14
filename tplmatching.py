@@ -176,17 +176,6 @@ class GetImage:
     """ 画像・動画 取得クラス """  # {{{
     def __init__(self, image):
         self.image = image
-        if os.name == "posix":
-            self.key_master = 1048685
-            self.key_end = 1048677
-            self.key_take = 1048692
-            self.key_quit = 1048689
-
-        else:
-            self.key_master = ord("m"):
-            self.key_end = ord("e"):
-            self.key_take = ord("t"):
-            self.key_quit = ord("q"):
 
     def get_image(self, conversion=None):
         """ 画像・動画 読込み """
@@ -490,6 +479,18 @@ class ImageProcessing:
         elif os.name == "nt":
             self.delimiter = "\\"
 
+        # ## Define operate key
+        if os.name == "posix":
+            self.key_master = 1048685
+            self.key_end = 1048677
+            self.key_take = 1048692
+            self.key_quit = 1048689
+
+        else:
+            self.key_master = ord("m")
+            self.key_end = ord("e")
+            self.key_take = ord("t")
+            self.key_quit = ord("q")
 # }}}
 
     def run(self, window_name, name_master, port, printout,
@@ -978,7 +979,7 @@ class ImageProcessing:
                 self.get_still_image()
 
             # "q" 押下 終了処理
-            if cv2.waitKey(33) == self.key=quit:
+            if cv2.waitKey(33) == self.key:
                 print("Input key \"q\"")
                 time.sleep(0.5)
                 print(" END GET MASTER MODE ".center(print_col, "*"))
