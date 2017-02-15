@@ -101,6 +101,8 @@ class Trim:
         # その他 インスタンス変数# {{{
         self.window_name = "Original image"
         self.save_flag = False
+
+        # "Linux" のキーイン差異 補完
         if os.name == "posix":
             self.key_save = 1048691
             self.key_quit = 1048689
@@ -124,10 +126,12 @@ class Trim:
 
         cv2.imshow(self.window_name, self.image)
 
-        print("Trim pos: (" + str(self.start_x) + ", "
-              + str(self.start_y) + "), ("
-              + str(self.end_x) + ", "
-              + str(self.end_y) + ")")
+        ssx = str(self.start_x)
+        ssy = str(self.start_y)
+        sex = str(self.end_x)
+        sey = str(self.end_y)
+
+        print("Trim pos: ({}, {}), ({}, {})".format(ssx, ssy, sex, sey))
 
         # 保存 処理
         self.save_trim()
@@ -174,17 +178,21 @@ class Trim:
 
             self.save_flag = True
 
+            ssx = str(self.start_x)
+            ssy = str(self.start_y)
+            sex = str(self.end_x)
+            sey = str(self.end_y)
+
             print("Left button up")
-            print("End: " + str(self.end_x) + ", " + str(self.end_y))
-            print("Trim area: (" + str(self.start_x) + ", "
-                  + str(self.start_y) + "), ("
-                  + str(self.end_x) + ", "
-                  + str(self.end_y) + ")")
+            print("End: {}, {}".format(sex, sey))
+
+            print("Trim area: ({}, {}), ({}, {})".format(ssx, ssy, sex, sey))
             print("Save flag is " + str(self.save_flag))
             print("")
 
         # マウス移動 処理
-        # FIXME: "RuntimeError"になる（再起が深すぎる）！！！
+        # FIXME: "Linux" では動作しない
+        # FIXED?: "RuntimeError" になる（再起が深すぎる）！！！
         elif event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON:
             # 古い矩形描画を消去する為
             # マウス移動イベント毎に対象画像を読込み
@@ -195,21 +203,10 @@ class Trim:
 
             cv2.imshow(self.window_name, self.image)
 
-            print("Mouse location: " + str(self.coor_x) + ", "
-                  + str(self.coor_y))
-
-        # 保存 処理
-        # self.save_trim()
-        # 終了 処理
-        # DONE: "Linux" ここでフリーズ
-        # print("Test print finish mouse_event")
-        # self.quit_tirm(1)
-        # self.quit_tirm()
-        # これで解決？ Macのみテスト済み
-        # sys.exit()
-        # exit()
-        # os._exit(0)
-        # cv2.destroyAllWindows()
+            scx = str(self.coor_x)
+            scy = str(self.coor_y)
+            # print("Mouse location: " + str(self.coor_x) + ", " + str(self.coor_y))
+            print("Mouse location: {}, {}".format(scx, scy))
 
     def write_text(self, text, origin,
                    scale=0.7,
@@ -277,10 +274,13 @@ class Trim:
         if cv2.waitKey(0) == self.key_save and self.save_flag is True:
             print("Input key \"{}\"".format(self.key_save))
             print("Save image...")
-            print("Trim area: (" + str(self.start_x) + ", "
-                  + str(self.start_y) + "), ("
-                  + str(self.length_x) + ", "
-                  + str(self.length_y) + ")")
+
+            ssx = str(self.start_x)
+            ssy = str(self.start_y)
+            slx = str(self.length_x)
+            sly = str(self.length_y)
+
+            print("Save area: ({}, {}), ({}, {})".format(ssx, ssy, slx, sly))
             print("")
 
             # 各種描画を消去する為 対象画像を再読込み
@@ -292,8 +292,6 @@ class Trim:
             image_trim = self.image[height: self.end_y, width: self.end_x]
 
             # 保存処理と保存フラグ "真" -> "偽" 処理
-            # FIXME: 以下の "imwrite" はミス？ 不要か確認 -> テストコードっぽい
-            # cv2.imwrite("imwrite.png", image_trim)
             sda = sd.SaveData(self.name, self.path)
             sda.save_image(image_trim, self.extension)
 
@@ -304,14 +302,10 @@ class Trim:
                 cv2.destroyAllWindows()
                 cv2.imshow("Save image", image_trim)
                 time.sleep(1)
-                # TODO: 消す
-                # print("Test print before erase window")
                 self.quit_tirm(1)
 
             cv2.imshow("Save image", image_trim)
             time.sleep(0.1)
-            # TODO: 消す
-            # print("Test print comp save_trim")
             self.quit_tirm()
 
     def quit_tirm(self, mode=0):
@@ -325,7 +319,6 @@ class Trim:
         cv2.destroyAllWindows()
         print("Erase window")
         print("")
-        # import pdb; pdb.set_trace()
 
         return False
 
@@ -350,7 +343,6 @@ def main():
     print("START MAIN".center(print_col, " "))
     print(u"〓" * int(print_col / 2))
     print("")
-    # import pdb; pdb.set_trace()
 # }}}
 
     image = "trim_test.png"
@@ -365,6 +357,7 @@ def main():
         print("Save dir: " + save_dir)
     else:
         save_dir = "./MasterImage"
+
     # tm = Trim(image, "trimed", ".png", save_dir, end_process=1)
     tm = Trim(image, "trimed", ".png", save_dir, end_process=0)
     # tm = Trim("trim_test.png", "trimed",
