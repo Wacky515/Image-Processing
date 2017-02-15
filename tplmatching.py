@@ -15,9 +15,11 @@
 # FIXME:
 
 # TODO:
-#     "module" の指定は72行移行に統一する（"trim.py" も同様）
-#     "path" の結合は "os.path.join()" を使用する
 #     自作moduleのインポート方法 改善する
+#     "module" の指定は "REF1: " 行移行に統一する（"trim.py" も同様）
+
+#     "path" の結合は "os.path.join()" を使用する
+
 #     しきい値 手動入力にする
 #     アイコン 作成
 #     ソフト名 正式にする
@@ -74,6 +76,7 @@ try:
     cdir = os.path.abspath(os.path.dirname(__file__))
     os.chdir(cdir)
 
+    # REF1:
     sys.path.append(os.path.join("..", "SaveData"))
     sys.path.append(os.path.join("..", "Sound"))
     sys.path.append(os.path.join("..", "Serial"))
@@ -85,6 +88,7 @@ try:
 
 # TODO: ここ以降は改善必須
 except:
+    # TODO: "REF: " 以降に下記メッセージが出るのか確認
     print("Can not find custum module")
     print("Add default search path:")
     pprint(sys.path)
@@ -122,23 +126,6 @@ except:
             import trim as tm
             import savedata as sd
             import judgesound as js
-            import serialcommun as sc
-
-        # FIXME:
-        finally:
-            # cdir = os.path.abspath(os.path.dirname(__file__))
-
-            # sys.path.append(os.path.join("", cdir, "SaveData"))
-            # sys.path.append(os.path.join("", cdir, "Sound"))
-            # sys.path.append(os.path.join("", cdir, "Serial"))
-            sys.path.append(os.path.join("..", "SaveData"))
-            sys.path.append(os.path.join("..", "Sound"))
-            sys.path.append(os.path.join("..", "Serial"))
-
-            import trim as tm
-            import savedata as sd
-            import judgesound as js
-            # import serialcommun as sc
             import serialcommun as sc
 
     print("And then...")
@@ -305,8 +292,9 @@ class ConvertImage(GetImage):
         THRESH_MAX = 255
 
         cth = cv2.threshold
-        ret, dcta = cth(blr, thresh_std,
-                        THRESH_MAX, eval(self.THRESH_METHODS[method]))
+        tst = thresh_std
+        thm = THRESH_MAX
+        ret, dcta = cth(blr, tst, thm, eval(self.THRESH_METHODS[method]))
         print("Discriminant analysing...")
         print("")
 
@@ -323,8 +311,9 @@ class ConvertImage(GetImage):
         THRESH_MAX = 255
 
         cth = cv2.threshold
-        ret, binz = cth(blr, thresh_std,
-                        THRESH_MAX, eval(self.THRESH_METHODS[method]))
+        tst = thresh_std
+        thm = THRESH_MAX
+        ret, binz = cth(blr, tst, thm, eval(self.THRESH_METHODS[method]))
         print("Binarizing...")
         print("")
 
@@ -369,7 +358,7 @@ class Tplmatching:
         # cv2.TM_SQDIFF    :輝度値の差の２乗の合計     小さいほど類似
         # cv2.TM_CCORR     :輝度値の相関               大きいほど類似
         # cv2.TM_CCOEFF    :輝度値の平均を引いた相関   大きいほど類似
-        #                 （テンプレート画像と探索画像の明るさに左右されにくい）
+        #                  （テンプレート画像と探索画像の明暗差に影響され難い）
         # cv2.TM_***_NORMED :上記それぞれの正規化版
         # }}} """
         ALGOS = ["cv2.TM_SQDIFF",
@@ -418,13 +407,17 @@ class Tplmatching:
     def show_detect_area(self, location, image, frame):
         """ 捕捉範囲 演算 """
         # 中央座標 演算
-        coord, height, width = \
-            self.calc_detect_location(location, image)
+        scd = self.calc_detect_location(location, image)
+        coord = scd[0]
+        height = scd[1]
+        width = scd[2]
 
-        left_up = (location[0], location[1])
-        right_low = (location[0] + width, location[1] + height)
-        detect_image = (frame[location[1]:location[1] + height,
-                        location[0]:location[0] + width].copy())
+        loc = location
+        hit = height
+        wdh = width
+        left_up = (loc[0], loc[1])
+        right_low = (loc[0] + width, loc[1] + hit)
+        detect_image = (frame[loc[1]:loc[1] + hit, loc[0]:loc[0] + wdh].copy())
 
         return detect_image, left_up, right_low
 
@@ -479,7 +472,7 @@ class ImageProcessing:
         elif os.name == "nt":
             self.delimiter = "\\"
 
-        # ## Define operate key
+        # "Linux" のキーイン差異 補完
         if os.name == "posix":
             self.key_master = 1048685
             self.key_end = 1048677
@@ -535,7 +528,7 @@ class ImageProcessing:
         print("-" * print_col)
         print("")
 
-        print(" SEARCH MASTER MODE ".center(print_col, "*"))
+        print("SEARCH MASTER MODE".center(print_col, "*"))
         print("")
 
         cwd = os.getcwd()
@@ -558,8 +551,10 @@ class ImageProcessing:
         # !!!: 複数探査の時はここの "sda" をイテレート処理
         # 枝番最大のマスター画像 取得  # {{{
         self.sda = sd.SaveData(name_master, path_master)
-        set_num_master, get_num_master, get_master_flag = \
-            self.sda.get_name_max(self.extension)
+        snm, gnm, gmf = self.sda.get_name_max(self.extension)
+        set_num_master = snm
+        get_num_master = gnm
+        get_master_flag = gmf
         print(" RETURN TEMPLATE MATCHING ".center(print_col, "*"))
         print("Get master flag: {}".format(get_master_flag))
         print("")
@@ -571,8 +566,9 @@ class ImageProcessing:
 
             # マスター画像取得モード 遷移
             while get_master_flag is False:
-                get_num_master, get_master_flag = \
-                    sgm(name_master, self.extension, path_master)
+                r_sgm = sgm(name_master, self.extension, path_master)
+                get_num_master = r_sgm[0]
+                get_master_flag = r_sgm[1]
 # }}}
 
         # イニシャルのマッチしたマスター画像 名前・パス 表示  # {{{
@@ -639,13 +635,18 @@ class ImageProcessing:
                     master_eval = master
 
                 # テンプレートマッチング 処理
-                mch, self.val_min, self.val_max, self.loc_min, self.loc_max = \
-                    self.tmc.tplmatch(frame_eval, master_eval)
-                match = mch
+                stt = self.tmc.tplmatch(frame_eval, master_eval)
+                match = stt[0]
+                self.val_min = stt[1]
+                self.val_max = stt[2]
+                self.loc_min = stt[3]
+                self.loc_max = stt[4]
 
                 # マッチ領域 トリム処理
-                detect_eval, left_up, right_low = \
-                    self.tmc.show_detect_area(self.loc_max, master, frame)
+                sts = self.tmc.show_detect_area(self.loc_max, master, frame)
+                detect_eval = sts[0]
+                left_up = sts[1]
+                right_low = sts[2]
 
                 # 検出領域に操作領域と同じ画像処理 実行
                 if method[1] is not None:
@@ -656,7 +657,6 @@ class ImageProcessing:
 
                 # 評価処理 画面表示
                 scd = self.cim.display
-                # scd(str(method[0] + " frame"), self.frame_eval, 1)
                 scd(str(method[0] + " master"), master_eval, 1)
                 scd("Detected " + str(method[0]), detect_eval, 1)
 
@@ -678,8 +678,10 @@ class ImageProcessing:
                 print("Input key \"m\"")
                 print("Go get master")
                 print("")
-                get_num_master, get_master_flag = \
-                    sgm(name_master, self.extension, path_master)
+
+                r_sgm = sgm(name_master, self.extension, path_master)
+                get_num_master = r_sgm[0]
+                get_master_flag = r_sgm[1]
 
             # "e" 押下 終了処理
             if cv2.waitKey(33) == self.key_end:
@@ -766,7 +768,6 @@ class ImageProcessing:
                     self.judge_ng()
 
         # 検索中 表示
-        # if self.val_max < self.obj_detect:
         else:
             self.trim.write_text("Searching...", (0, "height"), offset=(0, 5))
             self.init_judge_param()
@@ -789,7 +790,8 @@ class ImageProcessing:
         sim = str(similarity) + "%"
         coord = (self.right_low[0], "height")
         offset = (0, self.right_low[1] + 5)
-        stwt(sim, coord, scale=0.6, color_out="white", color_in="green",
+        stwt(sim, coord, scale=0.6,
+             color_out="white", color_in="green",
              thickness_out=3, thickness_in=2, offset=offset)
 
         # OK音 音声出力
@@ -802,8 +804,11 @@ class ImageProcessing:
             sisi = sda_ok_image.save_image
             sisi(self.image, self.extension, save_lim=save_lim)
             stst = sda_ok_text.save_text
-            stst("OK, {}, {}, {}, {}".format(self.val_max, self.loc_max,
-                                             self.val_min, self.loc_min))
+            sva = self.val_max
+            sla = self.loc_max
+            svi = self.val_min
+            sli = self.loc_min
+            stst("OK, {}, {}, {}, {}".format(sva, sla, svi, sli))
 
             print("Set port: {}".format(self.port))
             print(self.destination)
@@ -838,8 +843,11 @@ class ImageProcessing:
             sisi = sda_ng_image.save_image
             sisi(self.image, self.extension, save_lim=save_lim)
             stst = sda_ng_text.save_text
-            stst("NG, {}, {}, {}, {}" .format(self.val_max, self.loc_max,
-                                              self.val_min, self.loc_min))
+            sva = self.val_max
+            sla = self.loc_max
+            svi = self.val_min
+            sli = self.loc_min
+            stst("NG, {}, {}, {}, {}".format(sva, sla, svi, sli))
 # }}}
 
     def init_judge_param(self):
@@ -884,7 +892,6 @@ class ImageProcessing:
 
         # メイン画面 表示
         self.cim.display(window_name, frame, 1)
-        # import pdb; pdb.set_trace()
 # }}}
 
     def go_get_master_mode(self, image, extension, path):
@@ -895,8 +902,7 @@ class ImageProcessing:
 
         # TODO: 複数探査の時はここの "sda" をイテレート処理！！！
         self.get_master(image, extension, path, 1)
-        set_name, get_name, get_flag = \
-            self.sda.get_name_max(extension)
+        set_name, get_name, get_flag = self.sda.get_name_max(extension)
         # TODO: イテレート処理予定 ここまで！！！
         cv2.destroyAllWindows()
 
@@ -953,22 +959,6 @@ class ImageProcessing:
             frame_draw = frame
             sdo(frame_draw, name, text2, text3)
 
-            # # TODO: 見直し(main loop で切出したメソッドに代替する)！！！
-            # # 操作方法説明文 表示位置 取得
-            # text_offset = 10
-            # baseline = frame.shape[0] - text_offset
-            # origin = 1, baseline
-
-            # # TODO: 見直し(main loop で切出したメソッドに代替する)！！！
-            # # 操作方法説明文 表示
-            # frame_draw = frame
-            # trim = tm.Trim(frame_draw, search, extension, path, 1)
-            # text_height = trim.write_text(text2, origin)
-            # trim.write_text(text3,
-            #                 (origin[0],
-            #                  origin[1] - text_offset - text_height[1]))
-            # self.cim.display(name, frame_draw, 1)
-
             print("Master capture")
             count += 1
 
@@ -984,7 +974,6 @@ class ImageProcessing:
                 time.sleep(0.5)
                 print(" END GET MASTER MODE ".center(print_col, "*"))
                 print("")
-                # import pdb; pdb.set_trace()
                 break
 # }}}
 
@@ -1020,6 +1009,7 @@ def main():
     print("")
 
     print("And then...")
+
     try:
         os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
     except:
@@ -1027,7 +1017,7 @@ def main():
             os.chdir("/Users/wacky515/OneDrive/Biz/Python/ImageProcessing")
         except:
             cdir = os.path.abspath(os.path.dirname(__file__))
-            # os.chdir("~/Python/ImageProcessing")
+            os.chdir("~/Python/ImageProcessing")
 
     # print(os.getcwd().rjust(print_col, " "))
 
@@ -1036,7 +1026,6 @@ def main():
     print("START MAIN".center(print_col, " "))
     print(u"〓" * int(print_col / 2))
     print("")
-    # import pdb; pdb.set_trace()
 # }}}
 
     # テンプレートマッチング テスト# {{{
@@ -1076,7 +1065,7 @@ def main():
     # # 仮の出力保持処理！！！
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
-    #
+
     # image = cv2.imread("tpl_2.png")
     # cim = ConvertImage()
     # cim.adaptive_threashold(image, "Adaptive Threashold", 0)
