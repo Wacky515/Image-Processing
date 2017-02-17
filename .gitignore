@@ -8,6 +8,7 @@
 !*.py
 !*.txt
 !*.md
+!trim_test.png
 
 ./
 old/
