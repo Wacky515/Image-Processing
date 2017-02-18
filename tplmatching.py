@@ -18,8 +18,6 @@
 #     自作moduleのインポート方法 改善する
 #     "module" の指定は "REF1: " 行移行に統一する（"trim.py" も同様）
 
-#     "path" の結合は "os.path.join()" を使用する
-
 #     しきい値 手動入力にする
 #     アイコン 作成
 #     ソフト名 正式にする
@@ -31,6 +29,7 @@
 #     関数名は動詞にする
 
 # DONE:  # {{{
+#     "path" の結合は "os.path.join()" を使用する
 #     "Linux" で画像の保存できない
 #     Macではtemplate保存後にMatchingに戻らない
 #     template画像が存在しないとtemplate読み込みエラー
