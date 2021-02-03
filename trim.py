@@ -42,7 +42,7 @@ import time
 from pprint import pprint
 
 import cv2
-import cv2.cv as cv
+# import cv2.cv as cv
 
 exe_path = os.path.abspath(os.path.dirname(__file__))
 os.chdir(exe_path)
@@ -53,11 +53,14 @@ sys.path.append(os.path.join("..", "SaveData"))
 
 import savedata as sd
 
-# sysモジュール リロード
-reload(sys)
+# MEMO:
+# Python3系ではデフォルトエンコードがutf-8のため、
+# sys.setdefaultencoding('UTF8')は非推奨
+# # sysモジュール リロード
+# reload(sys)
 
-# デフォルトの文字コード 出力
-sys.setdefaultencoding("utf-8")
+# # デフォルトの文字コード 出力
+# sys.setdefaultencoding("utf-8")
 # }}}
 
 print_col = 50
@@ -121,7 +124,8 @@ class Trim:
 
         # 操作方法説明文 表示
         text_height = self.write_text(self.text1, (1, self.baseline))
-        self.baseline_upper = text_height[1] + self.text_offset / 2
+        # self.baseline_upper = text_height[1] + self.text_offset / 2
+        self.baseline_upper = text_height[1] + self.text_offset // 2
         self.write_text(self.text2, (1, self.baseline_upper))
 
         cv2.imshow(self.window_name, self.image)
@@ -339,9 +343,13 @@ def main():
     os.chdir(exe_path)
     print(os.getcwd().rjust(print_col, " "))
 
-    print(u"〓" * int(print_col / 2))
+    # MEMO: 整数演算は "//" を使用する
+    #        "/" は浮動小数点を返す
+    # print(u"〓" * int(print_col / 2))
+    print(u"〓" * int(print_col // 2))
     print("START MAIN".center(print_col, " "))
-    print(u"〓" * int(print_col / 2))
+    # print(u"〓" * int(print_col / 2))
+    print(u"〓" * int(print_col // 2))
     print("")
 # }}}
 

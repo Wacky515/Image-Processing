@@ -15,16 +15,19 @@
 # モジュール インポート
 import sys
 import pickle
-import Tkinter as tk
+
+# MEMO: Python3 は tkinter
+# import Tkinter as tk
+import tkinter as tk
 from pprint import pprint
 
 import tplmatching as tm
 
-# sysモジュール リロード
-reload(sys)
+# # sysモジュール リロード
+# reload(sys)
 
-# デフォルトの文字コード 出力
-sys.setdefaultencoding("utf-8")
+# # デフォルトの文字コード 出力
+# sys.setdefaultencoding("utf-8")
 
 print_col = 50
 

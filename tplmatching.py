@@ -69,7 +69,7 @@ from pprint import pprint
 # import unittest
 
 import cv2
-import cv2.cv as cv
+# import cv2.cv as cv
 
 try:
     cdir = os.path.abspath(os.path.dirname(__file__))
@@ -94,15 +94,10 @@ except:
     print("")
 
     try:
-        sys.path.append("D:\OneDrive\Biz\Python")
-        sys.path.append("D:\OneDrive\Biz\Python\SaveData")
-        sys.path.append("D:\OneDrive\Biz\Python\Sound")
-        sys.path.append("D:\OneDrive\Biz\Python\Serial")
-
-        import trim as tm
-        import savedata as sd
-        import judgesound as js
-        import serialcommun as sc
+        sys.path.append("~/Python")
+        sys.path.append("~/Python/SaveData")
+        sys.path.append("~/Python/Sound")
+        sys.path.append("~/Python/Serial")
 
     except:
         try:
@@ -111,30 +106,31 @@ except:
             sys.path.append("/Users/wacky515/OneDrive/Biz/Python/Sound")
             sys.path.append("/Users/wacky515/OneDrive/Biz/Python/Serial")
 
-            import trim as tm
-            import savedata as sd
-            import judgesound as js
-            import serialcommun as sc
-
         except:
-            sys.path.append("~/Python")
-            sys.path.append("~/Python/SaveData")
-            sys.path.append("~/Python/Sound")
-            sys.path.append("~/Python/Serial")
-
-            import trim as tm
-            import savedata as sd
-            import judgesound as js
-            import serialcommun as sc
+            sys.path.append("D:\OneDrive\Biz\Python")
+            sys.path.append("D:\OneDrive\Biz\Python\SaveData")
+            sys.path.append("D:\OneDrive\Biz\Python\Sound")
+            sys.path.append("D:\OneDrive\Biz\Python\Serial")
 
     print("And then...")
     pprint(sys.path)
 
-# sysモジュール リロード
-reload(sys)
+try:
+    import trim as tm
+    import savedata as sd
+    import judgesound as js
 
-# デフォルトの文字コード 出力
-sys.setdefaultencoding("utf-8")
+except FailImportMyModule:
+    print("Fail import my module...")
+
+# MEMO:
+# Python3系ではデフォルトエンコードがutf-8のため、
+# sys.setdefaultencoding('UTF8')は非推奨
+# # sysモジュール リロード
+# reload(sys)
+
+# # デフォルトの文字コード 出力
+# sys.setdefaultencoding("utf-8")
 # }}}
 
 print_col = 50
@@ -434,7 +430,10 @@ class ImageProcessing:
 
     def __init__(self):  # {{{
         # 動画 取得
-        self.cap = cv2.VideoCapture(0)
+        # MEMO: 内蔵カメラ
+        # self.cap = cv2.VideoCapture(0)
+        # MEMO: 外付カメラ
+        self.cap = cv2.VideoCapture(1)
 
         # マッチ判定値
         self.obj_detect = 0.40
@@ -1010,7 +1009,8 @@ def main():
     print("And then...")
 
     try:
-        os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
+        # os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
+        os.chdir("C:/Users/mm12167/ImageProcessing")
     except:
         try:
             os.chdir("/Users/wacky515/OneDrive/Biz/Python/ImageProcessing")
