@@ -1,26 +1,20 @@
-!*.md
-!*.py
-!*.txt
-!trim_test.png
-
-*.*~
-*.pyc
-*.un~
+# Create:      201*/**/** **:**:**
+# Last Change: 2021/03/04 12:19:02.
 
 *.dbm
 *.dump
 *.exe
 *.png
 
-tags
-
-__pycache__/
-LogImage/
-MasterImage/
-
 ./
 build/
 dist/
 old/
 
+__pycache__/
+LogImage/
+MasterImage/
+
 judge_log.txt
+
+!trim_test.png

@@ -6,7 +6,8 @@
 #
 # Author:      Kilo11
 #
-# Created:     23/03/2016
+# Created:     2016/03/23
+# Last Change: 2021/03/04 13:30:07.
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10001
 # --------------------------------------------------
@@ -68,8 +69,17 @@ from pprint import pprint
 
 # import unittest
 
-import cv2
-# import cv2.cv as cv
+try:
+    import cv2
+except FailImportOpenCv:
+    print(">> Fail import OpenCV")
+
+# Python2 用設定
+if sys.version_info.major == 2:
+    try:
+        import cv2.cv as cv
+    except FailImportOpenCv:
+        print(">> Fail import OpenCV(cv2.cv)")
 
 try:
     cdir = os.path.abspath(os.path.dirname(__file__))
@@ -83,13 +93,14 @@ try:
     import trim as tm
     import savedata as sd
     import judgesound as js
-    import serialcom as sc
+    # import serialcom as sc
+    import serialcommun as sc
 
 # TODO: ここ以降は改善必須
-except:
+except NotFindCustumModuleInRelativePath:
     # TODO: "REF: " 以降に下記メッセージが出るのか確認
-    print("Can not find custum module")
-    print("Add default search path:")
+    print(">> Can't find custum module in relative path")
+    print(">> Add default search path:")
     pprint(sys.path)
     print("")
 
@@ -99,7 +110,8 @@ except:
         sys.path.append("~/Python/Sound")
         sys.path.append("~/Python/Serial")
 
-    except:
+    except NotFindCustumModuleInHomePath:
+        print(">> Can't find custum module in homepath")
         try:
             sys.path.append("/Users/wacky515/OneDrive/Biz/Python")
             sys.path.append("/Users/wacky515/OneDrive/Biz/Python/SaveData")
@@ -107,12 +119,13 @@ except:
             sys.path.append("/Users/wacky515/OneDrive/Biz/Python/Serial")
 
         except:
+            print(">> Can't find custum module in OneDrive(Mac)")
             sys.path.append("D:\OneDrive\Biz\Python")
             sys.path.append("D:\OneDrive\Biz\Python\SaveData")
             sys.path.append("D:\OneDrive\Biz\Python\Sound")
             sys.path.append("D:\OneDrive\Biz\Python\Serial")
 
-    print("And then...")
+    print(">> And then...")
     pprint(sys.path)
 
 try:
@@ -120,17 +133,17 @@ try:
     import savedata as sd
     import judgesound as js
 
-except FailImportMyModule:
-    print("Fail import my module...")
+except FailImportCustomModule:
+    print(">> Fail import custom module...")
 
 # MEMO:
 # Python3系ではデフォルトエンコードがutf-8のため、
 # sys.setdefaultencoding('UTF8')は非推奨
-# # sysモジュール リロード
-# reload(sys)
-
-# # デフォルトの文字コード 出力
-# sys.setdefaultencoding("utf-8")
+# Python2 用設定
+if sys.version_info.major == 2:
+    # sysモジュール リロード
+    reload(sys)
+    # デフォルトの文字コード 出力
 # }}}
 
 print_col = 50
@@ -151,7 +164,7 @@ def terminate(name_cap=None, time_wait=None):
     print("")
     print("Terminated...")
     sys.exit("System end")
-# }}}
+    # }}}
 
 
 class GetImage:
@@ -169,7 +182,7 @@ class GetImage:
             image = cv2.imread(self.image, conversion)
             return image
         except:
-            print("Image data is not found...")
+            print(">> Image data is not found...")
             return False
 
     def display(self, window_name, image=None, _type=None):
@@ -181,7 +194,7 @@ class GetImage:
         # _type [None: 静止画, それ以外: 動画]
         if image is None and _type is None:
             image = self.get_image()
-            print("Go get image...")
+            print(">> Go get image...")
 
         # TODO: "imshow" ウィンドウ幅 下限設定
         cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
@@ -191,7 +204,7 @@ class GetImage:
         if _type is None:
             # 静止画の出力保持処理
             terminate()
-# }}}
+    # }}}
 
 
 class ConvertImage(GetImage):
@@ -214,7 +227,7 @@ class ConvertImage(GetImage):
     def grayscale(self, image):
         """ グレースケール 変換処理 """
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        print("Convert grayscale...")
+        print(">> Convert grayscale...")
         print("")
 
         return gray
@@ -250,7 +263,7 @@ class ConvertImage(GetImage):
         cat = cv2.adaptiveThreshold
         adpth = cat(gray, THRESH_MAX, eval(THRESH_ALGOS[algo]),
                     eval(self.THRESH_METHODS[method]), area_calc, subtract)
-        print("Convert adaptive threashold...")
+        print(">> Convert adaptive threashold...")
         print("")
 
         return adpth
@@ -270,7 +283,7 @@ class ConvertImage(GetImage):
 
         cvf = cv2.bilateralFilter
         blr = cvf(gray, area_calc, color_sigma, metric_sigma)
-        print("Bilateral filtering...")
+        print(">> Bilateral filtering...")
         print("")
 
         return blr
@@ -290,7 +303,7 @@ class ConvertImage(GetImage):
         tst = thresh_std
         thm = THRESH_MAX
         ret, dcta = cth(blr, tst, thm, eval(self.THRESH_METHODS[method]))
-        print("Discriminant analysing...")
+        print(">> Discriminant analysing...")
         print("")
 
         return dcta
@@ -309,7 +322,7 @@ class ConvertImage(GetImage):
         tst = thresh_std
         thm = THRESH_MAX
         ret, binz = cth(blr, tst, thm, eval(self.THRESH_METHODS[method]))
-        print("Binarizing...")
+        print(">> Binarizing...")
         print("")
 
         return binz
@@ -335,7 +348,7 @@ class ConvertImage(GetImage):
         print("")
 
         return norm
-# }}}
+    # }}}
 
 
 class Tplmatching:
@@ -402,16 +415,16 @@ class Tplmatching:
     def show_detect_area(self, location, image, frame):
         """ 捕捉範囲 演算 """
         # 中央座標 演算
-        scd = self.calc_detect_location(location, image)
-        coord = scd[0]
-        height = scd[1]
-        width = scd[2]
+        scd          = self.calc_detect_location(location, image)
+        coord        = scd[0]
+        height       = scd[1]
+        width        = scd[2]
 
-        loc = location
-        hit = height
-        wdh = width
-        left_up = (loc[0], loc[1])
-        right_low = (loc[0] + width, loc[1] + hit)
+        loc          = location
+        hit          = height
+        wdh          = width
+        left_up      = (loc[0], loc[1])
+        right_low    = (loc[0] + width, loc[1] + hit)
         detect_image = (frame[loc[1]:loc[1] + hit, loc[0]:loc[0] + wdh].copy())
 
         return detect_image, left_up, right_low
@@ -419,9 +432,9 @@ class Tplmatching:
 
 class ImageProcessing:
     """ メイン画像処理クラス """
-    cim = ConvertImage()
-    tmc = Tplmatching()
-    jsd = js.JudgeSound()
+    cim   = ConvertImage()
+    tmc   = Tplmatching()
+    jsd   = js.JudgeSound()
 
     ciadp = cim.adaptive_threashold
     cidca = cim.discriminantanalyse
@@ -430,10 +443,12 @@ class ImageProcessing:
 
     def __init__(self):  # {{{
         # 動画 取得
-        # MEMO: 内蔵カメラ
-        # self.cap = cv2.VideoCapture(0)
-        # MEMO: 外付カメラ
-        self.cap = cv2.VideoCapture(1)
+        try:
+            # MEMO: 外付カメラ
+            self.cap = cv2.VideoCapture(1)
+        except UseInternalCam:
+            # MEMO: 内蔵カメラ
+            self.cap = cv2.VideoCapture(0)
 
         # マッチ判定値
         self.obj_detect = 0.40
@@ -532,7 +547,7 @@ class ImageProcessing:
         cwd = os.getcwd()
         path_master = cwd + self.delimiter + self.dir_master
 
-        print("Master directory:")
+        print(">> Master directory:")
         print(path_master.rjust(print_col, " "))
         print("")
 # }}}
@@ -548,13 +563,13 @@ class ImageProcessing:
 
         # !!!: 複数探査の時はここの "sda" をイテレート処理
         # 枝番最大のマスター画像 取得  # {{{
-        self.sda = sd.SaveData(name_master, path_master)
-        snm, gnm, gmf = self.sda.get_name_max(self.extension)
-        set_num_master = snm
-        get_num_master = gnm
+        self.sda        = sd.SaveData(name_master, path_master)
+        snm, gnm, gmf   = self.sda.get_name_max(self.extension)
+        set_num_master  = snm
+        get_num_master  = gnm
         get_master_flag = gmf
         print(" RETURN TEMPLATE MATCHING ".center(print_col, "*"))
-        print("Get master flag: {}".format(get_master_flag))
+        print(">> Get master flag: {}".format(get_master_flag))
         print("")
 # }}}
 
@@ -565,7 +580,7 @@ class ImageProcessing:
             # マスター画像取得モード 遷移
             while get_master_flag is False:
                 r_sgm = sgm(name_master, self.extension, path_master)
-                get_num_master = r_sgm[0]
+                get_num_master  = r_sgm[0]
                 get_master_flag = r_sgm[1]
 # }}}
 
@@ -588,7 +603,7 @@ class ImageProcessing:
         while True:
             if count == 0:
                 time.sleep(0.1)
-                print("Initial delay")
+                print(">> Initial delay")
 
             # キャプチャとキャプチャエラー 判定
             get_flag, frame = self.cap.read()
@@ -598,7 +613,7 @@ class ImageProcessing:
             if self.check_get_frame(frame):
                 continue
 
-            print("Capture is running...")
+            print(">> Capture is running...")
             print("")
 
             count += 1
@@ -608,9 +623,9 @@ class ImageProcessing:
             master_path = str(path_master) + self.delimiter + master_file
             master = cv2.imread(str(master_path), 1)
 
-            print("Master name: " + str(get_num_master))
-            print("Master extension: " + str(self.extension))
-            print("Master path: " + master_path)
+            print(">> Master name: " + str(get_num_master))
+            print(">> Master extension: " + str(self.extension))
+            print(">> Master path: " + master_path)
             print("")
 
             # テンプレートマッチング イテレート処理
@@ -673,8 +688,8 @@ class ImageProcessing:
 
             # "m" 押下 マスター画像取得モード 遷移
             if cv2.waitKey(33) == self.key_master:
-                print("Input key \"m\"")
-                print("Go get master")
+                print(">> Input key \"m\"")
+                print(">> Go get master")
                 print("")
 
                 r_sgm = sgm(name_master, self.extension, path_master)
@@ -683,7 +698,7 @@ class ImageProcessing:
 
             # "e" 押下 終了処理
             if cv2.waitKey(33) == self.key_end:
-                print("Input key \"e\"")
+                print(">> Input key \"e\"")
                 print(" END PROCESS ".center(print_col, "*"))
                 print("")
                 break
@@ -693,9 +708,9 @@ class ImageProcessing:
         """ カメラから動画取得 """  # {{{
         # キャプチャ イニシャルディレイ
         time.sleep(0.1)
-        print("Camera open check delay")
+        print(">> Camera open check delay")
         if not self.cap.isOpened():
-            print("Can not connect camera...")
+            print(">> Can not connect camera...")
             terminate()
             # トラックバー 定義(できない)！！！# {{{
             #        bar_name = "Max threshold"
@@ -714,23 +729,23 @@ class ImageProcessing:
     def check_get_flag(self, flag):
         """ 動画取得ミス時 スキップ処理 """  # {{{
         if flag is False:
-            print("Can not get end flag")
+            print(">> Can't get end flag")
             return True
             # }}}
 
     def check_get_frame(self, frame):
         """ ループ 終了処理 """  # {{{
         if frame is None:
-            print("Can not get video frame")
+            print(">> Can't get video frame")
             return True
             # }}}
 
     def judge_image(self, image, left_up, right_low):
         """ ワーク 検出・判定処理 """  # {{{
-        self.image = image
-        self.left_up = left_up
+        self.image     = image
+        self.left_up   = left_up
         self.right_low = right_low
-        ok_pass = 0
+        ok_pass        = 0
 
         self.trim = tm.Trim(image, None, None, None, 1)
 
@@ -748,13 +763,13 @@ class ImageProcessing:
             self.ok_count += 1
             if self.ok_count == 1:
                 self.ok_start = time.time()
-                print("Start OK time: " + str(self.ok_start))  # {{{
+                print(">> Start OK time: " + str(self.ok_start))  # {{{
                 print("")  # }}}
             elif self.ok_count > 1:
                 ok_pass = time.time() - self.ok_start
-                print("Start OK time: " + str(self.ok_start))  # {{{
-                print("Pass OK time: " + str(round(ok_pass, 2)) + "[sec]")
-                print("OK frame count: " + str(self.ok_count))
+                print(">> Start OK time: " + str(self.ok_start))  # {{{
+                print(">> Pass OK time: " + str(round(ok_pass, 2)) + "[sec]")
+                print(">> OK frame count: " + str(self.ok_count))
                 print("")  # }}}
 
             # 検知時間 判定
@@ -767,7 +782,7 @@ class ImageProcessing:
 
         # 検索中 表示
         else:
-            self.trim.write_text("Searching...", (0, "height"), offset=(0, 5))
+            self.trim.write_text(">> Searching...", (0, "height"), offset=(0, 5))
             self.init_judge_param()
 # }}}
 
@@ -808,7 +823,7 @@ class ImageProcessing:
             sli = self.loc_min
             stst("OK, {}, {}, {}, {}".format(sva, sla, svi, sli))
 
-            print("Set port: {}".format(self.port))
+            print(">> Set port: {}".format(self.port))
             print(self.destination)
             print("{}".format(self.printout[self.model][self.destination]))
             print("")
@@ -837,21 +852,21 @@ class ImageProcessing:
 
             # NGログ 出力
             sda_ng_image = sd.SaveData("ng_image", self.dir_log)
-            sda_ng_text = sd.SaveData("judge_log", os.getcwd())
+            sda_ng_text  = sd.SaveData("judge_log", os.getcwd())
             sisi = sda_ng_image.save_image
             sisi(self.image, self.extension, save_lim=save_lim)
             stst = sda_ng_text.save_text
-            sva = self.val_max
-            sla = self.loc_max
-            svi = self.val_min
-            sli = self.loc_min
+            sva  = self.val_max
+            sla  = self.loc_max
+            svi  = self.val_min
+            sli  = self.loc_min
             stst("NG, {}, {}, {}, {}".format(sva, sla, svi, sli))
 # }}}
 
     def init_judge_param(self):
         """ 判定諸元 初期化 """  # {{{
-        self.ok_count = 0
-        self.ok_start = 0
+        self.ok_count   = 0
+        self.ok_start   = 0
         self.beep_count = 0
         self.judge_flag = True
 # }}}
@@ -864,7 +879,7 @@ class ImageProcessing:
 
         time.sleep(0.1)
         image = "{}{}master_source{}".format(self.path, self.delimiter, ext)
-        print("Get master name: {}".format(image))
+        print(">> Get master name: {}".format(image))
 
         # 文字描画消去の為 再読込み
         get_flag, frame = self.cap.read()
@@ -878,14 +893,14 @@ class ImageProcessing:
         """ 操作方法説明文 画面表示 """  # {{{
         # 操作方法説明文 表示位置 取得
         text_offset = 10
-        baseline = frame.shape[0] - text_offset
-        origin = 1, baseline
+        baseline    = frame.shape[0] - text_offset
+        origin      = 1, baseline
 
         # 操作方法説明文 表示
-        trim = tm.Trim(frame, None, None, None, 1)
+        trim        = tm.Trim(frame, None, None, None, 1)
         text_height = trim.write_text(text1, origin)
-        coor_x = origin[0]
-        coor_y = origin[1] - text_offset - text_height[1]
+        coor_x      = origin[0]
+        coor_y      = origin[1] - text_offset - text_height[1]
         trim.write_text(text2, (coor_x, coor_y))
 
         # メイン画面 表示
@@ -912,19 +927,19 @@ class ImageProcessing:
     # TODO: 見直し(main loop で切出したメソッドに代替する)！！！
     def get_master(self, search, extension, path, mode=None):
         """ マスター画像 読込み """  # {{{
-        self.search = search
+        self.search    = search
         self.extension = extension
-        self.path = path
+        self.path      = path
 
-        name = "Get master image"
-        text2 = "Quit: Long press \"q\" key"
-        text3 = "Trimming: Long press \"t\" key"
+        name           = "Get master image"
+        text2          = "Quit: Long press \"q\" key"
+        text3          = "Trimming: Long press \"t\" key"
 
         # 処理開始 標準出力  # {{{
         print("-" * print_col)
         print(" START GET MASTER MODE ".center(print_col, "*"))
         print("-" * print_col)
-        print("Search master name: " + str(search))
+        print(">> Search master name: " + str(search))
         print("")
 # }}}
 
@@ -937,7 +952,7 @@ class ImageProcessing:
         while True:
             if count == 0:
                 time.sleep(0.1)
-                print("Initial delay")
+                print(">> Initial delay")
 
             # キャプチャとキャプチャエラー 判定
             get_flag, frame = self.cap.read()
@@ -957,18 +972,18 @@ class ImageProcessing:
             frame_draw = frame
             sdo(frame_draw, name, text2, text3)
 
-            print("Master capture")
+            print(">> Master capture")
             count += 1
 
             # "t" 押下 マスター画像取得モード 遷移
             if cv2.waitKey(33) == self.key_take:
-                print("Input key \"t\"")
+                print(">> Input key \"t\"")
                 print("")
                 self.get_still_image()
 
             # "q" 押下 終了処理
             if cv2.waitKey(33) == self.key:
-                print("Input key \"q\"")
+                print(">> Input key \"q\"")
                 time.sleep(0.5)
                 print(" END GET MASTER MODE ".center(print_col, "*"))
                 print("")
@@ -981,13 +996,13 @@ class ImageProcessing:
         simil_min = str(round(self.val_min * 100, 2)) + "%"
         print("")
 
-        print("Method: {}".format(method[0]))
+        print(">> Method: {}".format(method[0]))
 
-        print("Max similarity:")
+        print(">> Max similarity:")
         print(str(simil_max.rjust(print_col, " ")))
         print(str(self.loc_max).rjust(print_col, " "))
 
-        print("Min similarity:")
+        print(">> Min similarity:")
         print(str(simil_min.rjust(print_col, " ")))
         print(str(self.loc_min).rjust(print_col, " "))
         print("")
@@ -1002,11 +1017,11 @@ def main():
     print("".center(print_col, "-"))
     print("INFORMATION".center(print_col, " "))
     print("".center(print_col, "-"))
-    print("Default current directory:")
+    print(">> Default current directory:")
     print(os.getcwd().rjust(print_col, " "))
     print("")
 
-    print("And then...")
+    print(">> And then...")
 
     try:
         # os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
