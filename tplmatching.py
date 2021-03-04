@@ -7,12 +7,13 @@
 # Author:      Kilo11
 #
 # Created:     2016/03/23
-# Last Change: 2021/03/04 13:30:07.
+# Last Change: 2021/03/04 17:19:40.
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10001
 # --------------------------------------------------
 # }}}
 """ テンプレートマッチングによる画像処理 """
+
 # FIXME:
 
 # TODO:
@@ -29,45 +30,22 @@
 #     色識別 実装
 #     関数名は動詞にする
 
-# DONE:  # {{{
-#     "path" の結合は "os.path.join()" を使用する
-#     "Linux" で画像の保存できない
-#     Macではtemplate保存後にMatchingに戻らない
-#     template画像が存在しないとtemplate読み込みエラー
-#     ソース画像を保存できない！！！
-#     変数は "[大区分/固有]_[小区分/汎用]"
-#     メインループのネストが深すぎる
-#     各処理をメソッドに切出す
-#     デフォルト引数は "None" にする
-#     "matchTemplate" の "TM_CCOEFF_NORMED" は正規化する必要があるのか調査
-#     "***_NORMED"以外は正規化している
-#     Python3系 対応！！！
-#     Unicode文字リテラルを " u"body" " -> " "body" " に変更
-#     文字列の埋込を % 形式から format 形式に変更
-#     "print" -> "print()" に変更
-#     シリアル通信機能 実装
-#     __inin__.pyの作成
-#     GUI 実装
-#     OCR 実装（該当の module を発見し、import 実験まで完了）
-#     バーコード読取り機能 実装
-#     （該当の module を発見し、import 実験まで完了）
-#     "pprint" を使用する
+# DONE:
 
-# ABORT:
-#     ワークを動体検出後に判定開始する
-#     ワーク検出は背景差分で行う
-# }}}
+print_col = 50
+print("".center(print_col, "-"))
+print("MODULES".center(print_col, " "))
+print("".center(print_col, "-"))
 
 # モジュール インポート# {{{
 import os
 import sys
 import time
 # import glob
+# import unittest
 # !!!: ↓の "numpy" は消さない！！！
 import numpy as np
 from pprint import pprint
-
-# import unittest
 
 try:
     import cv2
@@ -81,72 +59,117 @@ if sys.version_info.major == 2:
     except FailImportOpenCv:
         print(">> Fail import OpenCV(cv2.cv)")
 
+# カレントディレクトリに CD して、並列にある自作モジュールパスを追加
+wdir = os.path.abspath(os.path.dirname(__file__))
+os.chdir(wdir)
+# REF1:
+sys.path.append(os.path.join("..", "SaveData"))
+sys.path.append(os.path.join("..", "Sound"))
+sys.path.append(os.path.join("..", "Serial"))
+
 try:
-    cdir = os.path.abspath(os.path.dirname(__file__))
-    os.chdir(cdir)
-
-    # REF1:
-    sys.path.append(os.path.join("..", "SaveData"))
-    sys.path.append(os.path.join("..", "Sound"))
-    sys.path.append(os.path.join("..", "Serial"))
-
     import trim as tm
     import savedata as sd
     import judgesound as js
-    # import serialcom as sc
     import serialcommun as sc
 
 # TODO: ここ以降は改善必須
-except NotFindCustumModuleInRelativePath:
+except NotFindCustumModuleInRelativePathUnix:
     # TODO: "REF: " 以降に下記メッセージが出るのか確認
     print(">> Can't find custum module in relative path")
-    print(">> Add default search path:")
+    print(">> Add search path as below:")
     pprint(sys.path)
     print("")
 
-    try:
-        sys.path.append("~/Python")
-        sys.path.append("~/Python/SaveData")
-        sys.path.append("~/Python/Sound")
-        sys.path.append("~/Python/Serial")
+    sys.path.append(os.path.join("~", "/Python/SaveData"))
+    sys.path.append(os.path.join("~", "/Python/Sound"))
+    sys.path.append(os.path.join("~", "/Python/Serial"))
 
-    except NotFindCustumModuleInHomePath:
-        print(">> Can't find custum module in homepath")
-        try:
-            sys.path.append("/Users/wacky515/OneDrive/Biz/Python")
-            sys.path.append("/Users/wacky515/OneDrive/Biz/Python/SaveData")
-            sys.path.append("/Users/wacky515/OneDrive/Biz/Python/Sound")
-            sys.path.append("/Users/wacky515/OneDrive/Biz/Python/Serial")
-
-        except:
-            print(">> Can't find custum module in OneDrive(Mac)")
-            sys.path.append("D:\OneDrive\Biz\Python")
-            sys.path.append("D:\OneDrive\Biz\Python\SaveData")
-            sys.path.append("D:\OneDrive\Biz\Python\Sound")
-            sys.path.append("D:\OneDrive\Biz\Python\Serial")
-
-    print(">> And then...")
-    pprint(sys.path)
-
-try:
     import trim as tm
     import savedata as sd
     import judgesound as js
+    import serialcommun as sc
 
-except FailImportCustomModule:
+except NotFindCustumModuleInRelativePathWin:
+    print(">> Can't find custum module in abs path(Unix)")
+    print(">> Add search path as below:")
+    pprint(sys.path)
+    print("")
+    sys.path.append(os.path.join("%USERPROFILE%", "\Python\SaveData"))
+    sys.path.append(os.path.join("%USERPROFILE%", "\Python\Sound"))
+    sys.path.append(os.path.join("%USERPROFILE%", "\Python\Serial"))
+
+    import trim as tm
+    import savedata as sd
+    import judgesound as js
+    import serialcommun as sc
+
+except NotFindCustumModuleInAbsPath:
+    print(">> Can't find custum module in abs path(Windows)")
+    print(">> Add search path as below:")
+    pprint(sys.path)
+    print("")
+    sys.path.append("~/Python")
+    sys.path.append("~/Python/SaveData")
+    sys.path.append("~/Python/Sound")
+    sys.path.append("~/Python/Serial")
+
+    import trim as tm
+    import savedata as sd
+    import judgesound as js
+    import serialcommun as sc
+
+except NotFindCustumModuleInHomePath:
+    print(">> Can't find custum module in homepath")
+    print(">> Add search path as below:")
+    pprint(sys.path)
+    print("")
+    sys.path.append("/Users/wacky515/OneDrive/Biz/Python")
+    sys.path.append("/Users/wacky515/OneDrive/Biz/Python/SaveData")
+    sys.path.append("/Users/wacky515/OneDrive/Biz/Python/Sound")
+    sys.path.append("/Users/wacky515/OneDrive/Biz/Python/Serial")
+
+    import trim as tm
+    import savedata as sd
+    import judgesound as js
+    import serialcommun as sc
+
+except NotFindCustumModuleInOneDriveUnix:
+    print(">> Can't find custum module in OneDrive(Unix)")
+    print(">> Add search path as below:")
+    pprint(sys.path)
+    print("")
+    sys.path.append("C:\OneDrive\Biz\Python")
+    sys.path.append("C:\OneDrive\Biz\Python\SaveData")
+    sys.path.append("C:\OneDrive\Biz\Python\Sound")
+    sys.path.append("C:\OneDrive\Biz\Python\Serial")
+
+    import trim as tm
+    import savedata as sd
+    import judgesound as js
+    import serialcommun as sc
+
+except NotFindCustumModuleInOneDriveWin:
+    print(">> Can't find custum module in OneDrive(Windows)")
     print(">> Fail import custom module...")
 
-# MEMO:
-# Python3系ではデフォルトエンコードがutf-8のため、
-# sys.setdefaultencoding('UTF8')は非推奨
+else:
+    print(">> Success import custom module...")
+
+finally:
+    print(">> Set module path as below:")
+    pprint(sys.path)
+
 # Python2 用設定
+    # MEMO:
+    # Python3系ではデフォルトエンコードがutf-8のため、
+    # sys.setdefaultencoding('UTF8')は非推奨
 if sys.version_info.major == 2:
     # sysモジュール リロード
     reload(sys)
     # デフォルトの文字コード 出力
 # }}}
 
-print_col = 50
 save_lim = 100
 
 
@@ -162,8 +185,8 @@ def terminate(name_cap=None, time_wait=None):
     cv2.destroyAllWindows()
 
     print("")
-    print("Terminated...")
-    sys.exit("System end")
+    print(">> Terminated...")
+    sys.exit(">> System end")
     # }}}
 
 
@@ -494,9 +517,9 @@ class ImageProcessing:
 
         else:
             self.key_master = ord("m")
-            self.key_end = ord("e")
-            self.key_take = ord("t")
-            self.key_quit = ord("q")
+            self.key_end    = ord("e")
+            self.key_take   = ord("t")
+            self.key_quit   = ord("q")
 # }}}
 
     def run(self, window_name, name_master, port, printout,
@@ -641,15 +664,15 @@ class ImageProcessing:
             # イテレート処理
             for method in methods:
                 if method[1] is not None:
-                    frame_eval = method[1](frame)
+                    frame_eval  = method[1](frame)
                     master_eval = method[1](master)
                 else:
-                    frame_eval = frame
+                    frame_eval  = frame
                     master_eval = master
 
                 # テンプレートマッチング 処理
                 stt = self.tmc.tplmatch(frame_eval, master_eval)
-                match = stt[0]
+                match        = stt[0]
                 self.val_min = stt[1]
                 self.val_max = stt[2]
                 self.loc_min = stt[3]
@@ -657,9 +680,9 @@ class ImageProcessing:
 
                 # マッチ領域 トリム処理
                 sts = self.tmc.show_detect_area(self.loc_max, master, frame)
-                detect_eval = sts[0]
-                left_up = sts[1]
-                right_low = sts[2]
+                detect_eval  = sts[0]
+                left_up      = sts[1]
+                right_low    = sts[2]
 
                 # 検出領域に操作領域と同じ画像処理 実行
                 if method[1] is not None:
@@ -693,7 +716,7 @@ class ImageProcessing:
                 print("")
 
                 r_sgm = sgm(name_master, self.extension, path_master)
-                get_num_master = r_sgm[0]
+                get_num_master  = r_sgm[0]
                 get_master_flag = r_sgm[1]
 
             # "e" 押下 終了処理
@@ -800,9 +823,9 @@ class ImageProcessing:
 
         # 類似度 表示
         similarity = round(self.val_max * 100, 1)
-        sim = str(similarity) + "%"
-        coord = (self.right_low[0], "height")
-        offset = (0, self.right_low[1] + 5)
+        sim        = str(similarity) + "%"
+        coord      = (self.right_low[0], "height")
+        offset     = (0, self.right_low[1] + 5)
         stwt(sim, coord, scale=0.6,
              color_out="white", color_in="green",
              thickness_out=3, thickness_in=2, offset=offset)
@@ -813,14 +836,14 @@ class ImageProcessing:
 
             # OKログ 出力
             sda_ok_image = sd.SaveData("ok_image", self.dir_log)
-            sda_ok_text = sd.SaveData("judge_log", os.getcwd())
+            sda_ok_text  = sd.SaveData("judge_log", os.getcwd())
             sisi = sda_ok_image.save_image
             sisi(self.image, self.extension, save_lim=save_lim)
             stst = sda_ok_text.save_text
-            sva = self.val_max
-            sla = self.loc_max
-            svi = self.val_min
-            sli = self.loc_min
+            sva  = self.val_max
+            sla  = self.loc_max
+            svi  = self.val_min
+            sli  = self.loc_min
             stst("OK, {}, {}, {}, {}".format(sva, sla, svi, sli))
 
             print(">> Set port: {}".format(self.port))
@@ -1011,34 +1034,41 @@ class ImageProcessing:
 
 def main():
     """ メインルーチン """
-    # Vimテスト用各変数 定義# {{{
-
+    # Vimテスト用各変数 定義  # {{{
     # イニシャル情報 出力
+    print("")
     print("".center(print_col, "-"))
-    print("INFORMATION".center(print_col, " "))
+    print("INIT INFORMATION".center(print_col, " "))
     print("".center(print_col, "-"))
     print(">> Default current directory:")
     print(os.getcwd().rjust(print_col, " "))
     print("")
 
-    print(">> And then...")
-
+    print(">> Start main routine")
+    wdir = os.path.abspath(os.path.dirname(__file__))
     try:
+        os.chdir(wdir)
+    except FailCdCurrentDir:
+        os.chdir(os.path.join("~", "/Python/ImageProcessing"))
+        # os.chdir("/Users/wacky515/Python/ImageProcessing")
+        print(">> Change dir(Unix)")
+    except FailCdUnix:
+        os.chdir(os.path.join("%USERPROFILE%", "\Python\ImageProcessing"))
+        # os.chdir("C:/Users/mm12167/Python/ImageProcessing")
         # os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
-        os.chdir("C:/Users/mm12167/ImageProcessing")
-    except:
-        try:
-            os.chdir("/Users/wacky515/OneDrive/Biz/Python/ImageProcessing")
-        except:
-            cdir = os.path.abspath(os.path.dirname(__file__))
-            os.chdir("~/Python/ImageProcessing")
-
-    # print(os.getcwd().rjust(print_col, " "))
+        print(">> Change dir(Windows)")
+    except FailCdWin:
+        print(">> Fail change dir")
+    else:
+        print(">> Success change dir")
+    finally:
+        print(">> Current dir:")
+        print(os.getcwd().rjust(print_col, " "))
 
     print("")
-    print(u"〓" * int(print_col / 2))
-    print("START MAIN".center(print_col, " "))
-    print(u"〓" * int(print_col / 2))
+    print(u"〓" * int(print_col // 2))
+    print("START MAIN ROUTINE".center(print_col, " "))
+    print(u"〓" * int(print_col // 2))
     print("")
 # }}}
 
