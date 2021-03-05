@@ -7,7 +7,7 @@
 # Author:      Kilo11
 #
 # Created:     2016/03/23
-# Last Change: 2021/03/05 10:57:40.
+# Last Change: 2021/03/05 14:47:35.
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10001
 # --------------------------------------------------
@@ -32,11 +32,6 @@
 
 # DONE:
 
-print_col = 50
-print("".center(print_col, "-"))
-print(" MODULES ".center(print_col, " "))
-print("".center(print_col, "-"))
-
 # モジュール インポート# {{{
 import os
 import sys
@@ -58,6 +53,11 @@ if sys.version_info.major == 2:
         import cv2.cv as cv
     except FailImportOpenCv:
         print(">> FAIL IMPORT OPENCV(CV2.CV)")
+
+print_col = 50
+print("".center(print_col, "-"))
+print(" MODULES ".center(print_col, " "))
+print("".center(print_col, "-"))
 
 # カレントディレクトリに CD して、並列にある自作モジュールパスを追加
 wdir = os.path.abspath(os.path.dirname(__file__))
@@ -95,9 +95,9 @@ except NotFindCustumModuleInRelativePathWin:
     print(">> Add search path as below:")
     pprint(sys.path)
     print("")
-    sys.path.append(os.path.join("%USERPROFILE%", "\Python\SaveData"))
-    sys.path.append(os.path.join("%USERPROFILE%", "\Python\Sound"))
-    sys.path.append(os.path.join("%USERPROFILE%", "\Python\Serial"))
+    sys.path.append(os.path.join("%USERPROFILE%", "\\Python\\SaveData"))
+    sys.path.append(os.path.join("%USERPROFILE%", "\\Python\\Sound"))
+    sys.path.append(os.path.join("%USERPROFILE%", "\\Python\\Serial"))
 
     import trim as tm
     import savedata as sd
@@ -139,10 +139,10 @@ except NotFindCustumModuleInOneDriveUnix:
     print(">> Add search path as below:")
     pprint(sys.path)
     print("")
-    sys.path.append("C:\OneDrive\Biz\Python")
-    sys.path.append("C:\OneDrive\Biz\Python\SaveData")
-    sys.path.append("C:\OneDrive\Biz\Python\Sound")
-    sys.path.append("C:\OneDrive\Biz\Python\Serial")
+    sys.path.append("C:\\OneDrive\\Biz\\Python")
+    sys.path.append("C:\\OneDrive\\Biz\\Python\\SaveData")
+    sys.path.append("C:\\OneDrive\\Biz\\Python\\Sound")
+    sys.path.append("C:\\OneDrive\\Biz\\Python\\Serial")
 
     import trim as tm
     import savedata as sd
@@ -192,6 +192,7 @@ def terminate(name_cap=None, time_wait=None):
 
 class GetImage:
     """ 画像・動画 取得クラス """  # {{{
+
     def __init__(self, image):
         self.image = image
 
@@ -204,7 +205,8 @@ class GetImage:
         try:
             image = cv2.imread(self.image, conversion)
             return image
-        except:
+
+        except NotExistImage:
             print(">> Image data is not found...")
             return False
 
@@ -438,16 +440,16 @@ class Tplmatching:
     def show_detect_area(self, location, image, frame):
         """ 捕捉範囲 演算 """
         # 中央座標 演算
-        scd          = self.calc_detect_location(location, image)
-        coord        = scd[0]
-        height       = scd[1]
-        width        = scd[2]
+        scd = self.calc_detect_location(location, image)
+        coord = scd[0]
+        height = scd[1]
+        width = scd[2]
 
-        loc          = location
-        hit          = height
-        wdh          = width
-        left_up      = (loc[0], loc[1])
-        right_low    = (loc[0] + width, loc[1] + hit)
+        loc = location
+        hit = height
+        wdh = width
+        left_up = (loc[0], loc[1])
+        right_low = (loc[0] + width, loc[1] + hit)
         detect_image = (frame[loc[1]:loc[1] + hit, loc[0]:loc[0] + wdh].copy())
 
         return detect_image, left_up, right_low
@@ -455,9 +457,9 @@ class Tplmatching:
 
 class ImageProcessing:
     """ メイン画像処理クラス """
-    cim   = ConvertImage()
-    tmc   = Tplmatching()
-    jsd   = js.JudgeSound()
+    cim = ConvertImage()
+    tmc = Tplmatching()
+    jsd = js.JudgeSound()
 
     ciadp = cim.adaptive_threashold
     cidca = cim.discriminantanalyse
@@ -520,10 +522,10 @@ class ImageProcessing:
 
         else:
             self.key_master = ord("m")
-            self.key_end    = ord("e")
-            self.key_take   = ord("t")
-            self.key_quit   = ord("q")
-# }}}
+            self.key_end = ord("e")
+            self.key_take = ord("t")
+            self.key_quit = ord("q")
+        # }}}
 
     def run(self, window_name, name_master, port, printout,
             extension=None, dir_master=None, dir_log=None,
@@ -559,7 +561,7 @@ class ImageProcessing:
             self.destination = "LABEL BATT-C597A/J-CA"
         else:
             self.destination = destination
-# }}}
+        # }}}
 
         # 処理開始 標準出力  # {{{
         print("-" * print_col)
@@ -576,7 +578,7 @@ class ImageProcessing:
         print(">> Master directory:")
         print(path_master.rjust(print_col, " "))
         print("")
-# }}}
+        # }}}
 
         # 検索するマスター画像 名前・パス 表示  # {{{
         search_master_file = str(name_master) + "_****" + str(self.extension)
@@ -585,19 +587,19 @@ class ImageProcessing:
         print("Search master file name: " + search_master_file)
         print("Search master path: " + search_master_path)
         print("")
-# }}}
+        # }}}
 
         # !!!: 複数探査の時はここの "sda" をイテレート処理
         # 枝番最大のマスター画像 取得  # {{{
-        self.sda        = sd.SaveData(name_master, path_master)
-        snm, gnm, gmf   = self.sda.get_name_max(self.extension)
-        set_num_master  = snm
-        get_num_master  = gnm
+        self.sda = sd.SaveData(name_master, path_master)
+        snm, gnm, gmf = self.sda.get_name_max(self.extension)
+        set_num_master = snm
+        get_num_master = gnm
         get_master_flag = gmf
         print(" RETURN TEMPLATE MATCHING ".center(print_col, "*"))
         print(">> Get master flag: {}".format(get_master_flag))
         print("")
-# }}}
+        # }}}
 
         # マスター画像有無 判定  # {{{
         if get_master_flag is False:
@@ -606,9 +608,9 @@ class ImageProcessing:
             # マスター画像取得モード 遷移
             while get_master_flag is False:
                 r_sgm = sgm(name_master, self.extension, path_master)
-                get_num_master  = r_sgm[0]
+                get_num_master = r_sgm[0]
                 get_master_flag = r_sgm[1]
-# }}}
+        # }}}
 
         # イニシャルのマッチしたマスター画像 名前・パス 表示  # {{{
         master_file = str(get_num_master) + str(self.extension)
@@ -618,7 +620,7 @@ class ImageProcessing:
         print("Get master extension: " + str(self.extension))
         print("Master path: " + master_path)
         print("")
-# }}}
+        # }}}
         # !!!: イテレート処理予定 ここまで
 
         # キャプチャ 開始
@@ -667,15 +669,15 @@ class ImageProcessing:
             # イテレート処理
             for method in methods:
                 if method[1] is not None:
-                    frame_eval  = method[1](frame)
+                    frame_eval = method[1](frame)
                     master_eval = method[1](master)
                 else:
-                    frame_eval  = frame
+                    frame_eval = frame
                     master_eval = master
 
                 # テンプレートマッチング 処理
                 stt = self.tmc.tplmatch(frame_eval, master_eval)
-                match        = stt[0]
+                match = stt[0]
                 self.val_min = stt[1]
                 self.val_max = stt[2]
                 self.loc_min = stt[3]
@@ -683,9 +685,9 @@ class ImageProcessing:
 
                 # マッチ領域 トリム処理
                 sts = self.tmc.show_detect_area(self.loc_max, master, frame)
-                detect_eval  = sts[0]
-                left_up      = sts[1]
-                right_low    = sts[2]
+                detect_eval = sts[0]
+                left_up = sts[1]
+                right_low = sts[2]
 
                 # 検出領域に操作領域と同じ画像処理 実行
                 if method[1] is not None:
@@ -719,7 +721,7 @@ class ImageProcessing:
                 print("")
 
                 r_sgm = sgm(name_master, self.extension, path_master)
-                get_num_master  = r_sgm[0]
+                get_num_master = r_sgm[0]
                 get_master_flag = r_sgm[1]
 
             # "e" 押下 終了処理
@@ -758,7 +760,7 @@ class ImageProcessing:
             #        window_name = "Adaptive Threashold cap"
             # }}}
         cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
-# }}}
+        # }}}
 
     def check_get_flag(self, flag):
         """ 動画取得ミス時 スキップ処理 """  # {{{
@@ -776,10 +778,10 @@ class ImageProcessing:
 
     def judge_image(self, image, left_up, right_low):
         """ ワーク 検出・判定処理 """  # {{{
-        self.image     = image
-        self.left_up   = left_up
+        self.image = image
+        self.left_up = left_up
         self.right_low = right_low
-        ok_pass        = 0
+        ok_pass = 0
 
         self.trim = tm.Trim(image, None, None, None, 1)
 
@@ -816,9 +818,10 @@ class ImageProcessing:
 
         # 検索中 表示
         else:
-            self.trim.write_text(">> Searching...", (0, "height"), offset=(0, 5))
+            twt = self.trim.write_text
+            twt(">> Searching...", (0, "height"), offset=(0, 5))
             self.init_judge_param()
-# }}}
+        # }}}
 
     def judge_ok(self):
         """ 判定OK 処理 """  # {{{
@@ -834,9 +837,9 @@ class ImageProcessing:
 
         # 類似度 表示
         similarity = round(self.val_max * 100, 1)
-        sim        = str(similarity) + "%"
-        coord      = (self.right_low[0], "height")
-        offset     = (0, self.right_low[1] + 5)
+        sim = str(similarity) + "%"
+        coord = (self.right_low[0], "height")
+        offset = (0, self.right_low[1] + 5)
         stwt(sim, coord, scale=0.6,
              color_out="white", color_in="green",
              thickness_out=3, thickness_in=2, offset=offset)
@@ -847,14 +850,14 @@ class ImageProcessing:
 
             # OKログ 出力
             sda_ok_image = sd.SaveData("ok_image", self.dir_log)
-            sda_ok_text  = sd.SaveData("judge_log", os.getcwd())
+            sda_ok_text = sd.SaveData("judge_log", os.getcwd())
             sisi = sda_ok_image.save_image
             sisi(self.image, self.extension, save_lim=save_lim)
             stst = sda_ok_text.save_text
-            sva  = self.val_max
-            sla  = self.loc_max
-            svi  = self.val_min
-            sli  = self.loc_min
+            sva = self.val_max
+            sla = self.loc_max
+            svi = self.val_min
+            sli = self.loc_min
             stst("OK, {}, {}, {}, {}".format(sva, sla, svi, sli))
 
             print(">> Set port: {}".format(self.port))
@@ -866,7 +869,7 @@ class ImageProcessing:
                 src = sc.SerialCom()
                 sst = src.send_tsc
                 sst(self.printout[self.model][self.destination], self.port)
-            except:
+            except ErrorBarcodePrinte:
                 print(" BARCODE PRINT OUT ERROR ".center(print_col, "*"))
                 print("")
 # }}}
@@ -886,21 +889,21 @@ class ImageProcessing:
 
             # NGログ 出力
             sda_ng_image = sd.SaveData("ng_image", self.dir_log)
-            sda_ng_text  = sd.SaveData("judge_log", os.getcwd())
+            sda_ng_text = sd.SaveData("judge_log", os.getcwd())
             sisi = sda_ng_image.save_image
             sisi(self.image, self.extension, save_lim=save_lim)
             stst = sda_ng_text.save_text
-            sva  = self.val_max
-            sla  = self.loc_max
-            svi  = self.val_min
-            sli  = self.loc_min
+            sva = self.val_max
+            sla = self.loc_max
+            svi = self.val_min
+            sli = self.loc_min
             stst("NG, {}, {}, {}, {}".format(sva, sla, svi, sli))
 # }}}
 
     def init_judge_param(self):
         """ 判定諸元 初期化 """  # {{{
-        self.ok_count   = 0
-        self.ok_start   = 0
+        self.ok_count = 0
+        self.ok_start = 0
         self.beep_count = 0
         self.judge_flag = True
 # }}}
@@ -927,14 +930,14 @@ class ImageProcessing:
         """ 操作方法説明文 画面表示 """  # {{{
         # 操作方法説明文 表示位置 取得
         text_offset = 10
-        baseline    = frame.shape[0] - text_offset
-        origin      = 1, baseline
+        baseline = frame.shape[0] - text_offset
+        origin = 1, baseline
 
         # 操作方法説明文 表示
-        trim        = tm.Trim(frame, None, None, None, 1)
+        trim = tm.Trim(frame, None, None, None, 1)
         text_height = trim.write_text(text1, origin)
-        coor_x      = origin[0]
-        coor_y      = origin[1] - text_offset - text_height[1]
+        coor_x = origin[0]
+        coor_y = origin[1] - text_offset - text_height[1]
         trim.write_text(text2, (coor_x, coor_y))
 
         # メイン画面 表示
@@ -961,13 +964,13 @@ class ImageProcessing:
     # TODO: 見直し(main loop で切出したメソッドに代替する)！！！
     def get_master(self, search, extension, path, mode=None):
         """ マスター画像 読込み """  # {{{
-        self.search    = search
+        self.search = search
         self.extension = extension
-        self.path      = path
+        self.path = path
 
-        name           = "Get master image"
-        text2          = "Quit: Long press \"q\" key"
-        text3          = "Trimming: Long press \"t\" key"
+        name = "Get master image"
+        text2 = "Quit: Long press \"q\" key"
+        text3 = "Trimming: Long press \"t\" key"
 
         # 処理開始 標準出力  # {{{
         print("-" * print_col)
@@ -1064,9 +1067,9 @@ def main():
         # os.chdir("/Users/wacky515/Python/ImageProcessing")
         print(">> Change directory(Unix)")
     except FailCdUnix:
-        os.chdir(os.path.join("%USERPROFILE%", "\Python\ImageProcessing"))
+        os.chdir(os.path.join("%USERPROFILE%", "\\Python\\ImageProcessing"))
         # os.chdir("C:/Users/mm12167/Python/ImageProcessing")
-        # os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
+        # os.chdir("D:\\OneDrive\\Biz\\Python\\ImageProcessing")
         print(">> Change directory(Windows)")
     except FailCdWin:
         print(">> FAIL CHANGE DIRECTORY")
@@ -1095,7 +1098,7 @@ def main():
     cip = ImageProcessing()
     cip.run("Raw capture", "masterImage", port, printout)
     print(">> Image processing end...")
-# }}}
+    # }}}
 
     # 静止画取得 テスト# {{{
     # gim = GetImage(pic_smpl_1)
@@ -1103,7 +1106,7 @@ def main():
     # # gim.diplay("Tes1", 0, 0)
     # gim2.display("Tes2", 0, 0)
     # print("Main loop end...")
-# }}}
+    # }}}
 
     # 動画取得 テスト# {{{
     # cav = GetImage()
@@ -1131,6 +1134,7 @@ def main():
     # print(GetImage.__doc__)
     # print(help(__name__))
     # }}}
+
 
 if __name__ == "__main__":
     main()

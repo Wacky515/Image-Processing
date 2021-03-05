@@ -1,10 +1,14 @@
 # Create:      201*/**/** **:**:**
-# Last Change: 2021/03/04 12:19:02.
+# Last Change: 2021/03/05 15:11:35.
 
 *.dbm
 *.dump
 *.exe
 *.png
+*.spec
+judgesound.py
+savedata.py
+serialcommun.py
 
 ./
 build/
