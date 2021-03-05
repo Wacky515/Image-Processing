@@ -7,12 +7,13 @@
 # Author:      Kilo11
 #
 # Created:     2016/03/23 **:**:**
-# Last Change: 2021/02/26 22:42:44.
+# Last Change: 2021/03/05 23:18:02.
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10001
 # --------------------------------------------------
 # }}}
 """ テンプレートマッチングによる画像処理 """
+
 # FIXME:
 
 # TODO:
@@ -30,112 +31,146 @@
 #     色識別 実装
 #     関数名は動詞にする
 
-# DONE:  # {{{
-#     "path" の結合は "os.path.join()" を使用する
-#     "Linux" で画像の保存できない
-#     Macではtemplate保存後にMatchingに戻らない
-#     template画像が存在しないとtemplate読み込みエラー
-#     ソース画像を保存できない！！！
-#     変数は "[大区分/固有]_[小区分/汎用]"
-#     メインループのネストが深すぎる
-#     各処理をメソッドに切出す
-#     デフォルト引数は "None" にする
-#     "matchTemplate" の "TM_CCOEFF_NORMED" は正規化する必要があるのか調査
-#     "***_NORMED"以外は正規化している
-#     Python3系 対応！！！
-#     Unicode文字リテラルを " u"body" " -> " "body" " に変更
-#     文字列の埋込を % 形式から format 形式に変更
-#     "print" -> "print()" に変更
-#     シリアル通信機能 実装
-#     __inin__.pyの作成
-#     GUI 実装
-#     OCR 実装（該当の module を発見し、import 実験まで完了）
-#     バーコード読取り機能 実装
-#     （該当の module を発見し、import 実験まで完了）
-#     "pprint" を使用する
-
-# ABORT:
-#     ワークを動体検出後に判定開始する
-#     ワーク検出は背景差分で行う
-# }}}
+# DONE:
 
 # モジュール インポート# {{{
 import os
 import sys
 import time
 # import glob
+# import unittest
 # !!!: ↓の "numpy" は消さない！！！
 import numpy as np
 from pprint import pprint
 
-# import unittest
+try:
+    import cv2
+except FailImportOpenCv:
+    print(">> FAIL IMPORT OPENCV")
 
-import cv2
-# import cv2.cv as cv
+# Python2 用設定
+if sys.version_info.major == 2:
+    try:
+        import cv2.cv as cv
+    except FailImportOpenCv:
+        print(">> FAIL IMPORT OPENCV(CV2.CV)")
+
+print_col = 50
+print("".center(print_col, "-"))
+print(" MODULES ".center(print_col, " "))
+print("".center(print_col, "-"))
+
+# カレントディレクトリに CD して、並列にある自作モジュールパスを追加
+wdir = os.path.abspath(os.path.dirname(__file__))
+os.chdir(wdir)
+# REF1:
+sys.path.append(os.path.join("..", "SaveData"))
+sys.path.append(os.path.join("..", "Sound"))
+sys.path.append(os.path.join("..", "Serial"))
 
 try:
-    cdir = os.path.abspath(os.path.dirname(__file__))
-    os.chdir(cdir)
-
-    # REF1:
-    sys.path.append(os.path.join("..", "SaveData"))
-    sys.path.append(os.path.join("..", "Sound"))
-    sys.path.append(os.path.join("..", "Serial"))
-
     import trim as tm
     import savedata as sd
     import judgesound as js
-    import serialcom as sc
+    import serialcommun as sc
 
 # TODO: ここ以降は改善必須
-except:
+except NotFindCustumModuleInRelativePathUnix:
     # TODO: "REF: " 以降に下記メッセージが出るのか確認
-    print("Can not find custum module")
-    print("Add default search path:")
+    print(">> CAN NOT FIND CUSTUM MODULE IN RELATIVE PATH")
+    print(">> Add search path as below:")
     pprint(sys.path)
     print("")
 
-    try:
-        sys.path.append("~/Python")
-        sys.path.append("~/Python/SaveData")
-        sys.path.append("~/Python/Sound")
-        sys.path.append("~/Python/Serial")
+    sys.path.append(os.path.join("~", "/Python/SaveData"))
+    sys.path.append(os.path.join("~", "/Python/Sound"))
+    sys.path.append(os.path.join("~", "/Python/Serial"))
 
-    except:
-        try:
-            sys.path.append("/Users/wacky515/OneDrive/Biz/Python")
-            sys.path.append("/Users/wacky515/OneDrive/Biz/Python/SaveData")
-            sys.path.append("/Users/wacky515/OneDrive/Biz/Python/Sound")
-            sys.path.append("/Users/wacky515/OneDrive/Biz/Python/Serial")
-
-        except:
-            sys.path.append("D:\OneDrive\Biz\Python")
-            sys.path.append("D:\OneDrive\Biz\Python\SaveData")
-            sys.path.append("D:\OneDrive\Biz\Python\Sound")
-            sys.path.append("D:\OneDrive\Biz\Python\Serial")
-
-    print("And then...")
-    pprint(sys.path)
-
-try:
     import trim as tm
     import savedata as sd
     import judgesound as js
+    import serialcommun as sc
 
-except FailImportMyModule:
-    print("Fail import my module...")
+except NotFindCustumModuleInRelativePathWin:
+    print(">> CAN NOT FIND CUSTUM MODULE IN ABS PATH(UNIX)")
+    print(">> Add search path as below:")
+    pprint(sys.path)
+    print("")
+    sys.path.append(os.path.join("%USERPROFILE%", "\\Python\\SaveData"))
+    sys.path.append(os.path.join("%USERPROFILE%", "\\Python\\Sound"))
+    sys.path.append(os.path.join("%USERPROFILE%", "\\Python\\Serial"))
 
-# MEMO:
-# Python3系ではデフォルトエンコードがutf-8のため、
-# sys.setdefaultencoding('UTF8')は非推奨
-# # sysモジュール リロード
-# reload(sys)
+    import trim as tm
+    import savedata as sd
+    import judgesound as js
+    import serialcommun as sc
 
-# # デフォルトの文字コード 出力
-# sys.setdefaultencoding("utf-8")
+except NotFindCustumModuleInAbsPath:
+    print(">> CAN NOT FIND CUSTUM MODULE IN ABS PATH(WINDOWS)")
+    print(">> Add search path as below:")
+    pprint(sys.path)
+    print("")
+    sys.path.append("~/Python")
+    sys.path.append("~/Python/SaveData")
+    sys.path.append("~/Python/Sound")
+    sys.path.append("~/Python/Serial")
+
+    import trim as tm
+    import savedata as sd
+    import judgesound as js
+    import serialcommun as sc
+
+except NotFindCustumModuleInHomePath:
+    print(">> CAN NOT FIND CUSTUM MODULE IN HOMEPATH")
+    print(">> Add search path as below:")
+    pprint(sys.path)
+    print("")
+    sys.path.append("/Users/wacky515/OneDrive/Biz/Python")
+    sys.path.append("/Users/wacky515/OneDrive/Biz/Python/SaveData")
+    sys.path.append("/Users/wacky515/OneDrive/Biz/Python/Sound")
+    sys.path.append("/Users/wacky515/OneDrive/Biz/Python/Serial")
+
+    import trim as tm
+    import savedata as sd
+    import judgesound as js
+    import serialcommun as sc
+
+except NotFindCustumModuleInOneDriveUnix:
+    print(">> CAN NOT FIND CUSTUM MODULE IN ONEDRIVE(UNIX)")
+    print(">> Add search path as below:")
+    pprint(sys.path)
+    print("")
+    sys.path.append("C:\\OneDrive\\Biz\\Python")
+    sys.path.append("C:\\OneDrive\\Biz\\Python\\SaveData")
+    sys.path.append("C:\\OneDrive\\Biz\\Python\\Sound")
+    sys.path.append("C:\\OneDrive\\Biz\\Python\\Serial")
+
+    import trim as tm
+    import savedata as sd
+    import judgesound as js
+    import serialcommun as sc
+
+except NotFindCustumModuleInOneDriveWin:
+    print(">> CAN NOT FIND CUSTUM MODULE IN ONEDRIVE(WINDOWS)")
+    print(">> FAIL IMPORT CUSTOM MODULE")
+
+else:
+    print(">> Success import custom module")
+
+finally:
+    print(">> Set module path as below:")
+    pprint(sys.path)
+
+# Python2 用設定
+    # MEMO:
+    # Python3系ではデフォルトエンコードがutf-8のため、
+    # sys.setdefaultencoding('UTF8')は非推奨
+if sys.version_info.major == 2:
+    # sysモジュール リロード
+    reload(sys)
+    # デフォルトの文字コード 出力
 # }}}
 
-print_col = 50
 save_lim = 100
 
 
@@ -151,13 +186,14 @@ def terminate(name_cap=None, time_wait=None):
     cv2.destroyAllWindows()
 
     print("")
-    print("Terminated...")
-    sys.exit("System end")
-# }}}
+    print(">> Terminated...")
+    sys.exit(">> System end")
+    # }}}
 
 
 class GetImage:
     """ 画像・動画 取得クラス """  # {{{
+
     def __init__(self, image):
         self.image = image
 
@@ -170,8 +206,9 @@ class GetImage:
         try:
             image = cv2.imread(self.image, conversion)
             return image
-        except:
-            print("Image data is not found...")
+
+        except NotExistImage:
+            print(">> Image data is not found...")
             return False
 
     def display(self, window_name, image=None, _type=None):
@@ -183,7 +220,7 @@ class GetImage:
         # _type [None: 静止画, それ以外: 動画]
         if image is None and _type is None:
             image = self.get_image()
-            print("Go get image...")
+            print(">> Go get image...")
 
         # TODO: "imshow" ウィンドウ幅 下限設定
         cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
@@ -193,7 +230,7 @@ class GetImage:
         if _type is None:
             # 静止画の出力保持処理
             terminate()
-# }}}
+    # }}}
 
 
 class ConvertImage(GetImage):
@@ -216,7 +253,7 @@ class ConvertImage(GetImage):
     def grayscale(self, image):
         """ グレースケール 変換処理 """
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        print("Convert grayscale...")
+        print(">> Convert grayscale...")
         print("")
 
         return gray
@@ -252,7 +289,7 @@ class ConvertImage(GetImage):
         cat = cv2.adaptiveThreshold
         adpth = cat(gray, THRESH_MAX, eval(THRESH_ALGOS[algo]),
                     eval(self.THRESH_METHODS[method]), area_calc, subtract)
-        print("Convert adaptive threashold...")
+        print(">> Convert adaptive threashold...")
         print("")
 
         return adpth
@@ -272,7 +309,7 @@ class ConvertImage(GetImage):
 
         cvf = cv2.bilateralFilter
         blr = cvf(gray, area_calc, color_sigma, metric_sigma)
-        print("Bilateral filtering...")
+        print(">> Bilateral filtering...")
         print("")
 
         return blr
@@ -292,7 +329,7 @@ class ConvertImage(GetImage):
         tst = thresh_std
         thm = THRESH_MAX
         ret, dcta = cth(blr, tst, thm, eval(self.THRESH_METHODS[method]))
-        print("Discriminant analysing...")
+        print(">> Discriminant analysing...")
         print("")
 
         return dcta
@@ -311,7 +348,7 @@ class ConvertImage(GetImage):
         tst = thresh_std
         thm = THRESH_MAX
         ret, binz = cth(blr, tst, thm, eval(self.THRESH_METHODS[method]))
-        print("Binarizing...")
+        print(">> Binarizing...")
         print("")
 
         return binz
@@ -337,7 +374,7 @@ class ConvertImage(GetImage):
         print("")
 
         return norm
-# }}}
+    # }}}
 
 
 class Tplmatching:
@@ -432,10 +469,15 @@ class ImageProcessing:
 
     def __init__(self):  # {{{
         # 動画 取得
-        # MEMO: 内蔵カメラ
-        # self.cap = cv2.VideoCapture(0)
+        print(">> Init camera connect check")
         # MEMO: 外付カメラ
         self.cap = cv2.VideoCapture(1)
+        try:
+            # MEMO: 外付カメラ
+            self.cap = cv2.VideoCapture(1)
+        except NotConnectExternalCam:
+            # MEMO: 内蔵カメラ
+            self.cap = cv2.VideoCapture(0)
 
         # マッチ判定値
         self.obj_detect = 0.40
@@ -484,7 +526,7 @@ class ImageProcessing:
             self.key_end = ord("e")
             self.key_take = ord("t")
             self.key_quit = ord("q")
-# }}}
+        # }}}
 
     def run(self, window_name, name_master, port, printout,
             extension=None, dir_master=None, dir_log=None,
@@ -520,24 +562,24 @@ class ImageProcessing:
             self.destination = "LABEL BATT-C597A/J-CA"
         else:
             self.destination = destination
-# }}}
+        # }}}
 
         # 処理開始 標準出力  # {{{
         print("-" * print_col)
-        print("START TEMPLATE MATCHING".center(print_col, " "))
+        print(" START TEMPLATE MATCHING ".center(print_col, " "))
         print("-" * print_col)
         print("")
 
-        print("SEARCH MASTER MODE".center(print_col, "*"))
+        print(" SEARCH MASTER MODE ".center(print_col, "*"))
         print("")
 
         cwd = os.getcwd()
         path_master = cwd + self.delimiter + self.dir_master
 
-        print("Master directory:")
+        print(">> Master directory:")
         print(path_master.rjust(print_col, " "))
         print("")
-# }}}
+        # }}}
 
         # 検索するマスター画像 名前・パス 表示  # {{{
         search_master_file = str(name_master) + "_****" + str(self.extension)
@@ -546,7 +588,7 @@ class ImageProcessing:
         print("Search master file name: " + search_master_file)
         print("Search master path: " + search_master_path)
         print("")
-# }}}
+        # }}}
 
         # !!!: 複数探査の時はここの "sda" をイテレート処理
         # 枝番最大のマスター画像 取得  # {{{
@@ -556,20 +598,20 @@ class ImageProcessing:
         get_num_master = gnm
         get_master_flag = gmf
         print(" RETURN TEMPLATE MATCHING ".center(print_col, "*"))
-        print("Get master flag: {}".format(get_master_flag))
+        print(">> Get master flag: {}".format(get_master_flag))
         print("")
-# }}}
+        # }}}
 
         # マスター画像有無 判定  # {{{
         if get_master_flag is False:
-            print("Master is none")
+            print(">> NO EXIST MASTER IMAGE")
 
             # マスター画像取得モード 遷移
             while get_master_flag is False:
                 r_sgm = sgm(name_master, self.extension, path_master)
                 get_num_master = r_sgm[0]
                 get_master_flag = r_sgm[1]
-# }}}
+        # }}}
 
         # イニシャルのマッチしたマスター画像 名前・パス 表示  # {{{
         master_file = str(get_num_master) + str(self.extension)
@@ -579,7 +621,7 @@ class ImageProcessing:
         print("Get master extension: " + str(self.extension))
         print("Master path: " + master_path)
         print("")
-# }}}
+        # }}}
         # !!!: イテレート処理予定 ここまで
 
         # キャプチャ 開始
@@ -590,7 +632,7 @@ class ImageProcessing:
         while True:
             if count == 0:
                 time.sleep(0.1)
-                print("Initial delay")
+                print(">> Initial delay")
 
             # キャプチャとキャプチャエラー 判定
             get_flag, frame = self.cap.read()
@@ -600,7 +642,7 @@ class ImageProcessing:
             if self.check_get_frame(frame):
                 continue
 
-            print("Capture is running...")
+            print(">> Capture is running...")
             print("")
 
             count += 1
@@ -610,9 +652,9 @@ class ImageProcessing:
             master_path = str(path_master) + self.delimiter + master_file
             master = cv2.imread(str(master_path), 1)
 
-            print("Master name: " + str(get_num_master))
-            print("Master extension: " + str(self.extension))
-            print("Master path: " + master_path)
+            print(">> Master name: " + str(get_num_master))
+            print(">> Master extension: " + str(self.extension))
+            print(">> Master path: " + master_path)
             print("")
 
             # テンプレートマッチング イテレート処理
@@ -675,8 +717,8 @@ class ImageProcessing:
 
             # "m" 押下 マスター画像取得モード 遷移
             if cv2.waitKey(33) == self.key_master:
-                print("Input key \"m\"")
-                print("Go get master")
+                print(">> Input key \"m\"")
+                print(">> Go get master")
                 print("")
 
                 r_sgm = sgm(name_master, self.extension, path_master)
@@ -685,7 +727,7 @@ class ImageProcessing:
 
             # "e" 押下 終了処理
             if cv2.waitKey(33) == self.key_end:
-                print("Input key \"e\"")
+                print(">> Input key \"e\"")
                 print(" END PROCESS ".center(print_col, "*"))
                 print("")
                 break
@@ -695,10 +737,18 @@ class ImageProcessing:
         """ カメラから動画取得 """  # {{{
         # キャプチャ イニシャルディレイ
         time.sleep(0.1)
-        print("Camera open check delay")
+        print(">> Camera open check delay")
         if not self.cap.isOpened():
-            print("Can not connect camera...")
-            terminate()
+            print(">> CAN NOT CONNECT EXTERNAL CAMERA")
+            print(">> Connect internal camera")
+            self.cap = cv2.VideoCapture(0)
+            if not self.cap.isOpened():
+                print(">> CAN NOT CONNECT CAMERA")
+                terminate()
+
+        else:
+            print(">> Connect external camera")
+
             # トラックバー 定義(できない)！！！# {{{
             #        bar_name = "Max threshold"
             #        print(thresh_max)
@@ -711,19 +761,19 @@ class ImageProcessing:
             #        window_name = "Adaptive Threashold cap"
             # }}}
         cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
-# }}}
+        # }}}
 
     def check_get_flag(self, flag):
         """ 動画取得ミス時 スキップ処理 """  # {{{
         if flag is False:
-            print("Can not get end flag")
+            print(">> CAN NOT GET END FLAG")
             return True
             # }}}
 
     def check_get_frame(self, frame):
         """ ループ 終了処理 """  # {{{
         if frame is None:
-            print("Can not get video frame")
+            print(">> CAN NOT GET VIDEO FRAME")
             return True
             # }}}
 
@@ -750,13 +800,13 @@ class ImageProcessing:
             self.ok_count += 1
             if self.ok_count == 1:
                 self.ok_start = time.time()
-                print("Start OK time: " + str(self.ok_start))  # {{{
+                print(">> Start OK time: " + str(self.ok_start))  # {{{
                 print("")  # }}}
             elif self.ok_count > 1:
                 ok_pass = time.time() - self.ok_start
-                print("Start OK time: " + str(self.ok_start))  # {{{
-                print("Pass OK time: " + str(round(ok_pass, 2)) + "[sec]")
-                print("OK frame count: " + str(self.ok_count))
+                print(">> Start OK time: " + str(self.ok_start))  # {{{
+                print(">> Pass OK time: " + str(round(ok_pass, 2)) + "[sec]")
+                print(">> OK frame count: " + str(self.ok_count))
                 print("")  # }}}
 
             # 検知時間 判定
@@ -769,9 +819,10 @@ class ImageProcessing:
 
         # 検索中 表示
         else:
-            self.trim.write_text("Searching...", (0, "height"), offset=(0, 5))
+            twt = self.trim.write_text
+            twt(">> Searching...", (0, "height"), offset=(0, 5))
             self.init_judge_param()
-# }}}
+        # }}}
 
     def judge_ok(self):
         """ 判定OK 処理 """  # {{{
@@ -810,7 +861,7 @@ class ImageProcessing:
             sli = self.loc_min
             stst("OK, {}, {}, {}, {}".format(sva, sla, svi, sli))
 
-            print("Set port: {}".format(self.port))
+            print(">> Set port: {}".format(self.port))
             print(self.destination)
             print("{}".format(self.printout[self.model][self.destination]))
             print("")
@@ -819,7 +870,7 @@ class ImageProcessing:
                 src = sc.SerialCom()
                 sst = src.send_tsc
                 sst(self.printout[self.model][self.destination], self.port)
-            except:
+            except ErrorBarcodePrinte:
                 print(" BARCODE PRINT OUT ERROR ".center(print_col, "*"))
                 print("")
 # }}}
@@ -861,12 +912,12 @@ class ImageProcessing:
     def get_still_image(self):
         """ マスター画像取得モード 遷移 """  # {{{
         ext = self.extension
-        print("Get still image")
+        print(">> Get master image")
         print("")
 
         time.sleep(0.1)
         image = "{}{}master_source{}".format(self.path, self.delimiter, ext)
-        print("Get master name: {}".format(image))
+        print(">> Get master name: {}".format(image))
 
         # 文字描画消去の為 再読込み
         get_flag, frame = self.cap.read()
@@ -896,7 +947,7 @@ class ImageProcessing:
 
     def go_get_master_mode(self, image, extension, path):
         """ マスター画像取得モード 遷移 """  # {{{
-        print("Go get master mode")
+        print(">> Go get master image mode")
         print("")
         time.sleep(0.1)
 
@@ -926,9 +977,9 @@ class ImageProcessing:
         print("-" * print_col)
         print(" START GET MASTER MODE ".center(print_col, "*"))
         print("-" * print_col)
-        print("Search master name: " + str(search))
+        print(">> Search master name: " + str(search))
         print("")
-# }}}
+        # }}}
 
         # 判定諸元 初期化
         self.init_judge_param()
@@ -939,7 +990,7 @@ class ImageProcessing:
         while True:
             if count == 0:
                 time.sleep(0.1)
-                print("Initial delay")
+                print(">> Initial delay")
 
             # キャプチャとキャプチャエラー 判定
             get_flag, frame = self.cap.read()
@@ -959,23 +1010,23 @@ class ImageProcessing:
             frame_draw = frame
             sdo(frame_draw, name, text2, text3)
 
-            print("Master capture")
+            print(">> Master capture")
             count += 1
 
             # "t" 押下 マスター画像取得モード 遷移
             if cv2.waitKey(33) == self.key_take:
-                print("Input key \"t\"")
+                print(">> Input key \"t\"")
                 print("")
                 self.get_still_image()
 
             # "q" 押下 終了処理
             if cv2.waitKey(33) == self.key:
-                print("Input key \"q\"")
+                print(">> Input key \"q\"")
                 time.sleep(0.5)
                 print(" END GET MASTER MODE ".center(print_col, "*"))
                 print("")
                 break
-# }}}
+            # }}}
 
     def print_simil(self, val_max, method):
         """ 類似度 標準出力 """  # {{{
@@ -983,51 +1034,58 @@ class ImageProcessing:
         simil_min = str(round(self.val_min * 100, 2)) + "%"
         print("")
 
-        print("Method: {}".format(method[0]))
+        print(">> Method: {}".format(method[0]))
 
-        print("Max similarity:")
+        print(">> Max similarity:")
         print(str(simil_max.rjust(print_col, " ")))
         print(str(self.loc_max).rjust(print_col, " "))
 
-        print("Min similarity:")
+        print(">> Min similarity:")
         print(str(simil_min.rjust(print_col, " ")))
         print(str(self.loc_min).rjust(print_col, " "))
         print("")
-# }}}
+        # }}}
 
 
 def main():
     """ メインルーチン """
-    # Vimテスト用各変数 定義# {{{
-
+    # Vimテスト用各変数 定義  # {{{
     # イニシャル情報 出力
+    print("")
     print("".center(print_col, "-"))
-    print("INFORMATION".center(print_col, " "))
+    print(" INIT INFORMATION ".center(print_col, " "))
     print("".center(print_col, "-"))
-    print("Default current directory:")
+    print(">> Initial current directory:")
     print(os.getcwd().rjust(print_col, " "))
     print("")
 
-    print("And then...")
-
+    print(">> Start main routine")
+    wdir = os.path.abspath(os.path.dirname(__file__))
     try:
-        # os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
-        os.chdir("C:/Users/mm12167/ImageProcessing")
-    except:
-        try:
-            os.chdir("/Users/wacky515/OneDrive/Biz/Python/ImageProcessing")
-        except:
-            cdir = os.path.abspath(os.path.dirname(__file__))
-            os.chdir("~/Python/ImageProcessing")
-
-    # print(os.getcwd().rjust(print_col, " "))
+        os.chdir(wdir)
+    except FailCdCurrentDir:
+        os.chdir(os.path.join("~", "/Python/ImageProcessing"))
+        # os.chdir("/Users/wacky515/Python/ImageProcessing")
+        print(">> Change directory(Unix)")
+    except FailCdUnix:
+        os.chdir(os.path.join("%USERPROFILE%", "\\Python\\ImageProcessing"))
+        # os.chdir("C:/Users/mm12167/Python/ImageProcessing")
+        # os.chdir("D:\\OneDrive\\Biz\\Python\\ImageProcessing")
+        print(">> Change directory(Windows)")
+    except FailCdWin:
+        print(">> FAIL CHANGE DIRECTORY")
+    else:
+        print(">> Success change directory")
+    finally:
+        print(">> Current directory:")
+        print(os.getcwd().rjust(print_col, " "))
 
     print("")
-    print(u"〓" * int(print_col / 2))
-    print("START MAIN".center(print_col, " "))
-    print(u"〓" * int(print_col / 2))
+    print(u"〓" * int(print_col // 2))
+    print(" START MAIN ROUTINE ".center(print_col, " "))
+    print(u"〓" * int(print_col // 2))
     print("")
-# }}}
+    # }}}
 
     # テンプレートマッチング テスト# {{{
     # 機種固有設定は実行ファイル上で "config" を作成しPickle化する
@@ -1040,8 +1098,8 @@ def main():
 
     cip = ImageProcessing()
     cip.run("Raw capture", "masterImage", port, printout)
-    print("Image processing end...")
-# }}}
+    print(">> Image processing end...")
+    # }}}
 
     # 静止画取得 テスト# {{{
     # gim = GetImage(pic_smpl_1)
@@ -1049,7 +1107,7 @@ def main():
     # # gim.diplay("Tes1", 0, 0)
     # gim2.display("Tes2", 0, 0)
     # print("Main loop end...")
-# }}}
+    # }}}
 
     # 動画取得 テスト# {{{
     # cav = GetImage()
@@ -1071,12 +1129,13 @@ def main():
     # cim = ConvertImage()
     # cim.adaptive_threashold(image, "Adaptive Threashold", 0)
     # print("Sudah cap")
-# }}}
+    # }}}
 
     # # ドキュメントストリング# {{{
     # print(GetImage.__doc__)
     # print(help(__name__))
     # }}}
+
 
 if __name__ == "__main__":
     main()
