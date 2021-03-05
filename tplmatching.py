@@ -7,7 +7,7 @@
 # Author:      Kilo11
 #
 # Created:     2016/03/23
-# Last Change: 2021/03/04 17:19:40.
+# Last Change: 2021/03/05 10:57:40.
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10001
 # --------------------------------------------------
@@ -34,7 +34,7 @@
 
 print_col = 50
 print("".center(print_col, "-"))
-print("MODULES".center(print_col, " "))
+print(" MODULES ".center(print_col, " "))
 print("".center(print_col, "-"))
 
 # モジュール インポート# {{{
@@ -50,14 +50,14 @@ from pprint import pprint
 try:
     import cv2
 except FailImportOpenCv:
-    print(">> Fail import OpenCV")
+    print(">> FAIL IMPORT OPENCV")
 
 # Python2 用設定
 if sys.version_info.major == 2:
     try:
         import cv2.cv as cv
     except FailImportOpenCv:
-        print(">> Fail import OpenCV(cv2.cv)")
+        print(">> FAIL IMPORT OPENCV(CV2.CV)")
 
 # カレントディレクトリに CD して、並列にある自作モジュールパスを追加
 wdir = os.path.abspath(os.path.dirname(__file__))
@@ -76,7 +76,7 @@ try:
 # TODO: ここ以降は改善必須
 except NotFindCustumModuleInRelativePathUnix:
     # TODO: "REF: " 以降に下記メッセージが出るのか確認
-    print(">> Can't find custum module in relative path")
+    print(">> CAN NOT FIND CUSTUM MODULE IN RELATIVE PATH")
     print(">> Add search path as below:")
     pprint(sys.path)
     print("")
@@ -91,7 +91,7 @@ except NotFindCustumModuleInRelativePathUnix:
     import serialcommun as sc
 
 except NotFindCustumModuleInRelativePathWin:
-    print(">> Can't find custum module in abs path(Unix)")
+    print(">> CAN NOT FIND CUSTUM MODULE IN ABS PATH(UNIX)")
     print(">> Add search path as below:")
     pprint(sys.path)
     print("")
@@ -105,7 +105,7 @@ except NotFindCustumModuleInRelativePathWin:
     import serialcommun as sc
 
 except NotFindCustumModuleInAbsPath:
-    print(">> Can't find custum module in abs path(Windows)")
+    print(">> CAN NOT FIND CUSTUM MODULE IN ABS PATH(WINDOWS)")
     print(">> Add search path as below:")
     pprint(sys.path)
     print("")
@@ -120,7 +120,7 @@ except NotFindCustumModuleInAbsPath:
     import serialcommun as sc
 
 except NotFindCustumModuleInHomePath:
-    print(">> Can't find custum module in homepath")
+    print(">> CAN NOT FIND CUSTUM MODULE IN HOMEPATH")
     print(">> Add search path as below:")
     pprint(sys.path)
     print("")
@@ -135,7 +135,7 @@ except NotFindCustumModuleInHomePath:
     import serialcommun as sc
 
 except NotFindCustumModuleInOneDriveUnix:
-    print(">> Can't find custum module in OneDrive(Unix)")
+    print(">> CAN NOT FIND CUSTUM MODULE IN ONEDRIVE(UNIX)")
     print(">> Add search path as below:")
     pprint(sys.path)
     print("")
@@ -150,11 +150,11 @@ except NotFindCustumModuleInOneDriveUnix:
     import serialcommun as sc
 
 except NotFindCustumModuleInOneDriveWin:
-    print(">> Can't find custum module in OneDrive(Windows)")
-    print(">> Fail import custom module...")
+    print(">> CAN NOT FIND CUSTUM MODULE IN ONEDRIVE(WINDOWS)")
+    print(">> FAIL IMPORT CUSTOM MODULE")
 
 else:
-    print(">> Success import custom module...")
+    print(">> Success import custom module")
 
 finally:
     print(">> Set module path as below:")
@@ -466,10 +466,13 @@ class ImageProcessing:
 
     def __init__(self):  # {{{
         # 動画 取得
+        print(">> Init camera connect check")
+        # MEMO: 外付カメラ
+        self.cap = cv2.VideoCapture(1)
         try:
             # MEMO: 外付カメラ
             self.cap = cv2.VideoCapture(1)
-        except UseInternalCam:
+        except NotConnectExternalCam:
             # MEMO: 内蔵カメラ
             self.cap = cv2.VideoCapture(0)
 
@@ -560,11 +563,11 @@ class ImageProcessing:
 
         # 処理開始 標準出力  # {{{
         print("-" * print_col)
-        print("START TEMPLATE MATCHING".center(print_col, " "))
+        print(" START TEMPLATE MATCHING ".center(print_col, " "))
         print("-" * print_col)
         print("")
 
-        print("SEARCH MASTER MODE".center(print_col, "*"))
+        print(" SEARCH MASTER MODE ".center(print_col, "*"))
         print("")
 
         cwd = os.getcwd()
@@ -598,7 +601,7 @@ class ImageProcessing:
 
         # マスター画像有無 判定  # {{{
         if get_master_flag is False:
-            print("Master is none")
+            print(">> NO EXIST MASTER IMAGE")
 
             # マスター画像取得モード 遷移
             while get_master_flag is False:
@@ -733,8 +736,16 @@ class ImageProcessing:
         time.sleep(0.1)
         print(">> Camera open check delay")
         if not self.cap.isOpened():
-            print(">> Can not connect camera...")
-            terminate()
+            print(">> CAN NOT CONNECT EXTERNAL CAMERA")
+            print(">> Connect internal camera")
+            self.cap = cv2.VideoCapture(0)
+            if not self.cap.isOpened():
+                print(">> CAN NOT CONNECT CAMERA")
+                terminate()
+
+        else:
+            print(">> Connect external camera")
+
             # トラックバー 定義(できない)！！！# {{{
             #        bar_name = "Max threshold"
             #        print(thresh_max)
@@ -752,14 +763,14 @@ class ImageProcessing:
     def check_get_flag(self, flag):
         """ 動画取得ミス時 スキップ処理 """  # {{{
         if flag is False:
-            print(">> Can't get end flag")
+            print(">> CAN NOT GET END FLAG")
             return True
             # }}}
 
     def check_get_frame(self, frame):
         """ ループ 終了処理 """  # {{{
         if frame is None:
-            print(">> Can't get video frame")
+            print(">> CAN NOT GET VIDEO FRAME")
             return True
             # }}}
 
@@ -897,7 +908,7 @@ class ImageProcessing:
     def get_still_image(self):
         """ マスター画像取得モード 遷移 """  # {{{
         ext = self.extension
-        print("Get still image")
+        print(">> Get master image")
         print("")
 
         time.sleep(0.1)
@@ -932,7 +943,7 @@ class ImageProcessing:
 
     def go_get_master_mode(self, image, extension, path):
         """ マスター画像取得モード 遷移 """  # {{{
-        print("Go get master mode")
+        print(">> Go get master image mode")
         print("")
         time.sleep(0.1)
 
@@ -964,7 +975,7 @@ class ImageProcessing:
         print("-" * print_col)
         print(">> Search master name: " + str(search))
         print("")
-# }}}
+        # }}}
 
         # 判定諸元 初期化
         self.init_judge_param()
@@ -1011,7 +1022,7 @@ class ImageProcessing:
                 print(" END GET MASTER MODE ".center(print_col, "*"))
                 print("")
                 break
-# }}}
+            # }}}
 
     def print_simil(self, val_max, method):
         """ 類似度 標準出力 """  # {{{
@@ -1029,7 +1040,7 @@ class ImageProcessing:
         print(str(simil_min.rjust(print_col, " ")))
         print(str(self.loc_min).rjust(print_col, " "))
         print("")
-# }}}
+        # }}}
 
 
 def main():
@@ -1038,9 +1049,9 @@ def main():
     # イニシャル情報 出力
     print("")
     print("".center(print_col, "-"))
-    print("INIT INFORMATION".center(print_col, " "))
+    print(" INIT INFORMATION ".center(print_col, " "))
     print("".center(print_col, "-"))
-    print(">> Default current directory:")
+    print(">> Initial current directory:")
     print(os.getcwd().rjust(print_col, " "))
     print("")
 
@@ -1051,26 +1062,26 @@ def main():
     except FailCdCurrentDir:
         os.chdir(os.path.join("~", "/Python/ImageProcessing"))
         # os.chdir("/Users/wacky515/Python/ImageProcessing")
-        print(">> Change dir(Unix)")
+        print(">> Change directory(Unix)")
     except FailCdUnix:
         os.chdir(os.path.join("%USERPROFILE%", "\Python\ImageProcessing"))
         # os.chdir("C:/Users/mm12167/Python/ImageProcessing")
         # os.chdir("D:\OneDrive\Biz\Python\ImageProcessing")
-        print(">> Change dir(Windows)")
+        print(">> Change directory(Windows)")
     except FailCdWin:
-        print(">> Fail change dir")
+        print(">> FAIL CHANGE DIRECTORY")
     else:
-        print(">> Success change dir")
+        print(">> Success change directory")
     finally:
-        print(">> Current dir:")
+        print(">> Current directory:")
         print(os.getcwd().rjust(print_col, " "))
 
     print("")
     print(u"〓" * int(print_col // 2))
-    print("START MAIN ROUTINE".center(print_col, " "))
+    print(" START MAIN ROUTINE ".center(print_col, " "))
     print(u"〓" * int(print_col // 2))
     print("")
-# }}}
+    # }}}
 
     # テンプレートマッチング テスト# {{{
     # 機種固有設定は実行ファイル上で "config" を作成しPickle化する
@@ -1083,7 +1094,7 @@ def main():
 
     cip = ImageProcessing()
     cip.run("Raw capture", "masterImage", port, printout)
-    print("Image processing end...")
+    print(">> Image processing end...")
 # }}}
 
     # 静止画取得 テスト# {{{
@@ -1114,7 +1125,7 @@ def main():
     # cim = ConvertImage()
     # cim.adaptive_threashold(image, "Adaptive Threashold", 0)
     # print("Sudah cap")
-# }}}
+    # }}}
 
     # # ドキュメントストリング# {{{
     # print(GetImage.__doc__)
