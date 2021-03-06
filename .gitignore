@@ -1,24 +1,24 @@
 # Create:      201*/**/** **:**:**
-# Last Change: 2021/03/05 15:11:35.
+# Last Change: 2021/03/06 22:31:18.
 
 *.dbm
 *.dump
 *.exe
 *.png
 *.spec
+
 judgesound.py
 savedata.py
 serialcommun.py
 
+judge_log.txt
+
 ./
+LogImage/
+__pycache__/
 build/
 dist/
 old/
-
-__pycache__/
-LogImage/
 MasterImage/
-
-judge_log.txt
 
 !trim_test.png
