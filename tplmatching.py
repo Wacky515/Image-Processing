@@ -7,7 +7,7 @@
 # Author:      Kilo11
 #
 # Created:     2016/03/23 **:**:**
-# Last Change: 2021/03/05 23:31:38.
+# Last Change: 2021/03/07 12:48:39.
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10001
 # --------------------------------------------------
@@ -66,13 +66,13 @@ os.chdir(wdir)
 # REF1:
 sys.path.append(os.path.join("..", "SaveData"))
 sys.path.append(os.path.join("..", "Sound"))
-sys.path.append(os.path.join("..", "Serial"))
+# sys.path.append(os.path.join("..", "Serial"))
 
 try:
     import trim as tm
     import savedata as sd
     import judgesound as js
-    import serialcommun as sc
+    # import serialcommun as sc
 
 # TODO: ここ以降は改善必須
 except NotFindCustumModuleInRelativePathUnix:
@@ -84,12 +84,12 @@ except NotFindCustumModuleInRelativePathUnix:
 
     sys.path.append(os.path.join("~", "/Python/SaveData"))
     sys.path.append(os.path.join("~", "/Python/Sound"))
-    sys.path.append(os.path.join("~", "/Python/Serial"))
+    # sys.path.append(os.path.join("~", "/Python/Serial"))
 
     import trim as tm
     import savedata as sd
     import judgesound as js
-    import serialcommun as sc
+    # import serialcommun as sc
 
 except NotFindCustumModuleInRelativePathWin:
     print(">> CAN NOT FIND CUSTUM MODULE IN ABS PATH(UNIX)")
@@ -98,12 +98,12 @@ except NotFindCustumModuleInRelativePathWin:
     print("")
     sys.path.append(os.path.join("%USERPROFILE%", "\\Python\\SaveData"))
     sys.path.append(os.path.join("%USERPROFILE%", "\\Python\\Sound"))
-    sys.path.append(os.path.join("%USERPROFILE%", "\\Python\\Serial"))
+    # sys.path.append(os.path.join("%USERPROFILE%", "\\Python\\Serial"))
 
     import trim as tm
     import savedata as sd
     import judgesound as js
-    import serialcommun as sc
+    # import serialcommun as sc
 
 except NotFindCustumModuleInAbsPath:
     print(">> CAN NOT FIND CUSTUM MODULE IN ABS PATH(WINDOWS)")
@@ -113,12 +113,12 @@ except NotFindCustumModuleInAbsPath:
     sys.path.append("~/Python")
     sys.path.append("~/Python/SaveData")
     sys.path.append("~/Python/Sound")
-    sys.path.append("~/Python/Serial")
+    # sys.path.append("~/Python/Serial")
 
     import trim as tm
     import savedata as sd
     import judgesound as js
-    import serialcommun as sc
+    # import serialcommun as sc
 
 except NotFindCustumModuleInHomePath:
     print(">> CAN NOT FIND CUSTUM MODULE IN HOMEPATH")
@@ -128,12 +128,12 @@ except NotFindCustumModuleInHomePath:
     sys.path.append("/Users/wacky515/OneDrive/Biz/Python")
     sys.path.append("/Users/wacky515/OneDrive/Biz/Python/SaveData")
     sys.path.append("/Users/wacky515/OneDrive/Biz/Python/Sound")
-    sys.path.append("/Users/wacky515/OneDrive/Biz/Python/Serial")
+    # sys.path.append("/Users/wacky515/OneDrive/Biz/Python/Serial")
 
     import trim as tm
     import savedata as sd
     import judgesound as js
-    import serialcommun as sc
+    # import serialcommun as sc
 
 except NotFindCustumModuleInOneDriveUnix:
     print(">> CAN NOT FIND CUSTUM MODULE IN ONEDRIVE(UNIX)")
@@ -143,12 +143,12 @@ except NotFindCustumModuleInOneDriveUnix:
     sys.path.append("C:\\OneDrive\\Biz\\Python")
     sys.path.append("C:\\OneDrive\\Biz\\Python\\SaveData")
     sys.path.append("C:\\OneDrive\\Biz\\Python\\Sound")
-    sys.path.append("C:\\OneDrive\\Biz\\Python\\Serial")
+    # sys.path.append("C:\\OneDrive\\Biz\\Python\\Serial")
 
     import trim as tm
     import savedata as sd
     import judgesound as js
-    import serialcommun as sc
+    # import serialcommun as sc
 
 except NotFindCustumModuleInOneDriveWin:
     print(">> CAN NOT FIND CUSTUM MODULE IN ONEDRIVE(WINDOWS)")
@@ -866,13 +866,13 @@ class ImageProcessing:
             print("{}".format(self.printout[self.model][self.destination]))
             print("")
 
-            try:
-                src = sc.SerialCom()
-                sst = src.send_tsc
-                sst(self.printout[self.model][self.destination], self.port)
-            except ErrorBarcodePrinte:
-                print(" BARCODE PRINT OUT ERROR ".center(print_col, "*"))
-                print("")
+            # try:
+            #     src = sc.SerialCom()
+            #     sst = src.send_tsc
+            #     sst(self.printout[self.model][self.destination], self.port)
+            # except ErrorBarcodePrinte:
+            #     print(" BARCODE PRINT OUT ERROR ".center(print_col, "*"))
+            #     print("")
 # }}}
 
     def judge_ng(self):
@@ -1060,7 +1060,12 @@ def main():
     print("")
 
     print(">> Start main routine")
-    wdir = os.path.abspath(os.path.dirname(__file__))
+    if getattr(sys, 'frozen', False):
+        # MEMO: "*.exe" から実行したときの実行ファイルがある "path"
+        wdir = os.path.dirname(os.path.abspath(sys.executable))
+    else:
+        # MEMO: "*.py" から実行したときの実行ファイルがある "path"
+        wdir = os.path.dirname(os.path.abspath(__file__))
     try:
         os.chdir(wdir)
     except FailCdCurrentDir:
