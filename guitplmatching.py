@@ -7,6 +7,7 @@
 # Author:      Kilo11
 #
 # Created:     27/06/2016
+# Last Change: 2021/03/11 14:15:46.
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10003
 # -----------------------------------------------------------------------------
@@ -15,19 +16,27 @@
 # モジュール インポート
 import sys
 import pickle
+import importlib
 
-# MEMO: Python3 は tkinter
-# import Tkinter as tk
-import tkinter as tk
+# MEMO: "Python3" は "tkinter"
+if sys.version_info.major == 3:
+    import tkinter as tk
+elif sys.version_info.major == 2:
+    import Tkinter as tk
+    # Python2 用設定
+    # sysモジュール リロード
+    importlib.reload(sys)
+    # デフォルトの文字コード 出力
+    sys.setdefaultencoding("utf-8")
+
 from pprint import pprint
 
 import tplmatching as tm
 
-# # sysモジュール リロード
-# reload(sys)
 
-# # デフォルトの文字コード 出力
-# sys.setdefaultencoding("utf-8")
+def NotFindSave():
+    pass
+
 
 print_col = 50
 
@@ -63,7 +72,7 @@ try:
     print("Load destination: {}".format(save_desti))
     print("Load barcode: {}".format(barcode))
 
-except:
+except NotFindSave:
     print("Save is not found")
 
 
@@ -100,10 +109,10 @@ def run(event):
     cip = tm.ImageProcessing()
     cip.run("Raw capture", "masterImage", port, barcode,
             model=model, destination=set_desti)
-            # model=model, destination="LABEL BATT-C597A/OTCA-S1P")
     print("")
     print("GUI image processing end...")
     sys.exit("Image prosedding done")
+
 
 tki = tk.Tk()
 # ウィンドウとタイトル 生成
@@ -156,7 +165,8 @@ tki.mainloop()
 
 
 def main():
-    sys.path.append("D:\OneDrive\Biz\Python\ImageProcess")
+    sys.path.append("D:\\OneDrive\\Biz\\Python\\ImageProcess")
+
 
 if __name__ == "__main__":
     main()

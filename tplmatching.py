@@ -1,17 +1,16 @@
 # !/usr/bin/python
 # -*- coding: utf-8 -*-
-# --------------------------------------------------  # {{{
+# ----------------------------------------------------------------------  # {{{
 # Name:        tplmatching.py
 # Purpose:     In README.md
 #
 # Author:      Kilo11
 #
 # Created:     2016/03/23 **:**:**
-# Last Change: 2021/03/07 12:48:39.
+# Last Change: 2021/03/11 14:44:02.
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10001
-# --------------------------------------------------
-# }}}
+# ----------------------------------------------------------------------  # }}}
 """ テンプレートマッチングによる画像処理 """
 
 # FIXME:
@@ -27,7 +26,7 @@
 
 #     画像出力ウィンドウの位置を定義（固定）する
 #     複数索敵・多段式判定を実装する
-        # -> インスタンスをイテレートする？
+#         -> インスタンスをイテレートする？
 #     色識別 実装
 #     関数名は動詞にする
 
@@ -36,24 +35,32 @@
 # モジュール インポート# {{{
 import os
 import sys
+import cv2
 import time
 # import glob
 # import unittest
 # !!!: ↓の "numpy" は消さない！！！
-import numpy as np
+# import numpy as np
+import importlib
+
 from pprint import pprint
 
-try:
-    import cv2
-except FailImportOpenCv:
-    print(">> FAIL IMPORT OPENCV")
 
-# Python2 用設定
-if sys.version_info.major == 2:
-    try:
-        import cv2.cv as cv
-    except FailImportOpenCv:
-        print(">> FAIL IMPORT OPENCV(CV2.CV)")
+def NotConnectExternalCam():
+    pass
+
+
+def FailCdCurrentDir():
+    pass
+
+
+def FailCdUnix():
+    pass
+
+
+def FailCdWin():
+    pass
+
 
 print_col = 50
 print("".center(print_col, "-"))
@@ -167,11 +174,15 @@ finally:
     # sys.setdefaultencoding('UTF8')は非推奨
 if sys.version_info.major == 2:
     # sysモジュール リロード
-    reload(sys)
+    importlib.reload(sys)
     # デフォルトの文字コード 出力
 # }}}
 
 save_lim = 100
+
+
+def NotExistImage():
+    pass
 
 
 def terminate(name_cap=None, time_wait=None):
@@ -442,7 +453,7 @@ class Tplmatching:
         """ 捕捉範囲 演算 """
         # 中央座標 演算
         scd = self.calc_detect_location(location, image)
-        coord = scd[0]
+        # coord = scd[0]
         height = scd[1]
         width = scd[2]
 
@@ -594,7 +605,7 @@ class ImageProcessing:
         # 枝番最大のマスター画像 取得  # {{{
         self.sda = sd.SaveData(name_master, path_master)
         snm, gnm, gmf = self.sda.get_name_max(self.extension)
-        set_num_master = snm
+        # set_num_master = snm
         get_num_master = gnm
         get_master_flag = gmf
         print(" RETURN TEMPLATE MATCHING ".center(print_col, "*"))

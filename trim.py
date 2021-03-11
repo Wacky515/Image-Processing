@@ -1,17 +1,16 @@
 ﻿# !/usr/bin/python
 # -*- coding: utf-8 -*-
-# --------------------------------------------------  # {{{
+# ----------------------------------------------------------------------  # {{{
 # Name:        trim.py
 # Purpose:     In README.md
 #
 # Author:      Kilo11
 #
-# Created:     2015/12/03
-# Last Change: 2021/03/10 15:55:39.
+# Created:     2015/12/03 **:**:**
+# Last Change: 2021/03/11 14:24:22.
 # Copyright:   (c) SkyDog 2015
 # Licence:     SDS10002
-# --------------------------------------------------
-# }}}
+# ----------------------------------------------------------------------  # }}}
 """ 画像のトリミング処理 """
 
 # TODO:
@@ -32,36 +31,27 @@
 # モジュール インポート  # {{{
 import os
 import sys
+import cv2
 import time
+import importlib
 import savedata as sd
-from pprint import pprint
-
-try:
-    import cv2
-except FailImportOpenCv:
-    print(">> Fail import OpenCV")
+# from pprint import pprint
 
 # Python2 用設定
 if sys.version_info.major == 2:
-    try:
-        import cv2.cv as cv
-    except FailImportOpenCv:
-        print(">> Fail import OpenCV(cv2.cv)")
+    # MEMO:
+    #   Python3系ではデフォルトエンコードがutf-8のため、
+    #   sys.setdefaultencoding('UTF8')は非推奨
+    #   sysモジュール リロード
+    importlib.reload(sys)
+    # デフォルトの文字コード 出力
+    sys.setdefaultencoding("utf-8")
 
 # カレントディレクトリに CD して、並列にある自作モジュールパスを追加
 wdir = os.path.abspath(os.path.dirname(__file__))
 os.chdir(wdir)
 
 sys.path.append(os.path.join("..", "SaveData"))
-
-# Python2 用設定
-#     MEMO:
-#     Python3系ではデフォルトエンコードがutf-8のため、
-#     sys.setdefaultencoding('UTF8')は非推奨
-if sys.version_info.major == 2:
-    # sysモジュール リロード
-    reload(sys)
-    # デフォルトの文字コード 出力
 # }}}
 
 print_col = 50
@@ -191,7 +181,7 @@ class Trim:
             print(">> Left button up")
             print(">> End: {}, {}".format(sex, sey))
 
-            print(">> Trim area: ({}, {}), ({}, {})".format(ssx, ssy, sex, sey))
+            print(">> Trim pos: ({}, {}), ({}, {})".format(ssx, ssy, sex, sey))
             print(">> Save flag is " + str(self.save_flag))
             print("")
 
@@ -210,7 +200,6 @@ class Trim:
 
             scx = str(self.coor_x)
             scy = str(self.coor_y)
-            # print(">> Mouse location: " + str(self.coor_x) + ", " + str(self.coor_y))
             print(">> Mouse location: {}, {}".format(scx, scy))
 
     def write_text(self, text, origin,
@@ -285,7 +274,7 @@ class Trim:
             slx = str(self.length_x)
             sly = str(self.length_y)
 
-            print(">> Save area: ({}, {}), ({}, {})".format(ssx, ssy, slx, sly))
+            print(">> Save pos: ({}, {}), ({}, {})".format(ssx, ssy, slx, sly))
             print("")
 
             # 各種描画を消去する為 対象画像を再読込み
