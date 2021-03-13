@@ -1,5 +1,4 @@
 # !/usr/bin/python
-# -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------  # {{{
 # Name:        tplmatching.py
 # Purpose:     In README.md
@@ -7,10 +6,11 @@
 # Author:      Kilo11
 #
 # Created:     2016/03/23 **:**:**
-# Last Change: 2021/03/12 10:22:39.
+# Last Change: 2021/03/13 21:40:50.
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10001
 # ----------------------------------------------------------------------  # }}}
+# -*- coding: utf-8 -*-
 """ テンプレートマッチングによる画像処理 """
 
 # FIXME:
@@ -37,29 +37,10 @@ import os
 import sys
 import cv2
 import time
-# import glob
-# import unittest
-# !!!: ↓の "numpy" は消さない！！！
-# import numpy as np
 import importlib
-
 from pprint import pprint
 
-
-def NotConnectExternalCam():
-    pass
-
-
-def FailCdCurrentDir():
-    pass
-
-
-def FailCdUnix():
-    pass
-
-
-def FailCdWin():
-    pass
+# import unittest
 
 
 print_col = 50
@@ -82,7 +63,7 @@ try:
     # import serialcommun as sc
 
 # TODO: ここ以降は改善必須
-except NotFindCustumModuleInRelativePathUnix:
+except ModuleNotFoundError:
     # TODO: "REF: " 以降に下記メッセージが出るのか確認
     print(">> CAN NOT FIND CUSTUM MODULE IN RELATIVE PATH")
     print(">> Add search path as below:")
@@ -98,7 +79,7 @@ except NotFindCustumModuleInRelativePathUnix:
     import judgesound as js
     # import serialcommun as sc
 
-except NotFindCustumModuleInRelativePathWin:
+except ModuleNotFoundError:
     print(">> CAN NOT FIND CUSTUM MODULE IN ABS PATH(UNIX)")
     print(">> Add search path as below:")
     pprint(sys.path)
@@ -112,7 +93,7 @@ except NotFindCustumModuleInRelativePathWin:
     import judgesound as js
     # import serialcommun as sc
 
-except NotFindCustumModuleInAbsPath:
+except ModuleNotFoundError:
     print(">> CAN NOT FIND CUSTUM MODULE IN ABS PATH(WINDOWS)")
     print(">> Add search path as below:")
     pprint(sys.path)
@@ -127,7 +108,7 @@ except NotFindCustumModuleInAbsPath:
     import judgesound as js
     # import serialcommun as sc
 
-except NotFindCustumModuleInHomePath:
+except ModuleNotFoundError:
     print(">> CAN NOT FIND CUSTUM MODULE IN HOMEPATH")
     print(">> Add search path as below:")
     pprint(sys.path)
@@ -142,7 +123,7 @@ except NotFindCustumModuleInHomePath:
     import judgesound as js
     # import serialcommun as sc
 
-except NotFindCustumModuleInOneDriveUnix:
+except ModuleNotFoundError:
     print(">> CAN NOT FIND CUSTUM MODULE IN ONEDRIVE(UNIX)")
     print(">> Add search path as below:")
     pprint(sys.path)
@@ -157,7 +138,7 @@ except NotFindCustumModuleInOneDriveUnix:
     import judgesound as js
     # import serialcommun as sc
 
-except NotFindCustumModuleInOneDriveWin:
+except ModuleNotFoundError:
     print(">> CAN NOT FIND CUSTUM MODULE IN ONEDRIVE(WINDOWS)")
     print(">> FAIL IMPORT CUSTOM MODULE")
 
@@ -181,8 +162,8 @@ if sys.version_info.major == 2:
 save_lim = 100
 
 
-def NotExistImage():
-    pass
+def printing(position):
+    print(position)
 
 
 def terminate(name_cap=None, time_wait=None):
@@ -218,7 +199,7 @@ class GetImage:
             image = cv2.imread(self.image, conversion)
             return image
 
-        except NotExistImage:
+        except cv2.error:
             print(">> Image data is not found...")
             return False
 
@@ -227,7 +208,7 @@ class GetImage:
         if image is None:
             image = self.image
 
-        # 静止画無し 処理 ← "is None" にした 動作確認！！！
+        # 静止画無し 処理
         # _type [None: 静止画, それ以外: 動画]
         if image is None and _type is None:
             image = self.get_image()
@@ -486,13 +467,16 @@ class ImageProcessing:
         try:
             # MEMO: 外付カメラ
             self.cap = cv2.VideoCapture(1)
-        except NotConnectExternalCam:
+        except cv2.error:
             # MEMO: 内蔵カメラ
             self.cap = cv2.VideoCapture(0)
+            print(">> Use internal camera")
+        else:
+            print(">> Use external camera")
 
         # マッチ判定値
-        self.obj_detect = 0.40
-        self.val_ok = 0.70
+        # self.obj_detect = 0.40
+        # self.val_ok = 0.70
 
         # OK/NG 表示固定flag
         self.judge_flag = True
@@ -510,6 +494,7 @@ class ImageProcessing:
         # 操作説明文
         self.text2 = "End: Long press \"e\" key"
         self.text3 = "Mastering: Long press \"m\" key"
+        self.text4 = "Set threshold: Long press \"t\" key"
 
         # 判定用 変数
         # self.frame_eval = None
@@ -539,15 +524,20 @@ class ImageProcessing:
             self.key_quit = ord("q")
         # }}}
 
-    def run(self, window_name, name_master, port, printout,
+    def run(self, window_name, name_master,
+            # def run(self, window_name, name_master, port, printout,
             extension=None, dir_master=None, dir_log=None,
-            model=None, destination=None):
+            model=None, val_ok=0.70, obj_detect=0.40):
+        # model=None, destination=None):
         """ 動画取得 処理（メインルーチン） """  # {{{
         # デフォルト引数 指定  # {{{
-        self.port = port
-        self.printout = printout
+        # self.port = port
+        # self.printout = printout
 
         sgm = self.go_get_master_mode
+
+        self.val_ok = val_ok
+        self.obj_detect = obj_detect
 
         if extension is None:
             self.extension = ".png"
@@ -564,15 +554,15 @@ class ImageProcessing:
         else:
             self.dir_log = dir_log
 
-        if model is None:
-            self.model = "C597A"
-        else:
-            self.model = model
+        # if model is None:
+        #     self.model = "C597A"
+        # else:
+            # self.model = model
 
-        if destination is None:
-            self.destination = "LABEL BATT-C597A/J-CA"
-        else:
-            self.destination = destination
+        # if destination is None:
+        #     self.destination = "LABEL BATT-C597A/J-CA"
+        # else:
+        #     self.destination = destination
         # }}}
 
         # 処理開始 標準出力  # {{{
@@ -760,19 +750,7 @@ class ImageProcessing:
         else:
             print(">> Connect external camera")
 
-            # トラックバー 定義(できない)！！！# {{{
-            #        bar_name = "Max threshold"
-            #        print(thresh_max)
-            # # トラックバー 生成
-            #        def set_parameter(value):
-            #            thresh_max = cv2.getTrackbarPos(bar_name, window_name)
-            #            thresh_max = cv2.setTrackbarPos(bar_name, window_name)
-            #        cv2.createTrackbar(bar_name, window_name,
-            #           0, 255, self.thresh_max)
-            #        window_name = "Adaptive Threashold cap"
-            # }}}
         cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
-        # }}}
 
     def check_get_flag(self, flag):
         """ 動画取得ミス時 スキップ処理 """  # {{{
@@ -872,16 +850,16 @@ class ImageProcessing:
             sli = self.loc_min
             stst("OK, {}, {}, {}, {}".format(sva, sla, svi, sli))
 
-            print(">> Set port: {}".format(self.port))
-            print(self.destination)
-            print("{}".format(self.printout[self.model][self.destination]))
+            # print(">> Set port: {}".format(self.port))
+            # print(self.destination)
+            # print("{}".format(self.printout[self.model][self.destination]))
             print("")
 
             # try:
             #     src = sc.SerialCom()
             #     sst = src.send_tsc
             #     sst(self.printout[self.model][self.destination], self.port)
-            # except ErrorBarcodePrinte:
+            # except :
             #     print(" BARCODE PRINT OUT ERROR ".center(print_col, "*"))
             #     print("")
 # }}}
@@ -1043,6 +1021,8 @@ class ImageProcessing:
         """ 類似度 標準出力 """  # {{{
         simil_max = str(round(val_max * 100, 2)) + "%"
         simil_min = str(round(self.val_min * 100, 2)) + "%"
+        val_ok = str(round(self.val_ok * 100, 2)) + "%"
+        obj_detect = str(round(self.obj_detect * 100, 2)) + "%"
         print("")
 
         print(">> Method: {}".format(method[0]))
@@ -1055,6 +1035,12 @@ class ImageProcessing:
         print(str(simil_min.rjust(print_col, " ")))
         print(str(self.loc_min).rjust(print_col, " "))
         print("")
+
+        print(">> OK value:")
+        print(str(val_ok.rjust(print_col, " ")))
+
+        print(">> Search mode value:")
+        print(str(obj_detect.rjust(print_col, " ")))
         # }}}
 
 
@@ -1079,16 +1065,13 @@ def main():
         wdir = os.path.dirname(os.path.abspath(__file__))
     try:
         os.chdir(wdir)
-    except FailCdCurrentDir:
+    except FileNotFoundError:
         os.chdir(os.path.join("~", "/Python/ImageProcessing"))
-        # os.chdir("/Users/wacky515/Python/ImageProcessing")
         print(">> Change directory(Unix)")
-    except FailCdUnix:
+    except FileNotFoundError:
         os.chdir(os.path.join("%USERPROFILE%", "\\Python\\ImageProcessing"))
-        # os.chdir("C:/Users/mm12167/Python/ImageProcessing")
-        # os.chdir("D:\\OneDrive\\Biz\\Python\\ImageProcessing")
         print(">> Change directory(Windows)")
-    except FailCdWin:
+    except FileNotFoundError:
         print(">> FAIL CHANGE DIRECTORY")
     else:
         print(">> Success change directory")
@@ -1103,17 +1086,18 @@ def main():
     print("")
     # }}}
 
-    # テンプレートマッチング テスト# {{{
+    # テンプレートマッチング テスト  # {{{
     # 機種固有設定は実行ファイル上で "config" を作成しPickle化する
-    port = 2
-    printout = {"C597A": {
-                "LABEL BATT-C597A/J-CA": "1AG6P4S2000-ABA",
-                "LABEL BATT-C597A/C-CA": "1AG6P4S2000-BBA",
-                "LABEL BATT-C597A/OTCA-S1P": "1AG6P4S2000--BA"
-                }}
+    # port = 2
+    # printout = {"C597A": {
+    #             "LABEL BATT-C597A/J-CA": "1AG6P4S2000-ABA",
+    #             "LABEL BATT-C597A/C-CA": "1AG6P4S2000-BBA",
+    #             "LABEL BATT-C597A/OTCA-S1P": "1AG6P4S2000--BA"
+    #             }}
 
     cip = ImageProcessing()
-    cip.run("Raw capture", "masterImage", port, printout)
+    cip.run("Raw capture", "masterImage")
+    # cip.run("Raw capture", "masterImage", port, printout)
     print(">> Image processing end...")
     # }}}
 
