@@ -7,7 +7,7 @@
 # Author:      Kilo11
 #
 # Created:     2015/12/03 **:**:**
-# Last Change: 2021/03/12 10:23:15.
+# Last Change: 2021/03/15 00:04:37.
 # Copyright:   (c) SkyDog 2015
 # Licence:     SDS10002
 # ----------------------------------------------------------------------  # }}}
@@ -33,6 +33,7 @@ import os
 import sys
 import cv2
 import time
+import platform
 import importlib
 import savedata as sd
 # from pprint import pprint
@@ -97,7 +98,7 @@ class Trim:
         self.save_flag = False
 
         # "Linux" のキーイン差異 補完
-        if os.name == "posix":
+        if platform.system() == "Linux":
             self.key_save = 1048691
             self.key_quit = 1048689
         else:

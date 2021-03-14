@@ -6,7 +6,7 @@
 # Author:      Kilo11
 #
 # Created:     2016/03/23 **:**:**
-# Last Change: 2021/03/14 11:16:12.
+# Last Change: 2021/03/15 00:12:14.
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10001
 # ----------------------------------------------------------------------  # }}}
@@ -521,7 +521,7 @@ class ImageProcessing:
             self.delimiter = "\\"
 
         # "Linux" のキーイン差異 補完
-        if os.name == "posix":
+        if sys.platform == "Linux":
             self.key_master = 1048685
             self.key_end = 1048677
             self.key_take = 1048692
