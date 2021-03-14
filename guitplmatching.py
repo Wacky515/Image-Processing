@@ -7,7 +7,7 @@
 # Author:      Kilo11
 #
 # Created:     2016/06/27
-# Last Change: 2021/03/14 11:06:00.
+# Last Change: 2021/03/14 23:33:57.
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10003
 # -----------------------------------------------------------------------------
@@ -102,6 +102,8 @@ def run(event):
         obj_detect = 0
     elif obj_detect > 70:
         obj_detect = 70
+    elif obj_detect > val_ok:
+        obj_detect = val_ok - 1
 
     # "port" 入力値をInt型に変換 取得  # {{{
     # port = int(port_txt_fld.get())
@@ -170,6 +172,8 @@ val_ok_label.pack()
 # ラベル 生成
 obj_detect_label = tk.Label(text="Input shift serarch mode value [0~70]%")
 obj_detect_label.pack()
+obj_detect_caution_label = tk.Label(text="This value must be lower OK value")
+obj_detect_caution_label.pack()
 
 # テキストフィールド 生成
 obj_detect_txt_fld = tk.Entry()
