@@ -6,7 +6,7 @@
 # Author:      Kilo11
 #
 # Created:     2016/03/23 **:**:**
-# Last Change: 2021/03/13 21:40:50.
+# Last Change: 2021/03/14 11:16:12.
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10001
 # ----------------------------------------------------------------------  # }}}
@@ -462,15 +462,25 @@ class ImageProcessing:
     def __init__(self):  # {{{
         # 動画 取得
         print(">> Init camera connect check")
-        # MEMO: 外付カメラ
-        self.cap = cv2.VideoCapture(1)
+        # # MEMO: 外付カメラ
+        # self.cap = cv2.VideoCapture(1)
         try:
-            # MEMO: 外付カメラ
-            self.cap = cv2.VideoCapture(1)
+            if sys.platform == "darwin":
+                print(">> Use internal camera[Mac]")
+                # MEMO: 内蔵カメラ
+                self.cap = cv2.VideoCapture(0)
+            elif os.name == "nt":
+                # MEMO: 外付カメラ
+                print(">> Use external camera[Windows]")
+                self.cap = cv2.VideoCapture(1)
+            else:
+                print(">> Use external camera[Unix]")
+                self.cap = cv2.VideoCapture(1)
+
         except cv2.error:
             # MEMO: 内蔵カメラ
-            self.cap = cv2.VideoCapture(0)
             print(">> Use internal camera")
+            self.cap = cv2.VideoCapture(0)
         else:
             print(">> Use external camera")
 

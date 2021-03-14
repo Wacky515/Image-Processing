@@ -7,7 +7,7 @@
 # Author:      Kilo11
 #
 # Created:     2016/06/27
-# Last Change: 2021/03/13 21:43:48.
+# Last Change: 2021/03/14 11:06:00.
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10003
 # -----------------------------------------------------------------------------
@@ -88,20 +88,25 @@ def run(event):
     print("")
 
     # "val_ok" 入力値をInt型に変換 取得
-    val_ok = int(port_txt_fld.get())
+    val_ok = int(val_ok_txt_fld.get())
+    # "val_ok" 入力値制限
     if val_ok < 10:
         val_ok = 10
     elif val_ok > 99:
         val_ok = 99
 
-    obj_detect = int(port_txt_fld.get())
-    if obj_detect < 10:
-        obj_detect = 10
-    elif obj_detect > 99:
-        obj_detect = 99
+    # "obj_detect" 入力値をInt型に変換 取得
+    obj_detect = int(obj_detect_txt_fld.get())
+    # "obj_detect" 入力値制限
+    if obj_detect < 0:
+        obj_detect = 0
+    elif obj_detect > 70:
+        obj_detect = 70
 
-    # "port" 入力値をInt型に変換 取得
+    # "port" 入力値をInt型に変換 取得  # {{{
     # port = int(port_txt_fld.get())
+    # }}}
+
     print("")
     print("".center(print_col, "-"))
     print(" INFORMATION ".center(print_col, " "))
@@ -120,6 +125,7 @@ def run(event):
     # print("Get from button: {}".format(val.get()))
     # print("Destination: {}".format(set_desti))
     # }}}
+
     print("".center(print_col, "-"))
     print(" INFORMATION ".center(print_col, " "))
     print("")
@@ -127,8 +133,9 @@ def run(event):
     # パラメタ 保存
     with open("setting.dump", "wb") as save_file:
         save = {"val_ok": val_ok, "obj_detect": obj_detect}
-    #   save = {"port": port, "model": model,
-    #         "save_desti": set_desti, "barcode": barcode}
+    #   save = {"port": port, "model": model,  # {{{
+    #         "save_desti": set_desti, "barcode": barcode
+    # }}}}
         pickle.dump(save, save_file)
 
     # 画像処理
@@ -141,36 +148,37 @@ def run(event):
 
 
 tki = tk.Tk()
+
 # ウィンドウとタイトル 生成
 tki.title("Setting image processing")
 tki.geometry("400x300")
 
 # ラベル 生成
-port_label = tk.Label(text="Input judge OK value [10~99%]")
-port_label.pack()
+val_ok_label = tk.Label(text="Input judge OK value [10~99]%")
+val_ok_label.pack()
 
 # テキストフィールド 生成
-port_txt_fld = tk.Entry()
-# port_txt_fld = tk.Entry(width=50)
-port_txt_fld.insert(tk.END, val_ok)
-port_txt_fld.pack()
+val_ok_txt_fld = tk.Entry()
+# val_ok_txt_fld = tk.Entry(width=50)
+val_ok_txt_fld.insert(tk.END, val_ok)
+val_ok_txt_fld.pack()
 
 # ラベル 生成
-port_label = tk.Label(text="")
-port_label.pack()
+val_ok_label = tk.Label(text="")
+val_ok_label.pack()
 
 # ラベル 生成
-port_label = tk.Label(text="Input shift serarch mode value [0~70%]")
-port_label.pack()
+obj_detect_label = tk.Label(text="Input shift serarch mode value [0~70]%")
+obj_detect_label.pack()
 
 # テキストフィールド 生成
-port_txt_fld = tk.Entry()
-port_txt_fld.insert(tk.END, obj_detect)
-port_txt_fld.pack()
+obj_detect_txt_fld = tk.Entry()
+obj_detect_txt_fld.insert(tk.END, obj_detect)
+obj_detect_txt_fld.pack()
 
 # ラベル 生成
-port_label = tk.Label(text="")
-port_label.pack()
+obj_detect_label = tk.Label(text="")
+obj_detect_label.pack()
 
 # ボタン 生成
 start_btton = tk.Button(text="INPUT")
