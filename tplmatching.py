@@ -6,7 +6,7 @@
 # Author:      Kilo11
 #
 # Created:     2016/03/23 **:**:**
-# Last Change: 2021/03/15 00:12:14.
+# Last Change: 2021/03/15 08:55:14.
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10001
 # ----------------------------------------------------------------------  # }}}
@@ -49,7 +49,13 @@ print(" MODULES ".center(print_col, " "))
 print("".center(print_col, "-"))
 
 # カレントディレクトリに CD して、並列にある自作モジュールパスを追加
-wdir = os.path.abspath(os.path.dirname(__file__))
+if getattr(sys, 'frozen', False):
+    # MEMO: "*.exe" から実行したときの実行ファイルがある "path"
+    wdir = os.path.dirname(os.path.abspath(sys.executable))
+else:
+    # MEMO: "*.py" から実行したときの実行ファイルがある "path"
+    wdir = os.path.dirname(os.path.abspath(__file__))
+
 os.chdir(wdir)
 # REF1:
 sys.path.append(os.path.join("..", "SaveData"))
