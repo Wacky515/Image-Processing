@@ -7,13 +7,14 @@
 # Author:      Kilo11
 #
 # Created:     2016/06/27
-# Last Change: 2021/03/14 23:33:57.
+# Last Change: 2021/03/15 09:07:19.
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10003
 # -----------------------------------------------------------------------------
 """ 画像処理 GUI """
 
 # モジュール インポート
+import os
 import sys
 import pickle
 import importlib
@@ -31,6 +32,14 @@ elif sys.version_info.major == 2:
 
 import tplmatching as tm
 
+if getattr(sys, 'frozen', False):
+    # MEMO: "*.exe" から実行したときの実行ファイルがある "path"
+    wdir = os.path.dirname(os.path.abspath(sys.executable))
+else:
+    # MEMO: "*.py" から実行したときの実行ファイルがある "path"
+    wdir = os.path.dirname(os.path.abspath(__file__))
+
+os.chdir(wdir)
 
 print_col = 50
 
@@ -233,7 +242,8 @@ tki.mainloop()
 
 
 def main():
-    sys.path.append("D:\\OneDrive\\Biz\\Python\\ImageProcess")
+    # sys.path.append("D:\\OneDrive\\Biz\\Python\\ImageProcess")
+    pass
 
 
 if __name__ == "__main__":
