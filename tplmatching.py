@@ -6,7 +6,7 @@
 # Author:      Kilo11
 #
 # Created:     2016/03/23 **:**:**
-# Last Change: 2021/03/16 22:21:36.
+# Last Change: 2021/03/16 23:02:44.
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10001
 # ----------------------------------------------------------------------  # }}}
@@ -713,7 +713,7 @@ class ImageProcessing:
                     detect_eval = method[1](detect_eval)
 
                 # OK/NG 判定
-                self.judge_image(frame_eval, left_up, right_low)
+                self.judge_image(frame, left_up, right_low)
 
                 # 評価処理 画面表示
                 scd = self.cim.display
