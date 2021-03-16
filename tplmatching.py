@@ -6,7 +6,7 @@
 # Author:      Kilo11
 #
 # Created:     2016/03/23 **:**:**
-# Last Change: 2021/03/15 08:55:14.
+# Last Change: 2021/03/16 17:22:51.
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10001
 # ----------------------------------------------------------------------  # }}}
@@ -32,7 +32,7 @@
 
 # DONE:
 
-# モジュール インポート# {{{
+# モジュール インポート  # {{{
 import os
 import sys
 import cv2
@@ -41,7 +41,6 @@ import importlib
 from pprint import pprint
 
 # import unittest
-
 
 print_col = 50
 print("".center(print_col, "-"))
@@ -267,17 +266,21 @@ class ConvertImage(GetImage):
         # *** 適応的二値化 解説 ***
         # 1画素枚に、任意の近傍画素から個別の閾値を算出
         # }}}
+
         # 最大閾値
         THRESH_MAX = 255
+
         # 閾値算出アルゴリズム# {{{
         # MeanC:        任意の近傍画素を算術平均し閾値を算出
-        # GaussianC:    任意の近傍画素をGaussianによる重み付け
+        # GaussianC:    任意の近傍画素を "Gaussian" による重み付け
         #               （近傍を重視）で総和し閾値を算出
         # }}} """
+
         THRESH_ALGOS = ["cv2.ADAPTIVE_THRESH_MEAN_C",
                         "cv2.ADAPTIVE_THRESH_GAUSSIAN_C"]
         # 切取る正方形の一の画素数（3、5、7... 奇数のみ！）
         area_calc = 7
+
         # 減算定数# {{{
         #   周囲が似た色の時、減算して閾値を意図的に突出させ
         #   背景領域のノイズ・色ゆらぎの影響を低減する
@@ -387,9 +390,9 @@ class Tplmatching:
         if algo is None:
             algo = 5
         # 類似度判定アルゴリズム 解説# {{{
-        # cv2.TM_SQDIFF    :輝度値の差の２乗の合計     小さいほど類似
-        # cv2.TM_CCORR     :輝度値の相関               大きいほど類似
-        # cv2.TM_CCOEFF    :輝度値の平均を引いた相関   大きいほど類似
+        # cv2.TM_SQDIFF    :輝度値の差の２乗差の合計             小さいほど類似
+        # cv2.TM_CCORR     :輝度値の相互相関                     大きいほど類似
+        # cv2.TM_CCOEFF    :輝度値の相関係数（平均を引いた相関） 大きいほど類似
         #                  （テンプレート画像と探索画像の明暗差に影響され難い）
         # cv2.TM_***_NORMED :上記それぞれの正規化版
         # }}} """
@@ -468,8 +471,6 @@ class ImageProcessing:
     def __init__(self):  # {{{
         # 動画 取得
         print(">> Init camera connect check")
-        # # MEMO: 外付カメラ
-        # self.cap = cv2.VideoCapture(1)
         try:
             if sys.platform == "darwin":
                 print(">> Use internal camera[Mac]")
@@ -678,10 +679,10 @@ class ImageProcessing:
             # !!!: 複数探査の時はここのタプルにマスターを入れる
             # 評価用 処理リスト
             methods = [
-                    ["Row", None],
-                    # ["Adaptive threashold", self.ciadp],
+                    # ["Row", None],
+                    ["Adaptive threashold", self.ciadp],
                     # ["Discriminant analyse", self.cidca],
-                    # ["Bilateral filter", self.cibiz]
+                    # ["Bilateral filter", self.cibiz],
                     ]
 
             # イテレート処理
@@ -722,7 +723,7 @@ class ImageProcessing:
                 # 捕捉範囲 正規化（捕捉範囲 強調表示用）
                 norm = self.cinor(match)
                 norm_eval = norm ** self.highlight
-                # frameよりmaster分縮む
+                # "frame" より "master" 分縮む
                 self.cim.display("Normalize " + str(method[0]), norm_eval, 1)
 
                 # 操作方法説明文 画面表示
@@ -878,7 +879,7 @@ class ImageProcessing:
             # except :
             #     print(" BARCODE PRINT OUT ERROR ".center(print_col, "*"))
             #     print("")
-# }}}
+    # }}}
 
     def judge_ng(self):
         """ 判定NG 処理 """  # {{{
@@ -948,7 +949,7 @@ class ImageProcessing:
 
         # メイン画面 表示
         self.cim.display(window_name, frame, 1)
-# }}}
+        # }}}
 
     def go_get_master_mode(self, image, extension, path):
         """ マスター画像取得モード 遷移 """  # {{{
@@ -965,7 +966,7 @@ class ImageProcessing:
         print("Get master name: " + str(get_name))
 
         return get_name, get_flag
-# }}}
+        # }}}
 
     # TODO: 見直し(main loop で切出したメソッドに代替する)！！！
     def get_master(self, search, extension, path, mode=None):
@@ -1031,7 +1032,7 @@ class ImageProcessing:
                 print(" END GET MASTER MODE ".center(print_col, "*"))
                 print("")
                 break
-            # }}}
+        # }}}
 
     def print_simil(self, val_max, method):
         """ 類似度 標準出力 """  # {{{
