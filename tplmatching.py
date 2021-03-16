@@ -6,7 +6,7 @@
 # Author:      Kilo11
 #
 # Created:     2016/03/23 **:**:**
-# Last Change: 2021/03/16 17:22:51.
+# Last Change: 2021/03/16 22:21:36.
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10001
 # ----------------------------------------------------------------------  # }}}
@@ -679,7 +679,7 @@ class ImageProcessing:
             # !!!: 複数探査の時はここのタプルにマスターを入れる
             # 評価用 処理リスト
             methods = [
-                    # ["Row", None],
+                    # ["Raw", None],
                     ["Adaptive threashold", self.ciadp],
                     # ["Discriminant analyse", self.cidca],
                     # ["Bilateral filter", self.cibiz],
@@ -905,7 +905,7 @@ class ImageProcessing:
             svi = self.val_min
             sli = self.loc_min
             stst("NG, {}, {}, {}, {}".format(sva, sla, svi, sli))
-# }}}
+        # }}}
 
     def init_judge_param(self):
         """ 判定諸元 初期化 """  # {{{
@@ -913,7 +913,7 @@ class ImageProcessing:
         self.ok_start = 0
         self.beep_count = 0
         self.judge_flag = True
-# }}}
+        # }}}
 
     def get_still_image(self):
         """ マスター画像取得モード 遷移 """  # {{{
