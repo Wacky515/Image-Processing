@@ -7,7 +7,7 @@
 # Author:      Kilo11
 #
 # Created:     2016/06/27
-# Last Change: 2021/03/15 09:07:19.
+# Last Change: 2021/03/16 10:25:11.
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10003
 # -----------------------------------------------------------------------------
@@ -88,6 +88,12 @@ try:
 
 except OSError:
     print("Not found setting.dump")
+
+except KeyError:
+    print("Invalid value")
+    print("Use default value")
+    val_ok = 80
+    obj_detect = 40
 
 
 def run(event):
