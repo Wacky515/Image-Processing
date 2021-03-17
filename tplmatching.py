@@ -6,7 +6,7 @@
 # Author:      Kilo11
 #
 # Created:     2016/03/23 **:**:**
-# Last Change: 2021/03/16 23:02:44.
+# Last Change: 2021/03/17 11:51:23.
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10001
 # ----------------------------------------------------------------------  # }}}
@@ -233,6 +233,14 @@ class GetImage:
 class ConvertImage(GetImage):
     """ 画像・動画 変換クラス """  # {{{
     # 閾値処理 手法リスト
+    # cv2.THRESH_BINARY:     threshold 以下の値を0、それ以外の値を maxValue にして2値化 # {{{
+    # cv2.THRESH_BINARY_INV: threshold 以下の値を maxValue、それ以外の値を0にして2値化
+    # cv2.THRESH_TRUNC: t    threshold 以下の値はそのままで、それ以外の値を threshold にする
+    # cv2.THRESH_TOZERO:     threshold 以下の値を0、それ以外の値はそのままにする
+    # cv2.THRESH_TOZERO_INV: threshold 以下の値はそのままで、それ以外の値を0にする
+    # cv2.THRESH_OTSU:       大津の手法で閾値を自動的に決める場合に指定
+    # cv2.THRESH_TRIANGLE:   ライアングルアルゴリズムで閾値を自動的に決める場合に指定
+    # }}}
     THRESH_METHODS = ["cv2.THRESH_BINARY",
                       "cv2.THRESH_BINARY_INV",
                       "cv2.THRESH_TRUNC",
@@ -241,8 +249,14 @@ class ConvertImage(GetImage):
                       "cv2.THRESH_BINARY + cv2.THRESH_OTSU",
                       "cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU",
                       "cv2.THRESH_TRUNC + cv2.THRESH_OTSU",
+                      "cv2.THRESH_TOZERO + cv2.THRESH_OTSU",
+                      "cv2.THRESH_TOZERO_INV + cv2.THRESH_OTSU",
+                      "cv2.THRESH_BINARY + cv2.THRESH_TRIANGLE",
+                      "cv2.THRESH_BINARY_INV + cv2.THRESH_TRIANGLE",
+                      "cv2.THRESH_TRUNC + cv2.THRESH_TRIANGLE",
                       "cv2.THRESH_TOZERO + cv2.kHRESH_OTSU",
-                      "cv2.THRESH_TOZERO_INV + cv2.THRESH_OTSU"]
+                      "cv2.THRESH_TOZERO_INV + cv2.THRESH_TRIANGLE",
+                      ]
 
     def __init__(self):
         pass
@@ -262,7 +276,7 @@ class ConvertImage(GetImage):
         if method is None:
             method = 0
         gray = self.grayscale(image)
-        # 適応的二値化(Adaptive Gaussian Thresholding) パラメタ定義# {{{
+        # 適応的二値化(Adaptive Gaussian Thresholding) パラメタ定義  # {{{
         # *** 適応的二値化 解説 ***
         # 1画素枚に、任意の近傍画素から個別の閾値を算出
         # }}}
@@ -270,18 +284,18 @@ class ConvertImage(GetImage):
         # 最大閾値
         THRESH_MAX = 255
 
-        # 閾値算出アルゴリズム# {{{
+        # 閾値算出アルゴリズム  # {{{
         # MeanC:        任意の近傍画素を算術平均し閾値を算出
         # GaussianC:    任意の近傍画素を "Gaussian" による重み付け
         #               （近傍を重視）で総和し閾値を算出
-        # }}} """
+        # }}}
 
         THRESH_ALGOS = ["cv2.ADAPTIVE_THRESH_MEAN_C",
                         "cv2.ADAPTIVE_THRESH_GAUSSIAN_C"]
         # 切取る正方形の一の画素数（3、5、7... 奇数のみ！）
         area_calc = 7
 
-        # 減算定数# {{{
+        # 減算定数  # {{{
         #   周囲が似た色の時、減算して閾値を意図的に突出させ
         #   背景領域のノイズ・色ゆらぎの影響を低減する
         # }}}
@@ -331,6 +345,7 @@ class ConvertImage(GetImage):
         thm = THRESH_MAX
         ret, dcta = cth(blr, tst, thm, eval(self.THRESH_METHODS[method]))
         print(">> Discriminant analysing...")
+        print(">> Threashold: {}".format(ret))
         print("")
 
         return dcta
@@ -350,6 +365,7 @@ class ConvertImage(GetImage):
         thm = THRESH_MAX
         ret, binz = cth(blr, tst, thm, eval(self.THRESH_METHODS[method]))
         print(">> Binarizing...")
+        print(">> Threashold: {}".format(ret))
         print("")
 
         return binz
@@ -679,8 +695,8 @@ class ImageProcessing:
             # !!!: 複数探査の時はここのタプルにマスターを入れる
             # 評価用 処理リスト
             methods = [
-                    # ["Raw", None],
-                    ["Adaptive threashold", self.ciadp],
+                    ["Raw", None],
+                    # ["Adaptive threashold", self.ciadp],
                     # ["Discriminant analyse", self.cidca],
                     # ["Bilateral filter", self.cibiz],
                     ]
@@ -870,7 +886,7 @@ class ImageProcessing:
             # print(">> Set port: {}".format(self.port))
             # print(self.destination)
             # print("{}".format(self.printout[self.model][self.destination]))
-            print("")
+            # print("")
 
             # try:
             #     src = sc.SerialCom()
