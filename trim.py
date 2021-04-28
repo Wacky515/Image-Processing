@@ -1,16 +1,17 @@
-# !/usr/bin/python
+﻿# !/usr/bin/python
 # -*- coding: utf-8 -*-
-# ----------------------------------------------------------------------  # {{{
+# --------------------------------------------------  # {{{
 # Name:        trim.py
 # Purpose:     In README.md
 #
 # Author:      Kilo11
 #
-# Created:     2015/12/03 **:**:**
-# Last Change: 2021/03/15 00:04:37.
+# Created:     2015/12/03
+# Last Change: 2021/03/04 17:19:21.
 # Copyright:   (c) SkyDog 2015
 # Licence:     SDS10002
-# ----------------------------------------------------------------------  # }}}
+# --------------------------------------------------
+# }}}
 """ 画像のトリミング処理 """
 
 # TODO:
@@ -31,28 +32,37 @@
 # モジュール インポート  # {{{
 import os
 import sys
-import cv2
 import time
-import platform
-import importlib
-import savedata as sd
-# from pprint import pprint
+from pprint import pprint
+
+try:
+    import cv2
+except FailImportOpenCv:
+    print(">> Fail import OpenCV")
 
 # Python2 用設定
 if sys.version_info.major == 2:
-    # MEMO:
-    #   Python3系ではデフォルトエンコードがutf-8のため、
-    #   sys.setdefaultencoding('UTF8')は非推奨
-    #   sysモジュール リロード
-    importlib.reload(sys)
-    # デフォルトの文字コード 出力
-    sys.setdefaultencoding("utf-8")
+    try:
+        import cv2.cv as cv
+    except FailImportOpenCv:
+        print(">> Fail import OpenCV(cv2.cv)")
 
 # カレントディレクトリに CD して、並列にある自作モジュールパスを追加
 wdir = os.path.abspath(os.path.dirname(__file__))
 os.chdir(wdir)
 
 sys.path.append(os.path.join("..", "SaveData"))
+
+import savedata as sd
+
+# Python2 用設定
+    # MEMO:
+    # Python3系ではデフォルトエンコードがutf-8のため、
+    # sys.setdefaultencoding('UTF8')は非推奨
+if sys.version_info.major == 2:
+    # sysモジュール リロード
+    reload(sys)
+    # デフォルトの文字コード 出力
 # }}}
 
 print_col = 50
@@ -64,14 +74,14 @@ class Trim:
     def __init__(self, img, name, extension, path, _type=0, end_process=0):
         # 画像読込み用 インスタンス変数  # {{{
         # _type: 0: 静止画 1: 動画 切換え
-        self.img = img
-        self.name = name
+        self.img       = img
+        self.name      = name
         self.extension = extension
-        self.path = path
+        self.path      = path
 
         if _type == 0:
             self.image = cv2.imread(self.img, 1)
-            self.size = self.image.shape
+            self.size  = self.image.shape
         else:
             self.image = img
 
@@ -79,14 +89,14 @@ class Trim:
 # }}}
 
         # 矩形描画用 インスタンス変数  # {{{
-        self.start_x = self.start_y = 0
-        self.end_x = self.end_y = 0
+        self.start_x  = self.start_y  = 0
+        self.end_x    = self.end_y    = 0
         self.length_x = self.length_y = 0
 # }}}
 
         # テキスト描画用 インスタンス変数  # {{{
-        self.text_offset = 10
-        self.baseline = 0
+        self.text_offset    = 10
+        self.baseline       = 0
         self.baseline_upper = 0
         self.text1 = "Select area: Drag center"
         self.text2 = "Quit: Long press \"q\" key"
@@ -95,10 +105,10 @@ class Trim:
 
         # その他 インスタンス変数  # {{{
         self.window_name = "Original image"
-        self.save_flag = False
+        self.save_flag   = False
 
         # "Linux" のキーイン差異 補完
-        if platform.system() == "Linux":
+        if os.name == "posix":
             self.key_save = 1048691
             self.key_quit = 1048689
         else:
@@ -182,7 +192,7 @@ class Trim:
             print(">> Left button up")
             print(">> End: {}, {}".format(sex, sey))
 
-            print(">> Trim pos: ({}, {}), ({}, {})".format(ssx, ssy, sex, sey))
+            print(">> Trim area: ({}, {}), ({}, {})".format(ssx, ssy, sex, sey))
             print(">> Save flag is " + str(self.save_flag))
             print("")
 
@@ -201,6 +211,7 @@ class Trim:
 
             scx = str(self.coor_x)
             scy = str(self.coor_y)
+            # print(">> Mouse location: " + str(self.coor_x) + ", " + str(self.coor_y))
             print(">> Mouse location: {}, {}".format(scx, scy))
 
     def write_text(self, text, origin,
@@ -213,7 +224,7 @@ class Trim:
         if type(color_out) is str:
             color_out = self.convert_color(color_out)
         if type(color_in) is str:
-            color_in = self.convert_color(color_in)
+            color_in  = self.convert_color(color_in)
 
         # 戻り値にフォントサイズを指定
         font = cv2.FONT_HERSHEY_SIMPLEX
@@ -222,9 +233,9 @@ class Trim:
         # 描画y座標が "height" なら文字自体の高さを代入
         if origin[1] == "height":
             # 要素書換えのためタプルをリストに変換後、復元
-            origin = list(origin)
+            origin    = list(origin)
             origin[1] = size[1] + offset[1]
-            origin = tuple(origin)
+            origin    = tuple(origin)
 
         cpt = cv2.putText
         image = self.image
@@ -241,20 +252,20 @@ class Trim:
         if type(color_out) is str:
             color_out = self.convert_color(color_out)
         if type(color_in) is str:
-            color_in = self.convert_color(color_in)
+            color_in  = self.convert_color(color_in)
 
         cra = cv2.rectangle
         if start_point is end_point is None:
             self.length_x = 2 * self.start_x - self.coor_x
             self.length_y = 2 * self.start_y - self.coor_y
-            start_point = (self.length_x, self.length_y)
-            end_point = (self.coor_x, self.coor_y)
+            start_point   = (self.length_x, self.length_y)
+            end_point     = (self.coor_x, self.coor_y)
         cra(self.image, start_point, end_point, color_out, thickness_out)
         cra(self.image, start_point, end_point, color_in, thickness_in)
 
     def convert_color(self, color):
         """ 指定色（ニーモニック） 変換 """
-        if color == "red":
+        if color   == "red":
             color = (0, 0, 255)
         elif color == "green":
             color = (0, 255, 0)
@@ -275,15 +286,15 @@ class Trim:
             slx = str(self.length_x)
             sly = str(self.length_y)
 
-            print(">> Save pos: ({}, {}), ({}, {})".format(ssx, ssy, slx, sly))
+            print(">> Save area: ({}, {}), ({}, {})".format(ssx, ssy, slx, sly))
             print("")
 
             # 各種描画を消去する為 対象画像を再読込み
             self.image = cv2.imread(self.img, 1)
 
             # トリミング範囲 演算
-            height = self.length_y
-            width = self.length_x
+            height     = self.length_y
+            width      = self.length_x
             image_trim = self.image[height: self.end_y, width: self.end_x]
 
             # 保存処理と保存フラグ "真" -> "偽" 処理
@@ -334,7 +345,7 @@ def main():
     print(os.getcwd().rjust(print_col, " "))
 
     # MEMO: 整数演算は "//" を使用する
-    #     "/" は浮動小数点を返す
+        # "/" は浮動小数点を返す
     print(u"〓" * int(print_col // 2))
     # print(u"〓" * int(print_col / 2))
     print("START MAIN".center(print_col, " "))
@@ -363,7 +374,6 @@ def main():
     # tm = Trim("trim_test.png", "trimed", ".png", save_dir)
     # tm = Trim("trim_test2.png")
     tm.trim()
-
 
 if __name__ == "__main__":
     main()
