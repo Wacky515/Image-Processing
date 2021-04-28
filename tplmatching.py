@@ -1,17 +1,16 @@
 # !/usr/bin/python
 # -*- coding: utf-8 -*-
-# --------------------------------------------------  # {{{
+# ----------------------------------------------------------------------  # {{{
 # Name:        tplmatching.py
 # Purpose:     In README.md
 #
 # Author:      Kilo11
 #
 # Created:     2016/03/23 **:**:**
-# Last Change: 2021/03/07 12:48:39.
+# Last Change: 2021/04/28 15:55:17.
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10001
-# --------------------------------------------------
-# }}}
+# ----------------------------------------------------------------------  # }}}
 """ テンプレートマッチングによる画像処理 """
 
 # FIXME:
@@ -27,33 +26,21 @@
 
 #     画像出力ウィンドウの位置を定義（固定）する
 #     複数索敵・多段式判定を実装する
-        # -> インスタンスをイテレートする？
+#         -> インスタンスをイテレートする？
 #     色識別 実装
 #     関数名は動詞にする
 
 # DONE:
 
-# モジュール インポート# {{{
+# モジュール インポート  # {{{
 import os
 import sys
+import cv2
 import time
-# import glob
-# import unittest
-# !!!: ↓の "numpy" は消さない！！！
-import numpy as np
+import importlib
 from pprint import pprint
 
-try:
-    import cv2
-except FailImportOpenCv:
-    print(">> FAIL IMPORT OPENCV")
-
-# Python2 用設定
-if sys.version_info.major == 2:
-    try:
-        import cv2.cv as cv
-    except FailImportOpenCv:
-        print(">> FAIL IMPORT OPENCV(CV2.CV)")
+# import unittest
 
 print_col = 50
 print("".center(print_col, "-"))
@@ -61,7 +48,13 @@ print(" MODULES ".center(print_col, " "))
 print("".center(print_col, "-"))
 
 # カレントディレクトリに CD して、並列にある自作モジュールパスを追加
-wdir = os.path.abspath(os.path.dirname(__file__))
+if getattr(sys, 'frozen', False):
+    # MEMO: "*.exe" から実行したときの実行ファイルがある "path"
+    wdir = os.path.dirname(os.path.abspath(sys.executable))
+else:
+    # MEMO: "*.py" から実行したときの実行ファイルがある "path"
+    wdir = os.path.dirname(os.path.abspath(__file__))
+
 os.chdir(wdir)
 # REF1:
 sys.path.append(os.path.join("..", "SaveData"))
@@ -75,7 +68,7 @@ try:
     # import serialcommun as sc
 
 # TODO: ここ以降は改善必須
-except NotFindCustumModuleInRelativePathUnix:
+except ModuleNotFoundError:
     # TODO: "REF: " 以降に下記メッセージが出るのか確認
     print(">> CAN NOT FIND CUSTUM MODULE IN RELATIVE PATH")
     print(">> Add search path as below:")
@@ -91,7 +84,7 @@ except NotFindCustumModuleInRelativePathUnix:
     import judgesound as js
     # import serialcommun as sc
 
-except NotFindCustumModuleInRelativePathWin:
+except ModuleNotFoundError:
     print(">> CAN NOT FIND CUSTUM MODULE IN ABS PATH(UNIX)")
     print(">> Add search path as below:")
     pprint(sys.path)
@@ -105,7 +98,7 @@ except NotFindCustumModuleInRelativePathWin:
     import judgesound as js
     # import serialcommun as sc
 
-except NotFindCustumModuleInAbsPath:
+except ModuleNotFoundError:
     print(">> CAN NOT FIND CUSTUM MODULE IN ABS PATH(WINDOWS)")
     print(">> Add search path as below:")
     pprint(sys.path)
@@ -120,7 +113,7 @@ except NotFindCustumModuleInAbsPath:
     import judgesound as js
     # import serialcommun as sc
 
-except NotFindCustumModuleInHomePath:
+except ModuleNotFoundError:
     print(">> CAN NOT FIND CUSTUM MODULE IN HOMEPATH")
     print(">> Add search path as below:")
     pprint(sys.path)
@@ -135,7 +128,7 @@ except NotFindCustumModuleInHomePath:
     import judgesound as js
     # import serialcommun as sc
 
-except NotFindCustumModuleInOneDriveUnix:
+except ModuleNotFoundError:
     print(">> CAN NOT FIND CUSTUM MODULE IN ONEDRIVE(UNIX)")
     print(">> Add search path as below:")
     pprint(sys.path)
@@ -150,7 +143,7 @@ except NotFindCustumModuleInOneDriveUnix:
     import judgesound as js
     # import serialcommun as sc
 
-except NotFindCustumModuleInOneDriveWin:
+except ModuleNotFoundError:
     print(">> CAN NOT FIND CUSTUM MODULE IN ONEDRIVE(WINDOWS)")
     print(">> FAIL IMPORT CUSTOM MODULE")
 
@@ -167,11 +160,15 @@ finally:
     # sys.setdefaultencoding('UTF8')は非推奨
 if sys.version_info.major == 2:
     # sysモジュール リロード
-    reload(sys)
+    importlib.reload(sys)
     # デフォルトの文字コード 出力
 # }}}
 
 save_lim = 100
+
+
+def printing(position):
+    print(position)
 
 
 def terminate(name_cap=None, time_wait=None):
@@ -207,7 +204,7 @@ class GetImage:
             image = cv2.imread(self.image, conversion)
             return image
 
-        except NotExistImage:
+        except cv2.error:
             print(">> Image data is not found...")
             return False
 
@@ -216,7 +213,7 @@ class GetImage:
         if image is None:
             image = self.image
 
-        # 静止画無し 処理 ← "is None" にした 動作確認！！！
+        # 静止画無し 処理
         # _type [None: 静止画, それ以外: 動画]
         if image is None and _type is None:
             image = self.get_image()
@@ -236,6 +233,14 @@ class GetImage:
 class ConvertImage(GetImage):
     """ 画像・動画 変換クラス """  # {{{
     # 閾値処理 手法リスト
+    # cv2.THRESH_BINARY:     threshold 以下の値を0、それ以外の値を maxValue にして2値化 # {{{
+    # cv2.THRESH_BINARY_INV: threshold 以下の値を maxValue、それ以外の値を0にして2値化
+    # cv2.THRESH_TRUNC: t    threshold 以下の値はそのままで、それ以外の値を threshold にする
+    # cv2.THRESH_TOZERO:     threshold 以下の値を0、それ以外の値はそのままにする
+    # cv2.THRESH_TOZERO_INV: threshold 以下の値はそのままで、それ以外の値を0にする
+    # cv2.THRESH_OTSU:       大津の手法で閾値を自動的に決める場合に指定
+    # cv2.THRESH_TRIANGLE:   ライアングルアルゴリズムで閾値を自動的に決める場合に指定
+    # }}}
     THRESH_METHODS = ["cv2.THRESH_BINARY",
                       "cv2.THRESH_BINARY_INV",
                       "cv2.THRESH_TRUNC",
@@ -244,8 +249,14 @@ class ConvertImage(GetImage):
                       "cv2.THRESH_BINARY + cv2.THRESH_OTSU",
                       "cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU",
                       "cv2.THRESH_TRUNC + cv2.THRESH_OTSU",
+                      "cv2.THRESH_TOZERO + cv2.THRESH_OTSU",
+                      "cv2.THRESH_TOZERO_INV + cv2.THRESH_OTSU",
+                      "cv2.THRESH_BINARY + cv2.THRESH_TRIANGLE",
+                      "cv2.THRESH_BINARY_INV + cv2.THRESH_TRIANGLE",
+                      "cv2.THRESH_TRUNC + cv2.THRESH_TRIANGLE",
                       "cv2.THRESH_TOZERO + cv2.kHRESH_OTSU",
-                      "cv2.THRESH_TOZERO_INV + cv2.THRESH_OTSU"]
+                      "cv2.THRESH_TOZERO_INV + cv2.THRESH_TRIANGLE",
+                      ]
 
     def __init__(self):
         pass
@@ -265,22 +276,26 @@ class ConvertImage(GetImage):
         if method is None:
             method = 0
         gray = self.grayscale(image)
-        # 適応的二値化(Adaptive Gaussian Thresholding) パラメタ定義# {{{
+        # 適応的二値化(Adaptive Gaussian Thresholding) パラメタ定義  # {{{
         # *** 適応的二値化 解説 ***
         # 1画素枚に、任意の近傍画素から個別の閾値を算出
         # }}}
+
         # 最大閾値
         THRESH_MAX = 255
-        # 閾値算出アルゴリズム# {{{
+
+        # 閾値算出アルゴリズム  # {{{
         # MeanC:        任意の近傍画素を算術平均し閾値を算出
-        # GaussianC:    任意の近傍画素をGaussianによる重み付け
+        # GaussianC:    任意の近傍画素を "Gaussian" による重み付け
         #               （近傍を重視）で総和し閾値を算出
-        # }}} """
+        # }}}
+
         THRESH_ALGOS = ["cv2.ADAPTIVE_THRESH_MEAN_C",
                         "cv2.ADAPTIVE_THRESH_GAUSSIAN_C"]
         # 切取る正方形の一の画素数（3、5、7... 奇数のみ！）
         area_calc = 7
-        # 減算定数# {{{
+
+        # 減算定数  # {{{
         #   周囲が似た色の時、減算して閾値を意図的に突出させ
         #   背景領域のノイズ・色ゆらぎの影響を低減する
         # }}}
@@ -330,6 +345,7 @@ class ConvertImage(GetImage):
         thm = THRESH_MAX
         ret, dcta = cth(blr, tst, thm, eval(self.THRESH_METHODS[method]))
         print(">> Discriminant analysing...")
+        print(">> Threashold: {}".format(ret))
         print("")
 
         return dcta
@@ -349,6 +365,7 @@ class ConvertImage(GetImage):
         thm = THRESH_MAX
         ret, binz = cth(blr, tst, thm, eval(self.THRESH_METHODS[method]))
         print(">> Binarizing...")
+        print(">> Threashold: {}".format(ret))
         print("")
 
         return binz
@@ -389,9 +406,9 @@ class Tplmatching:
         if algo is None:
             algo = 5
         # 類似度判定アルゴリズム 解説# {{{
-        # cv2.TM_SQDIFF    :輝度値の差の２乗の合計     小さいほど類似
-        # cv2.TM_CCORR     :輝度値の相関               大きいほど類似
-        # cv2.TM_CCOEFF    :輝度値の平均を引いた相関   大きいほど類似
+        # cv2.TM_SQDIFF    :輝度値の差の２乗差の合計             小さいほど類似
+        # cv2.TM_CCORR     :輝度値の相互相関                     大きいほど類似
+        # cv2.TM_CCOEFF    :輝度値の相関係数（平均を引いた相関） 大きいほど類似
         #                  （テンプレート画像と探索画像の明暗差に影響され難い）
         # cv2.TM_***_NORMED :上記それぞれの正規化版
         # }}} """
@@ -442,7 +459,7 @@ class Tplmatching:
         """ 捕捉範囲 演算 """
         # 中央座標 演算
         scd = self.calc_detect_location(location, image)
-        coord = scd[0]
+        # coord = scd[0]
         height = scd[1]
         width = scd[2]
 
@@ -470,18 +487,29 @@ class ImageProcessing:
     def __init__(self):  # {{{
         # 動画 取得
         print(">> Init camera connect check")
-        # MEMO: 外付カメラ
-        self.cap = cv2.VideoCapture(1)
         try:
-            # MEMO: 外付カメラ
-            self.cap = cv2.VideoCapture(1)
-        except NotConnectExternalCam:
+            if sys.platform == "darwin":
+                print(">> Use internal camera[Mac]")
+                # MEMO: 内蔵カメラ
+                self.cap = cv2.VideoCapture(0)
+            elif os.name == "nt":
+                # MEMO: 外付カメラ
+                print(">> Use external camera[Windows]")
+                self.cap = cv2.VideoCapture(1)
+            else:
+                print(">> Use external camera[Unix]")
+                self.cap = cv2.VideoCapture(1)
+
+        except cv2.error:
             # MEMO: 内蔵カメラ
+            print(">> Use internal camera")
             self.cap = cv2.VideoCapture(0)
+        else:
+            print(">> Use external camera")
 
         # マッチ判定値
-        self.obj_detect = 0.40
-        self.val_ok = 0.70
+        # self.obj_detect = 0.40
+        # self.val_ok = 0.70
 
         # OK/NG 表示固定flag
         self.judge_flag = True
@@ -499,6 +527,7 @@ class ImageProcessing:
         # 操作説明文
         self.text2 = "End: Long press \"e\" key"
         self.text3 = "Mastering: Long press \"m\" key"
+        self.text4 = "Set threshold: Long press \"t\" key"
 
         # 判定用 変数
         # self.frame_eval = None
@@ -515,7 +544,7 @@ class ImageProcessing:
             self.delimiter = "\\"
 
         # "Linux" のキーイン差異 補完
-        if os.name == "posix":
+        if sys.platform == "Linux":
             self.key_master = 1048685
             self.key_end = 1048677
             self.key_take = 1048692
@@ -528,15 +557,20 @@ class ImageProcessing:
             self.key_quit = ord("q")
         # }}}
 
-    def run(self, window_name, name_master, port, printout,
+    def run(self, window_name, name_master,
+            # def run(self, window_name, name_master, port, printout,
             extension=None, dir_master=None, dir_log=None,
-            model=None, destination=None):
+            model=None, val_ok=0.70, obj_detect=0.40):
+        # model=None, destination=None):
         """ 動画取得 処理（メインルーチン） """  # {{{
         # デフォルト引数 指定  # {{{
-        self.port = port
-        self.printout = printout
+        # self.port = port
+        # self.printout = printout
 
         sgm = self.go_get_master_mode
+
+        self.val_ok = val_ok
+        self.obj_detect = obj_detect
 
         if extension is None:
             self.extension = ".png"
@@ -553,15 +587,15 @@ class ImageProcessing:
         else:
             self.dir_log = dir_log
 
-        if model is None:
-            self.model = "C597A"
-        else:
-            self.model = model
+        # if model is None:
+        #     self.model = "C597A"
+        # else:
+            # self.model = model
 
-        if destination is None:
-            self.destination = "LABEL BATT-C597A/J-CA"
-        else:
-            self.destination = destination
+        # if destination is None:
+        #     self.destination = "LABEL BATT-C597A/J-CA"
+        # else:
+        #     self.destination = destination
         # }}}
 
         # 処理開始 標準出力  # {{{
@@ -594,7 +628,7 @@ class ImageProcessing:
         # 枝番最大のマスター画像 取得  # {{{
         self.sda = sd.SaveData(name_master, path_master)
         snm, gnm, gmf = self.sda.get_name_max(self.extension)
-        set_num_master = snm
+        # set_num_master = snm
         get_num_master = gnm
         get_master_flag = gmf
         print(" RETURN TEMPLATE MATCHING ".center(print_col, "*"))
@@ -661,10 +695,10 @@ class ImageProcessing:
             # !!!: 複数探査の時はここのタプルにマスターを入れる
             # 評価用 処理リスト
             methods = [
-                    ["Row", None],
+                    ["Raw", None],
                     # ["Adaptive threashold", self.ciadp],
                     # ["Discriminant analyse", self.cidca],
-                    # ["Bilateral filter", self.cibiz]
+                    # ["Bilateral filter", self.cibiz],
                     ]
 
             # イテレート処理
@@ -695,7 +729,7 @@ class ImageProcessing:
                     detect_eval = method[1](detect_eval)
 
                 # OK/NG 判定
-                self.judge_image(frame_eval, left_up, right_low)
+                self.judge_image(frame, left_up, right_low)
 
                 # 評価処理 画面表示
                 scd = self.cim.display
@@ -705,7 +739,7 @@ class ImageProcessing:
                 # 捕捉範囲 正規化（捕捉範囲 強調表示用）
                 norm = self.cinor(match)
                 norm_eval = norm ** self.highlight
-                # frameよりmaster分縮む
+                # "frame" より "master" 分縮む
                 self.cim.display("Normalize " + str(method[0]), norm_eval, 1)
 
                 # 操作方法説明文 画面表示
@@ -749,19 +783,7 @@ class ImageProcessing:
         else:
             print(">> Connect external camera")
 
-            # トラックバー 定義(できない)！！！# {{{
-            #        bar_name = "Max threshold"
-            #        print(thresh_max)
-            # # トラックバー 生成
-            #        def set_parameter(value):
-            #            thresh_max = cv2.getTrackbarPos(bar_name, window_name)
-            #            thresh_max = cv2.setTrackbarPos(bar_name, window_name)
-            #        cv2.createTrackbar(bar_name, window_name,
-            #           0, 255, self.thresh_max)
-            #        window_name = "Adaptive Threashold cap"
-            # }}}
         cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
-        # }}}
 
     def check_get_flag(self, flag):
         """ 動画取得ミス時 スキップ処理 """  # {{{
@@ -861,19 +883,19 @@ class ImageProcessing:
             sli = self.loc_min
             stst("OK, {}, {}, {}, {}".format(sva, sla, svi, sli))
 
-            print(">> Set port: {}".format(self.port))
-            print(self.destination)
-            print("{}".format(self.printout[self.model][self.destination]))
-            print("")
+            # print(">> Set port: {}".format(self.port))
+            # print(self.destination)
+            # print("{}".format(self.printout[self.model][self.destination]))
+            # print("")
 
             # try:
             #     src = sc.SerialCom()
             #     sst = src.send_tsc
             #     sst(self.printout[self.model][self.destination], self.port)
-            # except ErrorBarcodePrinte:
+            # except :
             #     print(" BARCODE PRINT OUT ERROR ".center(print_col, "*"))
             #     print("")
-# }}}
+    # }}}
 
     def judge_ng(self):
         """ 判定NG 処理 """  # {{{
@@ -899,7 +921,7 @@ class ImageProcessing:
             svi = self.val_min
             sli = self.loc_min
             stst("NG, {}, {}, {}, {}".format(sva, sla, svi, sli))
-# }}}
+        # }}}
 
     def init_judge_param(self):
         """ 判定諸元 初期化 """  # {{{
@@ -907,7 +929,7 @@ class ImageProcessing:
         self.ok_start = 0
         self.beep_count = 0
         self.judge_flag = True
-# }}}
+        # }}}
 
     def get_still_image(self):
         """ マスター画像取得モード 遷移 """  # {{{
@@ -943,7 +965,7 @@ class ImageProcessing:
 
         # メイン画面 表示
         self.cim.display(window_name, frame, 1)
-# }}}
+        # }}}
 
     def go_get_master_mode(self, image, extension, path):
         """ マスター画像取得モード 遷移 """  # {{{
@@ -960,7 +982,7 @@ class ImageProcessing:
         print("Get master name: " + str(get_name))
 
         return get_name, get_flag
-# }}}
+        # }}}
 
     # TODO: 見直し(main loop で切出したメソッドに代替する)！！！
     def get_master(self, search, extension, path, mode=None):
@@ -1026,12 +1048,14 @@ class ImageProcessing:
                 print(" END GET MASTER MODE ".center(print_col, "*"))
                 print("")
                 break
-            # }}}
+        # }}}
 
     def print_simil(self, val_max, method):
         """ 類似度 標準出力 """  # {{{
         simil_max = str(round(val_max * 100, 2)) + "%"
         simil_min = str(round(self.val_min * 100, 2)) + "%"
+        val_ok = str(round(self.val_ok * 100, 2)) + "%"
+        obj_detect = str(round(self.obj_detect * 100, 2)) + "%"
         print("")
 
         print(">> Method: {}".format(method[0]))
@@ -1044,6 +1068,12 @@ class ImageProcessing:
         print(str(simil_min.rjust(print_col, " ")))
         print(str(self.loc_min).rjust(print_col, " "))
         print("")
+
+        print(">> OK value:")
+        print(str(val_ok.rjust(print_col, " ")))
+
+        print(">> Search mode value:")
+        print(str(obj_detect.rjust(print_col, " ")))
         # }}}
 
 
@@ -1068,16 +1098,13 @@ def main():
         wdir = os.path.dirname(os.path.abspath(__file__))
     try:
         os.chdir(wdir)
-    except FailCdCurrentDir:
+    except FileNotFoundError:
         os.chdir(os.path.join("~", "/Python/ImageProcessing"))
-        # os.chdir("/Users/wacky515/Python/ImageProcessing")
         print(">> Change directory(Unix)")
-    except FailCdUnix:
+    except FileNotFoundError:
         os.chdir(os.path.join("%USERPROFILE%", "\\Python\\ImageProcessing"))
-        # os.chdir("C:/Users/mm12167/Python/ImageProcessing")
-        # os.chdir("D:\\OneDrive\\Biz\\Python\\ImageProcessing")
         print(">> Change directory(Windows)")
-    except FailCdWin:
+    except FileNotFoundError:
         print(">> FAIL CHANGE DIRECTORY")
     else:
         print(">> Success change directory")
@@ -1092,17 +1119,18 @@ def main():
     print("")
     # }}}
 
-    # テンプレートマッチング テスト# {{{
+    # テンプレートマッチング テスト  # {{{
     # 機種固有設定は実行ファイル上で "config" を作成しPickle化する
-    port = 2
-    printout = {"C597A": {
-                "LABEL BATT-C597A/J-CA": "1AG6P4S2000-ABA",
-                "LABEL BATT-C597A/C-CA": "1AG6P4S2000-BBA",
-                "LABEL BATT-C597A/OTCA-S1P": "1AG6P4S2000--BA"
-                }}
+    # port = 2
+    # printout = {"C597A": {
+    #             "LABEL BATT-C597A/J-CA": "1AG6P4S2000-ABA",
+    #             "LABEL BATT-C597A/C-CA": "1AG6P4S2000-BBA",
+    #             "LABEL BATT-C597A/OTCA-S1P": "1AG6P4S2000--BA"
+    #             }}
 
     cip = ImageProcessing()
-    cip.run("Raw capture", "masterImage", port, printout)
+    cip.run("Raw capture", "masterImage")
+    # cip.run("Raw capture", "masterImage", port, printout)
     print(">> Image processing end...")
     # }}}
 
