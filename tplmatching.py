@@ -7,7 +7,7 @@
 # Author:      Kilo11
 #
 # Created:     2016/03/23 **:**:**
-# Last Change: 2021/04/28 15:55:17.
+# Last Change: 2021/04/30 11:44:16.
 # Copyright:   (c) SkyDog 2016
 # Licence:     SDS10001
 # ----------------------------------------------------------------------  # }}}
@@ -197,6 +197,7 @@ class GetImage:
     def get_image(self, conversion=None):
         """ 画像・動画 読込み """
         if conversion is None:
+            # グレースケールで読込み
             conversion = 1
 
         # 画像取得
@@ -205,7 +206,8 @@ class GetImage:
             return image
 
         except cv2.error:
-            print(">> Image data is not found...")
+            print(">> Image name: {}".format(self.image))
+            print(">> Image data not found...")
             return False
 
     def display(self, window_name, image=None, _type=None):
@@ -222,7 +224,7 @@ class GetImage:
         # TODO: "imshow" ウィンドウ幅 下限設定
         cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
         cv2.imshow(window_name, image)
-        print("Display {} image...".format(window_name))
+        print(">> Display {} image...".format(window_name))
 
         if _type is None:
             # 静止画の出力保持処理
